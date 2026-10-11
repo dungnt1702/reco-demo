@@ -174,9 +174,13 @@ document.addEventListener('DOMContentLoaded', function () {
     var on = u.state === 'on';
     var pending = u.state === 'pending';
     var stCls = on ? 'st-live">Đang hoạt động' : pending ? 'st-wait">Chờ kích hoạt' : 'st-stop">Đã ngừng';
+    /* QD-153: tài khoản từ RecoHR đặt lại mật khẩu ở RecoHR; chỉ tài khoản nội bộ được cấp link Sales Hub */
+    var pwBtn = isLocal(u)
+      ? '<button class="btn btn-quiet btn-sm" data-act="pw" data-id="' + u.id + '">Cấp link đặt mật khẩu</button>'
+      : '<button class="btn btn-quiet btn-sm" data-act="pw-recohr" data-id="' + u.id + '">Đặt lại trong RecoHR</button>';
     var acts = on
       ? '<button class="btn btn-outline btn-sm" data-act="edit" data-id="' + u.id + '">Sửa</button>' +
-        '<button class="btn btn-quiet btn-sm" data-act="pw" data-id="' + u.id + '">Đặt lại mật khẩu</button>' +
+        pwBtn +
         '<button class="btn btn-quiet btn-sm" data-act="off" data-id="' + u.id + '">Ngừng</button>'
       : '<button class="btn btn-outline btn-sm" data-act="edit" data-id="' + u.id + '">Sửa</button>' +
         '<button class="btn btn-outline btn-sm" data-act="on" data-id="' + u.id + '">' + (pending ? 'Kích hoạt' : 'Mở lại') + '</button>';
@@ -302,20 +306,58 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ---------- Thao tác trên từng dòng ---------- */
+  /* Bản mô phỏng: Ngô Thanh Bình (Kế toán) đóng vai tài khoản Sales Hub nội bộ (auth_source='local');
+     mọi người còn lại là nhân viên đồng bộ từ RecoHR. */
+  var LOCAL_IDS = { u9: true };
+  function isLocal(u) { return !!LOCAL_IDS[u.id]; }
+
+  function resetInRecoHR(u) {
+    RECO.confirm({
+      eyebrow: 'Mật khẩu RecoHR',
+      title: esc(u.name) + ' dùng mật khẩu RecoHR',
+      body: '<p class="small">Tài khoản này đăng nhập bằng <strong>Đăng nhập bằng RecoHR</strong>, nên Sales Hub không cấp mật khẩu riêng (QD-153).</p>' +
+            '<p class="small mt-2">Đặt lại ở RecoHR: mở hồ sơ nhân viên, bấm <strong>Gửi link đặt lại mật khẩu</strong> — ' +
+            'RecoHR tạo link dùng một lần (24 giờ) kèm tin nhắn soạn sẵn để gửi qua Zalo, và gửi cả email nếu có. ' +
+            'Đặt xong, phiên Sales Hub cũ của người này cũng bị đăng xuất.</p>',
+      okText: 'Mở hồ sơ trên RecoHR',
+      cancelText: 'Đóng',
+      onOk: function () { RECO.toast('Bản thật mở hồ sơ ' + u.name + ' trên RecoHR.'); }
+    });
+  }
+
   function resetPassword(u, btn) {
     RECO.confirm({
-      eyebrow: 'Đặt lại mật khẩu',
-      title: 'Đặt lại mật khẩu cho ' + esc(u.name) + '?',
-      body: '<p class="small">Mật khẩu cũ <strong>mất hiệu lực ngay</strong> và mọi phiên đang mở của người này bị hủy.</p>' +
-            '<p class="small muted mt-2">Giai đoạn 1 chưa gửi email tự động (QD-021) — hệ thống sinh mật khẩu ban đầu, ' +
-            'anh/chị bàn giao trực tiếp cho người dùng và nhắc họ đổi ngay khi đăng nhập.</p>',
-      okText: 'Đặt lại mật khẩu',
+      eyebrow: 'Cấp link đặt mật khẩu',
+      title: 'Cấp link đặt mật khẩu cho ' + esc(u.name) + '?',
+      body: '<p class="small">Mật khẩu cũ <strong>mất hiệu lực ngay</strong> và mọi phiên đang mở của người này bị hủy. ' +
+            'Hệ thống tạo một link dùng một lần, hết hạn sau 24 giờ.</p>',
+      okText: 'Cấp link',
       onOk: function () {
-        RECO.busy(btn, 'Đang đặt lại…', 900, function () {
-          RECO.toast('Mật khẩu ban đầu của ' + u.name + ': ' + newPassword() + ' — bàn giao trực tiếp, không gửi email.');
-        });
+        RECO.busy(btn, 'Đang tạo link…', 900, function () { showLink(u); });
       }
     });
+  }
+
+  function showLink(u) {
+    var url = 'https://' + (location.host || 'saleshub.recogroup.vn') + '/dat-mat-khau?token=' + Math.random().toString(36).slice(2, 12) + '…';
+    var until = new Date(Date.now() + 24 * 3600 * 1000);
+    var hhmm = ('0' + until.getHours()).slice(-2) + ':' + ('0' + until.getMinutes()).slice(-2) + ' ' +
+               ('0' + until.getDate()).slice(-2) + '/' + ('0' + (until.getMonth() + 1)).slice(-2) + '/' + until.getFullYear();
+    var msg = 'Chào ' + u.name + ', bấm link sau để đặt mật khẩu Sales Hub (dùng một lần, hết hạn ' + hhmm + '): ' + url;
+    var m = RECO.confirm({
+      eyebrow: 'Link đặt mật khẩu',
+      title: 'Gửi link này cho ' + esc(u.name),
+      body: '<p class="small">Link chỉ hiện một lần. Cần link khác thì cấp lại — link cũ sẽ mất hiệu lực.</p>' +
+            '<label class="field mt-2"><span class="lab">Tin nhắn soạn sẵn (dán vào Zalo)</span>' +
+            '<textarea class="inp" rows="4" readonly data-msg-out>' + esc(msg) + '</textarea></label>',
+      okText: 'Sao chép tin nhắn',
+      cancelText: 'Đóng',
+      onOk: function () {
+        if (navigator.clipboard) navigator.clipboard.writeText(msg);
+        RECO.toast('Đã sao chép tin nhắn — dán vào Zalo cho ' + u.name + '.');
+      }
+    });
+    return m;
   }
   function stop(u, btn) {
     RECO.confirm({
@@ -361,6 +403,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!u) return;
     if (act === 'edit') openForm(u);
     else if (act === 'pw') resetPassword(u, b);
+    else if (act === 'pw-recohr') resetInRecoHR(u);
     else if (act === 'off') stop(u, b);
     else if (act === 'on') reopen(u, b);
   }
