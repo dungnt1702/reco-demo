@@ -2,7 +2,7 @@
 name: hasu-doc
 description: >-
   Tạo tài liệu mới trong repo demo RECO theo cấu trúc docs thật hiện có: docs/, docs/contracts/,
-  và các màn hình gd01/gd02 khi cần mô tả demo UI hoặc kịch bản.
+  và các màn hình demo (sales-hub/, recohr/) khi cần mô tả demo UI hoặc kịch bản.
 ---
 
 # HASU Doc — RECO demo documentation
@@ -10,15 +10,20 @@ description: >-
 ## Cấu trúc thư mục hiện có
 
 ```
-reco-sales-hub-demo/
+reco-demo/
+├── index.html          # cổng chọn hệ thống
 ├── README.md
-├── docs/
-│   └── contracts/
-├── gd01/
-├── gd02/
-├── assets/
-├── tools/
-└── screenshots/
+├── sales-hub/          # demo RECO Data-SalesHub
+│   ├── README.md
+│   ├── docs/
+│   │   └── contracts/
+│   ├── gd01/
+│   ├── gd02/
+│   ├── assets/
+│   ├── tools/
+│   └── screenshots/
+└── recohr/             # demo RecoHR
+    └── README.md
 ```
 
 ## Khi nào dùng
@@ -32,9 +37,10 @@ Ví dụ:
 ## Workflow
 
 1. Xác định file sẽ nằm ở đâu:
-   - docs hợp đồng / spec → `docs/contracts/`
-   - mô tả màn demo → `gd01/` hoặc `gd02/` nếu có đúng màn tương ứng
-   - readme / mô tả repo chung → `README.md` hoặc docs/ tương ứng
+   - docs hợp đồng / spec Sales Hub → `sales-hub/docs/contracts/`
+   - mô tả màn demo Sales Hub → `sales-hub/gd01/` hoặc `sales-hub/gd02/` nếu có đúng màn tương ứng
+   - tài liệu / màn demo RecoHR → `recohr/`
+   - readme / mô tả repo chung → `README.md` gốc; riêng từng hệ thống → README trong thư mục đó
 2. Đọc 2–3 file tương tự trước khi tạo mới để học format thực tế.
 3. Nếu chủ đề đã có file gần giống, ưu tiên update file sẵn thay vì tạo copy mới.
 4. Tạo file với tên mô tả rõ, không bịa `hasu_docs/` hay cấu trúc giả.

@@ -1,4 +1,4 @@
-# CLAUDE.md — reco-sales-hub-demo
+# CLAUDE.md — reco-demo
 
 Read instructions in this order:
 1. `AGENTS.md` in this repository.

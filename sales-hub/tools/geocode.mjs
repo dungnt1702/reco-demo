@@ -6,7 +6,7 @@
  * phải nằm sẵn trong geo.js. Script này chỉ là công cụ soạn dữ liệu cho người viết code.
  * Nominatim yêu cầu User-Agent thật và tối đa 1 truy vấn/giây.
  */
-const UA = 'reco-sales-hub-demo/1.0 (dungnt1@hasutech.com.vn)';
+const UA = 'reco-demo/1.0 (dungnt1@hasutech.com.vn)';
 
 /* id khớp với sections kind:'place' trong assets/store.js */
 const Q = [

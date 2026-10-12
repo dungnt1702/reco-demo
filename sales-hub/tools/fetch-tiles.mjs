@@ -27,7 +27,7 @@ const sharp = require('e:/Projects/RECO/reco-main-web/node_modules/sharp');
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const OUT = path.join(root, 'assets', 'tiles');
-const UA = 'reco-sales-hub-demo/1.0 (+dungnt1@hasutech.com.vn)';
+const UA = 'reco-demo/1.0 (+dungnt1@hasutech.com.vn)';
 const HOSTS = ['a', 'b', 'c'];
 const GAP = 300;
 

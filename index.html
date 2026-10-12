@@ -3,59 +3,42 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RECO Data-SalesHub — Cổng mô phỏng</title>
+<title>RECO Demo — Cổng mô phỏng</title>
 <meta name="theme-color" content="#09263c">
-<meta name="description" content="Chọn Giai đoạn 1 (phạm vi mô phỏng 19/08, báo giá v0.10) hoặc Giai đoạn 2 (bản đóng băng).">
-<link rel="icon" href="assets/img/reco-logo.png">
-<link rel="stylesheet" href="assets/reco.css">
+<meta name="description" content="Các bản mô phỏng của RECO: Data-SalesHub và RecoHR.">
+<link rel="icon" href="sales-hub/assets/img/reco-logo.png">
+<link rel="stylesheet" href="sales-hub/assets/reco.css">
 </head>
 <body data-shell="plain" data-page="index">
 <main id="page">
   <div class="wrap page">
-    <section class="hero with-img" style="background-image:linear-gradient(105deg, rgba(5,31,53,.97), rgba(9,49,82,.86)), url('assets/img/reco-team.jpg')">
-      <span class="eyebrow light">RECO Data-SalesHub</span>
-      <h1 style="max-width:22ch">Hai bản mô phỏng, một báo giá Giai đoạn 1 đang có hiệu lực</h1>
+    <section class="hero with-img" style="background-image:linear-gradient(105deg, rgba(5,31,53,.97), rgba(9,49,82,.86)), url('sales-hub/assets/img/reco-team.jpg')">
+      <span class="eyebrow light">RECO Demo</span>
+      <h1 style="max-width:22ch">Bản mô phỏng các hệ thống của RECO</h1>
       <p class="lead mt-2" style="max-width:62ch">
-        Giai đoạn 1 là bản làm việc: thông tin dự án tám khu vực đang hiện, catalog và SP Hot, thư viện mẫu, cây tài liệu, copy tin và mở kênh.
-        Giai đoạn 2 giữ snapshot (hỏi đáp, kịch bản, soạn bài riêng từng kênh, lưới bảng hàng làm mô hình).
+        Mỗi hệ thống có thư mục mô phỏng riêng. Chọn hệ thống cần xem.
       </p>
       <div class="row mt-3">
-        <a class="btn btn-primary" href="gd01/trang-dau.html">Mở Giai đoạn 1</a>
-        <a class="btn btn-ghost" href="gd02/trang-dau.html">Xem Giai đoạn 2 (đóng băng)</a>
-        <a class="btn btn-ghost" href="gd01/tinh-nang-gd1.html">Báo giá v0.10 · 89,9 triệu</a>
+        <a class="btn btn-primary" href="sales-hub/index.html">Mở Data-SalesHub</a>
+        <a class="btn btn-ghost" href="recohr/index.html">Mở RecoHR</a>
       </div>
     </section>
 
     <section class="mt-4">
       <div class="section-head">
-        <span class="eyebrow">Chọn bản</span>
-        <h2>Giai đoạn 1 là nơi trình bày phạm vi mới</h2>
+        <span class="eyebrow">Chọn hệ thống</span>
+        <h2>Hai hệ thống, hai bộ mô phỏng</h2>
       </div>
       <div class="grid g-2">
-        <a class="map-card" href="gd01/trang-dau.html">
-          <span class="mh">GĐ1</span>
-          <h3>Phạm vi Giai đoạn 1</h3>
-          <p>Tám khu vực dự án đang hiện · catalog + SP Hot phạm vi được giao (không giá) · mẫu chia sẻ, copy và mở kênh · cây tài liệu. Mặc định Nhân viên bán hàng. Drive chỉ thẻ mở link. 123 ngày công, thanh toán 89.900.000 đ. App iOS/Android tùy chọn 20.000.000 đ.</p>
+        <a class="map-card" href="sales-hub/index.html">
+          <span class="mh">SH</span>
+          <h3>Data-SalesHub</h3>
+          <p>Dự án, sản phẩm, thư viện tài liệu, chia sẻ cho khách. Gồm Giai đoạn 1, Giai đoạn 2 (đóng băng), báo giá và vận hành.</p>
         </a>
-        <a class="map-card" href="gd02/index.html">
-          <span class="mh">GĐ2</span>
-          <h3>Snapshot trước 19/08</h3>
-          <p>Kịch bản MH-12, soạn bài riêng từng kênh, lưới bảng hàng và phiếu tính giá — đóng băng để đối chiếu, không phải gói đang báo giá.</p>
-        </a>
-        <a class="map-card" href="gd01/tinh-nang-gd1.html">
-          <span class="mh">BG</span>
-          <h3>Báo giá</h3>
-          <p>14 hạng mục, 123 ngày công, ưu đãi 30%, thanh toán 89.900.000 đ. Tab Giai đoạn 2 là tạm tính.</p>
-        </a>
-        <a class="map-card" href="gd01/ha-tang.html">
-          <span class="mh">VH</span>
-          <h3>Vận hành</h3>
-          <p>Tên miền, máy chủ, Drive — RECO tự chi. Lịch bàn giao và bảo trì năm, tách khỏi phí phần mềm của TLB.</p>
-        </a>
-        <a class="map-card" href="gd01/sitemap.html">
-          <span class="mh">BĐ</span>
-          <h3>Bản đồ hệ thống</h3>
-          <p>Đối chiếu SaleHUB với màn hình, lọc theo phạm vi GĐ1 / ngoài gói / GĐ2.</p>
+        <a class="map-card" href="recohr/index.html">
+          <span class="mh">HR</span>
+          <h3>RecoHR</h3>
+          <p>Nhân sự, tài khoản và đăng nhập. Các màn mô phỏng cho HR sẽ được bổ sung tại đây.</p>
         </a>
       </div>
     </section>
