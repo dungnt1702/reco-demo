@@ -3,26 +3,68 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RecoHR — Mô phỏng</title>
+<title>RecoHR — Prototype giao diện mới</title>
 <meta name="theme-color" content="#09263c">
-<meta name="description" content="Các màn mô phỏng của RecoHR.">
+<meta name="description" content="Prototype giao diện mới của RecoHR cho web và app, cùng phong cách với Sales Hub.">
 <link rel="icon" href="../sales-hub/assets/img/reco-logo.png">
-<link rel="stylesheet" href="../sales-hub/assets/reco.css">
+<link rel="stylesheet" href="assets/hr.css">
+<style>
+  .screens { display: grid; gap: 14px; }
+  @media (min-width: 768px) { .screens { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1100px) { .screens { grid-template-columns: repeat(3, 1fr); } }
+  .screen { display: grid; gap: 10px; padding: 18px; }
+  .screen p { margin: 0; font-size: 0.86rem; color: var(--muted); }
+  .screen .row { margin-top: auto; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+  .swatches span { display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; }
+  .swatches i { width: 22px; height: 22px; border-radius: 7px; border: 1px solid var(--line); }
+</style>
 </head>
-<body data-shell="plain" data-page="index">
-<main id="page">
-  <div class="wrap page">
-    <section class="hero">
-      <span class="eyebrow light">RecoHR</span>
-      <h1 style="max-width:22ch">Mô phỏng RecoHR</h1>
-      <p class="lead mt-2" style="max-width:62ch">
-        Chưa có màn mô phỏng nào. Các màn của HR sẽ được thêm vào thư mục này.
-      </p>
-      <div class="row mt-3">
-        <a class="btn btn-ghost" href="../index.html">Về cổng mô phỏng</a>
-      </div>
-    </section>
+<body data-shell="gallery" data-page="index">
+<main class="wrap page">
+  <section class="hero">
+    <a class="brand" href="../index.html" style="color:#fff"><b>RECO</b><span style="color:var(--accent-light)">HR</span></a>
+    <h1 class="mt-3" style="max-width:20ch">Prototype giao diện mới cho RecoHR</h1>
+    <p class="mt-2" style="max-width:62ch;color:rgb(255 255 255 / .82)">
+      Cùng ngôn ngữ thiết kế với Sales Hub: nền giấy, xanh navy và cam RECO, chữ Manrope + Be Vietnam Pro, thẻ bo tròn.
+      Mỗi màn là một trang responsive: từ 1024px là giao diện <b>web</b> có menu ngang; trên điện thoại là giao diện <b>app</b> với thanh dưới và nút chấm công nổi.
+    </p>
+    <div class="row mt-3">
+      <a class="btn btn-primary" href="trang-chu.html"><i data-i="monitor"></i>Xem bản web</a>
+      <a class="btn btn-ghost" href="khung-app.html?p=trang-chu"><i data-i="phone"></i>Xem bản app</a>
+    </div>
+  </section>
+
+  <div class="section-head mt-4" style="margin-bottom:14px">
+    <span class="eyebrow">7 màn chính · dữ liệu mô phỏng</span>
+    <h2 class="mt-1">Chọn màn để xem</h2>
   </div>
+
+  <div class="screens">
+    <article class="card screen"><span class="ico-tile"><i data-i="lock"></i></span><h3>Đăng nhập</h3><p>Số điện thoại hoặc email + mật khẩu, quên mật khẩu qua email.</p><div class="row"><a class="btn btn-outline btn-sm" href="dang-nhap.html">Web</a><a class="btn btn-outline btn-sm" href="khung-app.html?p=dang-nhap">App</a></div></article>
+    <article class="card screen"><span class="ico-tile o"><i data-i="home"></i></span><h3>Trang chủ</h3><p>Thẻ "Hôm nay" với giờ vào/ra ca, thao tác nhanh, số liệu tháng, đơn chờ duyệt, tin nội bộ.</p><div class="row"><a class="btn btn-outline btn-sm" href="trang-chu.html">Web</a><a class="btn btn-outline btn-sm" href="khung-app.html?p=trang-chu">App</a></div></article>
+    <article class="card screen"><span class="ico-tile o"><i data-i="finger"></i></span><h3>Chấm công</h3><p>Vùng chấm công trên bản đồ, nút chấm lớn + chụp ảnh xác nhận, chấm công tiếp khách, dòng thời gian.</p><div class="row"><a class="btn btn-outline btn-sm" href="cham-cong.html">Web</a><a class="btn btn-outline btn-sm" href="khung-app.html?p=cham-cong">App</a></div></article>
+    <article class="card screen"><span class="ico-tile g"><i data-i="cal"></i></span><h3>Bảng công</h3><p>Lịch tháng tô màu theo trạng thái, bấm ngày để xem giờ vào/ra và đơn giải trình.</p><div class="row"><a class="btn btn-outline btn-sm" href="bang-cong.html">Web</a><a class="btn btn-outline btn-sm" href="khung-app.html?p=bang-cong">App</a></div></article>
+    <article class="card screen"><span class="ico-tile b"><i data-i="doc"></i></span><h3>Đơn từ</h3><p>Số phép còn, lọc theo loại đơn, tạo đơn vắng mặt / WFH / công tác / giải trình với tính ngày tự động.</p><div class="row"><a class="btn btn-outline btn-sm" href="don-tu.html">Web</a><a class="btn btn-outline btn-sm" href="khung-app.html?p=don-tu">App</a></div></article>
+    <article class="card screen"><span class="ico-tile p"><i data-i="check"></i></span><h3>Phê duyệt</h3><p>Thẻ đơn có cảnh báo trùng lịch, duyệt / từ chối / chuyển tiếp, duyệt hàng loạt, hoàn tác.</p><div class="row"><a class="btn btn-outline btn-sm" href="phe-duyet.html">Web</a><a class="btn btn-outline btn-sm" href="khung-app.html?p=phe-duyet">App</a></div></article>
+    <article class="card screen"><span class="ico-tile"><i data-i="users"></i></span><h3>Nhân sự</h3><p>Danh bạ và tình trạng công hôm nay, tìm không dấu, lọc phòng ban. Bảng chuyển thành thẻ trên điện thoại.</p><div class="row"><a class="btn btn-outline btn-sm" href="nhan-su.html">Web</a><a class="btn btn-outline btn-sm" href="khung-app.html?p=nhan-su">App</a></div></article>
+  </div>
+
+  <section class="card mt-4">
+    <div class="card-head"><h3>Bảng màu dùng chung với Sales Hub</h3></div>
+    <div class="card-body swatches">
+      <span><i style="background:var(--navy)"></i>Navy #09263c</span>
+      <span><i style="background:var(--orange)"></i>Cam RECO #f27622</span>
+      <span><i style="background:var(--paper)"></i>Nền giấy #f8f7f3</span>
+      <span><i style="background:var(--verified)"></i>Đủ công</span>
+      <span><i style="background:var(--leave)"></i>Nghỉ phép</span>
+      <span><i style="background:var(--wfh)"></i>Làm từ xa</span>
+      <span><i style="background:var(--danger)"></i>Thiếu công</span>
+    </div>
+  </section>
+
+  <p class="micro mt-3"><a href="../index.html">← Về cổng mô phỏng</a> · Tên, ảnh và số liệu trong prototype đều là mô phỏng.</p>
 </main>
+<script src="assets/hr.js"></script>
 </body>
 </html>

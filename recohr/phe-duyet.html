@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Phê duyệt — RecoHR</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../sales-hub/assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/hr.css">
+</head>
+<body data-page="phe-duyet">
+<main class="wrap page">
+  <div class="page-head">
+    <div>
+      <span class="eyebrow">Nhóm kinh doanh 2 · 6 người</span>
+      <h1 class="mt-1">Phê duyệt</h1>
+      <p>Đơn của thành viên trong nhóm chờ bạn duyệt ở cấp 1. Đơn nghỉ trên 3 ngày được chuyển tiếp lên phòng HR.</p>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="stack">
+      <div class="spread" style="flex-wrap:wrap">
+        <div class="seg" data-tabs="queue" role="toolbar" aria-label="Lọc đơn">
+          <button type="button" data-filter="all" aria-pressed="true">Chờ duyệt<span class="n" id="n-wait">3</span></button>
+          <button type="button" data-filter="leave" aria-pressed="false">Vắng mặt</button>
+          <button type="button" data-filter="wfh" aria-pressed="false">Làm từ xa</button>
+          <button type="button" data-filter="explain" aria-pressed="false">Giải trình</button>
+        </div>
+        <label class="check"><input type="checkbox" id="all"> Chọn tất cả</label>
+      </div>
+
+      <div class="bulkbar" id="bulk" hidden>
+        <span id="bulk-n">0 đơn đã chọn</span>
+        <button class="btn btn-primary btn-sm" type="button" id="bulk-ok"><i data-i="tick"></i>Duyệt các đơn đã chọn</button>
+      </div>
+
+      <div class="reqs" id="queue">
+        <article class="req" data-type="leave" data-who="Lê Văn Đăng">
+          <div class="req-top">
+            <input type="checkbox" class="pick" aria-label="Chọn đơn của Lê Văn Đăng">
+            <span class="avatar"><img src="../sales-hub/assets/img/avatar-dang.jpg" alt=""></span>
+            <div class="main"><b>Lê Văn Đăng</b><span>Nhân viên kinh doanh · gửi 2 giờ trước</span></div>
+            <span class="st st-leave">Nghỉ phép năm</span>
+          </div>
+          <div class="req-facts">
+            <div><i data-i="cal"></i>Thứ Tư 14/10 – Thứ Năm 15/10</div>
+            <div><i data-i="clock"></i>2 ngày</div>
+            <div><i data-i="sun"></i>Phép còn 6 → 4 ngày</div>
+          </div>
+          <p class="reason">Đưa con đi khám định kỳ ở bệnh viện tỉnh.</p>
+          <div class="hint"><i data-i="alert"></i>Ngày 14/10 nhóm đã có 1 người nghỉ phép (Vũ Minh Khoa).</div>
+          <div class="req-acts">
+            <button class="btn btn-outline btn-sm" type="button" data-act="forward">Chuyển tiếp</button>
+            <button class="btn btn-danger-quiet btn-sm" type="button" data-act="reject">Từ chối</button>
+            <button class="btn btn-navy btn-sm" type="button" data-act="approve"><i data-i="tick"></i>Duyệt</button>
+          </div>
+        </article>
+
+        <article class="req" data-type="wfh" data-who="Phạm Hồng Ngọc">
+          <div class="req-top">
+            <input type="checkbox" class="pick" aria-label="Chọn đơn của Phạm Hồng Ngọc">
+            <span class="avatar"><img src="../sales-hub/assets/img/avatar-ngoc.jpg" alt=""></span>
+            <div class="main"><b>Phạm Hồng Ngọc</b><span>Nhân viên kinh doanh · gửi hôm qua</span></div>
+            <span class="st st-wfh">Làm từ xa</span>
+          </div>
+          <div class="req-facts">
+            <div><i data-i="cal"></i>Thứ Ba 13/10</div>
+            <div><i data-i="clock"></i>1 ngày</div>
+            <div><i data-i="laptop"></i>WFH tháng này: 2 / 4</div>
+          </div>
+          <p class="reason">Chuẩn bị tài liệu chào bán, cần tập trung làm việc ở nhà.</p>
+          <div class="req-acts">
+            <button class="btn btn-outline btn-sm" type="button" data-act="forward">Chuyển tiếp</button>
+            <button class="btn btn-danger-quiet btn-sm" type="button" data-act="reject">Từ chối</button>
+            <button class="btn btn-navy btn-sm" type="button" data-act="approve"><i data-i="tick"></i>Duyệt</button>
+          </div>
+        </article>
+
+        <article class="req" data-type="explain" data-who="Đỗ Thu Hà">
+          <div class="req-top">
+            <input type="checkbox" class="pick" aria-label="Chọn đơn của Đỗ Thu Hà">
+            <span class="avatar"><img src="../sales-hub/assets/img/avatar-thuha.jpg" alt=""></span>
+            <div class="main"><b>Đỗ Thu Hà</b><span>Nhân viên kinh doanh · gửi 3 ngày trước</span></div>
+            <span class="st st-bad">Giải trình công</span>
+          </div>
+          <div class="req-facts">
+            <div><i data-i="cal"></i>Thứ Sáu 09/10</div>
+            <div><i data-i="finger"></i>Thiếu chấm vào · ra lúc 17:38</div>
+          </div>
+          <p class="reason">Đến văn phòng lúc 08:25 nhưng điện thoại hết pin nên không chấm công được.</p>
+          <div class="req-acts">
+            <button class="btn btn-outline btn-sm" type="button" data-act="forward">Chuyển tiếp</button>
+            <button class="btn btn-danger-quiet btn-sm" type="button" data-act="reject">Từ chối</button>
+            <button class="btn btn-navy btn-sm" type="button" data-act="approve"><i data-i="tick"></i>Duyệt</button>
+          </div>
+        </article>
+
+        <div class="card empty-state" id="empty" hidden><span class="ico-tile g"><i data-i="tick"></i></span><b style="color:var(--navy)">Đã xử lý hết đơn</b><br>Đơn mới sẽ hiện ở đây.</div>
+      </div>
+    </div>
+
+    <aside class="side stack">
+      <section class="card" aria-labelledby="t-h">
+        <div class="card-head"><h3 id="t-h">Nhóm hôm nay</h3><span class="chip">12/10</span></div>
+        <ul class="list">
+          <li><span class="ico-tile g"><i data-i="tick"></i></span><div class="main"><b>4 có mặt</b><span>Lan, Đăng, Hà, Bình</span></div></li>
+          <li><span class="ico-tile p"><i data-i="laptop"></i></span><div class="main"><b>1 làm từ xa</b><span>Ngọc</span></div></li>
+          <li><span class="ico-tile r"><i data-i="alert"></i></span><div class="main"><b>1 chưa chấm công</b><span>Vũ Minh Khoa</span></div><a class="link" href="#" data-toast="Đã nhắc Khoa chấm công — mô phỏng">Nhắc</a></li>
+        </ul>
+      </section>
+      <section class="card" aria-labelledby="r-h">
+        <div class="card-head"><h3 id="r-h">Đã xử lý gần đây</h3></div>
+        <ul class="list" id="done">
+          <li><div class="main"><b>Vũ Minh Khoa · Nghỉ ốm</b><span>08/10 · 1 ngày</span></div><span class="st st-ok">Đã duyệt</span></li>
+          <li><div class="main"><b>Lê Văn Đăng · Làm từ xa</b><span>02/10</span></div><span class="st st-bad">Từ chối</span></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<dialog class="sheet" id="reject" aria-labelledby="rj-h">
+  <form method="dialog">
+    <div class="sheet-head"><h3 id="rj-h">Từ chối đơn</h3><button class="icon-btn" data-close aria-label="Đóng"><i data-i="x"></i></button></div>
+    <div class="sheet-body">
+      <p class="small muted" style="margin:0" id="rj-who"></p>
+      <label class="field"><span>Lý do (người gửi sẽ thấy)</span><textarea class="inp" id="rj-reason">Trùng lịch mở bán, em đổi sang tuần sau nhé.</textarea></label>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-outline" data-close>Hủy</button>
+      <button class="btn btn-primary" type="button" id="rj-ok">Từ chối đơn</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="assets/hr.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var h = HR.h;
+  var queue = document.getElementById('queue');
+  var bulk = document.getElementById('bulk');
+  var pending = null;
+
+  function cards() { return Array.prototype.slice.call(queue.querySelectorAll('.req:not([data-gone])')); }
+  function refresh() {
+    var left = cards();
+    document.getElementById('n-wait').textContent = String(left.length);
+    document.querySelectorAll('.nav .count, .dock .count').forEach(function (c) { c.textContent = String(left.length); c.hidden = !left.length; });
+    document.getElementById('empty').hidden = left.length > 0;
+    var picked = left.filter(function (c) { return c.querySelector('.pick').checked; });
+    bulk.hidden = picked.length === 0;
+    document.getElementById('bulk-n').textContent = picked.length + ' đơn đã chọn';
+  }
+  function logDone(card, text, cls) {
+    var type = card.querySelector('.req-top .st').textContent;
+    var li = h('li', {}, [h('div.main', {}, [h('b', { text: card.getAttribute('data-who') + ' · ' + type }), h('span', { text: 'Vừa xử lý' })]), h('span.st.' + cls, { text: text })]);
+    var list = document.getElementById('done');
+    list.insertBefore(li, list.firstChild);
+    return li;
+  }
+  function resolve(card, text, cls) {
+    card.setAttribute('data-gone', '');
+    card.classList.add('gone');
+    var li = logDone(card, text, cls);
+    setTimeout(function () { card.hidden = true; refresh(); }, 250);
+    return function undo() {
+      card.removeAttribute('data-gone');
+      card.hidden = false;
+      card.classList.remove('gone');
+      li.remove();
+      refresh();
+    };
+  }
+
+  queue.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b) return;
+    var card = b.closest('.req');
+    var who = card.getAttribute('data-who');
+    var act = b.getAttribute('data-act');
+    if (act === 'approve') HR.toast('Đã duyệt đơn của ' + who + '.', resolve(card, 'Đã duyệt', 'st-ok'));
+    if (act === 'forward') HR.toast('Đã chuyển tiếp đơn của ' + who + ' lên phòng HR.', resolve(card, 'Chuyển tiếp', 'st-wait'));
+    if (act === 'reject') {
+      pending = card;
+      document.getElementById('rj-who').textContent = 'Đơn của ' + who + ' — ' + card.querySelector('.req-top .st').textContent;
+      document.getElementById('reject').showModal();
+    }
+  });
+  document.getElementById('rj-ok').addEventListener('click', function () {
+    document.getElementById('reject').close();
+    if (pending) HR.toast('Đã từ chối đơn của ' + pending.getAttribute('data-who') + '.', resolve(pending, 'Từ chối', 'st-bad'));
+    pending = null;
+  });
+
+  queue.addEventListener('change', refresh);
+  document.getElementById('all').addEventListener('change', function () {
+    var on = this.checked;
+    cards().forEach(function (c) { if (!c.hidden) c.querySelector('.pick').checked = on; });
+    refresh();
+  });
+  document.getElementById('bulk-ok').addEventListener('click', function () {
+    var picked = cards().filter(function (c) { return c.querySelector('.pick').checked; });
+    var undos = picked.map(function (c) { c.querySelector('.pick').checked = false; return resolve(c, 'Đã duyệt', 'st-ok'); });
+    document.getElementById('all').checked = false;
+    HR.toast('Đã duyệt ' + picked.length + ' đơn.', function () { undos.forEach(function (u) { u(); }); });
+  });
+});
+</script>
+</body>
+</html>

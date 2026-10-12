@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trang chủ — RecoHR</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../sales-hub/assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/hr.css">
+</head>
+<body data-page="trang-chu">
+<main class="wrap page">
+  <div class="page-head">
+    <div>
+      <span class="eyebrow">Thứ Hai, 12/10/2026</span>
+      <h1 class="mt-1">Chào buổi sáng, Lan</h1>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="stack">
+      <!-- Hôm nay -->
+      <section class="hero today" aria-label="Chấm công hôm nay">
+        <div>
+          <div class="row">
+            <span class="pill-light"><i data-i="building"></i>Trụ sở RECO</span>
+            <span class="pill-light ok"><i data-i="tick"></i>Đúng giờ</span>
+          </div>
+          <h2 class="mt-2">Ca hành chính · 08:30 – 17:30</h2>
+          <div class="times">
+            <div><span>Vào ca</span><b class="num">08:21</b></div>
+            <div><span>Ra ca</span><b class="num">--:--</b></div>
+            <div><span>Bây giờ</span><b class="num" data-clock>--:--</b></div>
+          </div>
+          <div class="progress"><i id="prog" style="width:21%"></i></div>
+          <p class="micro mt-1" style="margin-bottom:0" id="elapsed">Đã làm 1 giờ 40 phút · còn 7 giờ 09 phút đến hết ca</p>
+        </div>
+        <a class="btn btn-primary" href="cham-cong.html"><i data-i="finger"></i>Chấm công ra</a>
+      </section>
+
+      <!-- Thao tác nhanh -->
+      <nav class="quick" aria-label="Thao tác nhanh">
+        <a href="cham-cong.html"><span class="qi o"><i data-i="finger"></i></span>Chấm công</a>
+        <a href="don-tu.html#tao"><span class="qi b"><i data-i="sun"></i></span>Xin nghỉ phép</a>
+        <a href="don-tu.html#tao"><span class="qi p"><i data-i="laptop"></i></span>Làm từ xa</a>
+        <a href="don-tu.html#tao"><span class="qi"><i data-i="plane"></i></span>Công tác</a>
+        <a class="hide-sm" href="bang-cong.html"><span class="qi g"><i data-i="note"></i></span>Giải trình công</a>
+        <a class="hide-sm" href="nhan-su.html"><span class="qi"><i data-i="org"></i></span>Danh bạ</a>
+      </nav>
+
+      <!-- Số liệu tháng -->
+      <section aria-labelledby="m-h">
+        <div class="spread mb-2" style="margin-bottom:10px">
+          <h3 id="m-h">Tháng 10 của bạn</h3>
+          <a class="link" href="bang-cong.html">Xem bảng công</a>
+        </div>
+        <div class="stats">
+          <div class="stat"><span class="lbl">Ngày công</span><span class="num">5,5 <small>/ 22</small></span><div class="bar"><i style="width:25%"></i></div></div>
+          <div class="stat tone-warn"><span class="lbl">Đi muộn</span><span class="num">1 <small>lần · 17 phút</small></span></div>
+          <div class="stat tone-ok"><span class="lbl">Phép năm còn</span><span class="num">9,5 <small>ngày</small></span></div>
+          <div class="stat"><span class="lbl">Giải trình chờ duyệt</span><span class="num">1 <small>ngày</small></span></div>
+        </div>
+      </section>
+
+      <!-- Tin nội bộ -->
+      <section class="card" aria-labelledby="n-h">
+        <div class="card-head"><h3 id="n-h">Tin nội bộ</h3><a class="link" href="#" data-toast="Bảng tin nội bộ — mô phỏng">Tất cả</a></div>
+        <a class="post" href="#" data-toast="Chi tiết bài viết — mô phỏng">
+          <img src="../sales-hub/assets/img/reco-opening.jpg" alt="">
+          <div><span class="eyebrow">Sự kiện</span><b>Khai trương văn phòng mới — mời toàn thể nhân viên tham dự lúc 9:00 thứ Sáu</b><span class="micro">2 giờ trước · 24 bình luận</span></div>
+        </a>
+        <a class="post" href="#" data-toast="Chi tiết bài viết — mô phỏng">
+          <img src="../sales-hub/assets/img/reco-partnership.jpg" alt="">
+          <div><span class="eyebrow">Thông báo</span><b>Quy định mới về đơn làm từ xa áp dụng từ 01/11</b><span class="micro">Hôm qua · Phòng HR</span></div>
+        </a>
+      </section>
+    </div>
+
+    <aside class="side stack">
+      <!-- Chờ bạn duyệt -->
+      <section class="card" aria-labelledby="a-h">
+        <div class="card-head"><h3 id="a-h">Chờ bạn duyệt</h3><span class="st st-wait">3 đơn</span></div>
+        <ul class="list">
+          <li><span class="avatar sm"><img src="../sales-hub/assets/img/avatar-dang.jpg" alt=""></span><div class="main"><b>Lê Văn Đăng</b><span>Nghỉ phép · 14–15/10 · 2 ngày</span></div><i data-i="chev"></i></li>
+          <li><span class="avatar sm"><img src="../sales-hub/assets/img/avatar-ngoc.jpg" alt=""></span><div class="main"><b>Phạm Hồng Ngọc</b><span>Làm từ xa · 13/10</span></div><i data-i="chev"></i></li>
+          <li><span class="avatar sm"><img src="../sales-hub/assets/img/avatar-thuha.jpg" alt=""></span><div class="main"><b>Đỗ Thu Hà</b><span>Giải trình · quên chấm vào 09/10</span></div><i data-i="chev"></i></li>
+        </ul>
+        <div class="card-body" style="padding-top:0"><a class="btn btn-navy btn-block" href="phe-duyet.html">Mở phê duyệt</a></div>
+      </section>
+
+      <!-- Đơn của tôi -->
+      <section class="card" aria-labelledby="d-h">
+        <div class="card-head"><h3 id="d-h">Đơn của tôi</h3><a class="link" href="don-tu.html">Tất cả</a></div>
+        <ul class="list">
+          <li><span class="ico-tile"><i data-i="plane"></i></span><div class="main"><b>Công tác Đà Nẵng</b><span>20–22/10</span></div><span class="st st-wait">Chờ duyệt</span></li>
+          <li><span class="ico-tile r"><i data-i="note"></i></span><div class="main"><b>Giải trình thiếu chấm ra</b><span>09/10</span></div><span class="st st-wait">Chờ duyệt</span></li>
+          <li><span class="ico-tile b"><i data-i="sun"></i></span><div class="main"><b>Nghỉ phép</b><span>06/10 · 1 ngày</span></div><span class="st st-ok">Đã duyệt</span></li>
+        </ul>
+      </section>
+
+      <!-- Sinh nhật -->
+      <section class="card" aria-labelledby="b-h">
+        <div class="card-body">
+          <div class="row" style="gap:14px">
+            <span class="ico-tile o"><i data-i="cake"></i></span>
+            <div style="flex:1;min-width:0"><h3 id="b-h">Sinh nhật tuần này</h3><p class="micro" style="margin:2px 0 0">Ngọc (14/10) · Tùng (16/10)</p></div>
+            <div class="avatars"><span class="avatar sm"><img src="../sales-hub/assets/img/avatar-ngoc.jpg" alt=""></span><span class="avatar sm"><img src="../sales-hub/assets/img/avatar-tung.jpg" alt=""></span></div>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+<script src="assets/hr.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  /* Thời gian đã làm tính từ giờ vào ca 08:21 đến hết ca 17:30 */
+  var START = 8 * 60 + 21, END = 17 * 60 + 30;
+  function dur(m) { return Math.floor(m / 60) + ' giờ ' + HR.pad(m % 60) + ' phút'; }
+  function update() {
+    var d = new Date();
+    var now = Math.min(Math.max(d.getHours() * 60 + d.getMinutes(), START), END);
+    var done = now - START, left = END - now;
+    document.getElementById('prog').style.width = Math.round(done / (END - START) * 100) + '%';
+    document.getElementById('elapsed').textContent = left ? 'Đã làm ' + dur(done) + ' · còn ' + dur(left) + ' đến hết ca' : 'Đã hết ca · nhớ chấm công ra';
+  }
+  update();
+  setInterval(update, 30000);
+});
+</script>
+</body>
+</html>

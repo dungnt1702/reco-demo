@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Đăng nhập — RecoHR</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../sales-hub/assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/hr.css">
+</head>
+<body data-shell="none" data-page="dang-nhap">
+<main class="auth">
+  <section class="auth-art">
+    <a class="brand" href="index.html"><b>RECO</b><span>HR</span></a>
+    <div>
+      <span class="eyebrow light">Cổng nhân sự RECO</span>
+      <h1 class="mt-1">Chấm công, xin nghỉ, duyệt đơn — trong một chạm</h1>
+      <p class="mt-2">Một tài khoản dùng cho cả web và ứng dụng di động, cũng là tài khoản đăng nhập Sales Hub.</p>
+    </div>
+    <div class="auth-points">
+      <div><i data-i="finger"></i>Chấm công theo vị trí văn phòng</div>
+      <div><i data-i="doc"></i>Đơn nghỉ phép, WFH, công tác, giải trình</div>
+      <div><i data-i="shield"></i>Dữ liệu nhân sự chỉ người có quyền mới xem</div>
+    </div>
+  </section>
+
+  <section class="auth-form">
+    <form class="auth-card" id="login" novalidate>
+      <div>
+        <h2>Đăng nhập</h2>
+        <p class="muted small mt-1">Dùng số điện thoại hoặc email công ty.</p>
+      </div>
+      <label class="field">
+        <span>Số điện thoại hoặc email</span>
+        <div class="inp-ico"><i data-i="user"></i><input class="inp" name="id" autocomplete="username" value="lan.nguyen@reco.demo"></div>
+      </label>
+      <label class="field">
+        <span class="spread">Mật khẩu <a class="link" href="#" data-open="forgot">Quên mật khẩu?</a></span>
+        <div class="pw">
+          <input class="inp" type="password" name="pw" autocomplete="current-password" value="demo-password">
+          <button type="button" id="pw-toggle" aria-label="Hiện mật khẩu"><i data-i="eye"></i></button>
+        </div>
+      </label>
+      <label class="check"><input type="checkbox" checked> Ghi nhớ đăng nhập trên thiết bị này</label>
+      <button class="btn btn-primary btn-block" type="submit">Đăng nhập <i data-i="arrow"></i></button>
+      <p class="micro" style="margin:0;text-align:center">Gặp sự cố? Liên hệ phòng HR hoặc bộ phận IT.</p>
+    </form>
+  </section>
+</main>
+
+<dialog class="sheet" id="forgot" aria-labelledby="forgot-h">
+  <form method="dialog">
+    <div class="sheet-head"><h3 id="forgot-h">Quên mật khẩu</h3><button class="icon-btn" data-close aria-label="Đóng"><i data-i="x"></i></button></div>
+    <div class="sheet-body">
+      <p class="muted small" style="margin:0">Nhập email công ty. Hệ thống gửi đường dẫn đặt lại mật khẩu vào hộp thư của bạn.</p>
+      <label class="field"><span>Email</span><div class="inp-ico"><i data-i="mail"></i><input class="inp" type="email" value="lan.nguyen@reco.demo"></div></label>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-outline" data-close>Hủy</button>
+      <button class="btn btn-primary" id="forgot-send" type="button">Gửi đường dẫn</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="assets/hr.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var pw = document.querySelector('input[name="pw"]');
+  document.getElementById('pw-toggle').addEventListener('click', function () {
+    pw.type = pw.type === 'password' ? 'text' : 'password';
+  });
+  document.getElementById('login').addEventListener('submit', function (e) {
+    e.preventDefault();
+    location.href = 'trang-chu.html';
+  });
+  document.getElementById('forgot-send').addEventListener('click', function () {
+    document.getElementById('forgot').close();
+    HR.toast('Đã gửi đường dẫn đặt lại mật khẩu tới email.');
+  });
+});
+</script>
+</body>
+</html>

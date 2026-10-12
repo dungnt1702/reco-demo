@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bảng công — RecoHR</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../sales-hub/assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/hr.css">
+</head>
+<body data-page="bang-cong">
+<main class="wrap page">
+  <div class="page-head">
+    <div>
+      <span class="eyebrow">Bảng công cá nhân</span>
+      <h1 class="mt-1">Tháng 10/2026</h1>
+    </div>
+    <div class="row">
+      <a class="btn btn-outline btn-sm" href="#" data-toast="Chuyển tháng — mô phỏng" aria-label="Tháng trước"><i data-i="chevl"></i></a>
+      <a class="btn btn-outline btn-sm" href="#" data-toast="Tải bảng công (Excel) — mô phỏng"><i data-i="download"></i>Tải về</a>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="lbl">Công thực tế</span><span class="num">5,5 <small>/ 22</small></span><div class="bar"><i style="width:25%"></i></div></div>
+    <div class="stat"><span class="lbl">Nghỉ phép · WFH</span><span class="num">1 <small>· 1</small></span></div>
+    <div class="stat tone-warn"><span class="lbl">Đi muộn</span><span class="num">1 <small>lần · 17 phút</small></span></div>
+    <div class="stat"><span class="lbl">Giải trình chờ duyệt</span><span class="num" style="color:var(--danger)">1 <small>ngày</small></span></div>
+  </div>
+
+  <div class="cols mt-3">
+    <section class="card">
+      <div class="card-body">
+        <div class="cal" id="cal" aria-label="Lịch công tháng 10/2026"></div>
+        <div class="legend mt-2">
+          <span><i style="background:var(--verified)"></i>Đủ công</span>
+          <span><i style="background:var(--orange)"></i>Đi muộn</span>
+          <span><i style="background:var(--leave)"></i>Nghỉ phép</span>
+          <span><i style="background:var(--wfh)"></i>Làm từ xa</span>
+          <span><i style="background:var(--danger)"></i>Thiếu công</span>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="card" aria-live="polite">
+        <div class="card-head"><div><span class="eyebrow" id="d-dow"></span><h3 id="d-title" class="mt-1"></h3></div><span id="d-st"></span></div>
+        <div class="card-body">
+          <dl class="kv">
+            <dt>Ca</dt><dd id="d-shift"></dd>
+            <dt>Vào ca</dt><dd id="d-in"></dd>
+            <dt>Ra ca</dt><dd id="d-out"></dd>
+            <dt>Địa điểm</dt><dd id="d-loc"></dd>
+            <dt>Tính công</dt><dd id="d-work"></dd>
+          </dl>
+          <p class="micro mt-2" id="d-note" style="margin-bottom:0"></p>
+          <a class="btn btn-outline btn-block mt-2" id="d-explain" href="don-tu.html" hidden><i data-i="note"></i>Xem đơn giải trình</a>
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<script src="assets/hr.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var h = HR.h;
+  var SHIFT = '08:30 – 17:30';
+  var OFFICE = 'Trụ sở RECO';
+  /* Dữ liệu mô phỏng; 01/10/2026 là thứ Năm, hôm nay là thứ Hai 12/10. */
+  var DATA = {
+    1: { c: 'ok', s: 'Đủ công', i: '08:19', o: '17:36', w: '1' },
+    2: { c: 'late', s: 'Đi muộn 17 phút', i: '08:47', o: '17:52', w: '1', n: 'Đi muộn dưới 30 phút, không trừ công.' },
+    5: { c: 'ok', s: 'Đủ công', i: '08:24', o: '17:35', w: '1' },
+    6: { c: 'leave', s: 'Nghỉ phép', i: '—', o: '—', w: '1 (phép năm)', loc: '—', n: 'Đơn nghỉ phép đã được Trần Minh Tùng duyệt.' },
+    7: { c: 'wfh', s: 'Làm từ xa', i: '08:30', o: '17:30', w: '1', loc: 'Tại nhà', n: 'Đơn WFH đã duyệt.' },
+    8: { c: 'ok', s: 'Đủ công', i: '08:18', o: '17:42', w: '1' },
+    9: { c: 'miss', s: 'Thiếu chấm ra', i: '08:26', o: '—', w: '0,5 (chờ giải trình)', n: 'Đã gửi giải trình, đang chờ duyệt.', x: true },
+    12: { c: 'today', s: 'Đang trong ca', i: '08:21', o: 'Chưa chấm', w: '—' }
+  };
+  var STCLS = { ok: 'st-ok', late: 'st-wait', leave: 'st-leave', wfh: 'st-wfh', miss: 'st-bad', today: 'st-wait', off: 'st-off', future: 'st-off' };
+  var DOW = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+  var cal = document.getElementById('cal');
+
+  ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'].forEach(function (d) { cal.appendChild(h('div.dow', { text: d })); });
+  for (var e = 0; e < 3; e++) cal.appendChild(h('div.day.empty', { 'aria-hidden': 'true' }));
+
+  function info(day) {
+    var dow = new Date(2026, 9, day).getDay();
+    if (DATA[day]) return DATA[day];
+    if (dow === 0 || dow === 6) return { c: 'off', s: 'Ngày nghỉ', i: '—', o: '—', w: '—', loc: '—' };
+    return { c: 'future', s: 'Chưa đến', i: '—', o: '—', w: '—', loc: '—' };
+  }
+
+  function show(day, btn) {
+    var d = info(day);
+    cal.querySelectorAll('.day[aria-pressed]').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+    btn.setAttribute('aria-pressed', 'true');
+    document.getElementById('d-dow').textContent = DOW[new Date(2026, 9, day).getDay()];
+    document.getElementById('d-title').textContent = HR.pad(day) + '/10/2026';
+    var st = document.getElementById('d-st');
+    st.className = 'st ' + STCLS[d.c];
+    st.textContent = d.s;
+    document.getElementById('d-shift').textContent = d.c === 'off' ? '—' : SHIFT;
+    document.getElementById('d-in').textContent = d.i;
+    document.getElementById('d-out').textContent = d.o;
+    document.getElementById('d-loc').textContent = d.loc || OFFICE;
+    document.getElementById('d-work').textContent = d.w;
+    document.getElementById('d-note').textContent = d.n || '';
+    document.getElementById('d-explain').hidden = !d.x;
+  }
+
+  for (var day = 1; day <= 31; day++) {
+    var d = info(day);
+    var label = d.c === 'off' || d.c === 'future' ? '' : (d.c === 'ok' ? d.i + '–' + d.o : d.s);
+    var b = h('button.day.' + d.c, { type: 'button', 'aria-pressed': 'false', 'aria-label': day + '/10: ' + d.s }, [
+      h('span', { text: String(day) }), label ? h('small', { text: label }) : null
+    ]);
+    (function (n, el) { el.addEventListener('click', function () { show(n, el); }); })(day, b);
+    cal.appendChild(b);
+  }
+  show(9, cal.querySelectorAll('.day:not(.empty)')[8]);
+});
+</script>
+</body>
+</html>

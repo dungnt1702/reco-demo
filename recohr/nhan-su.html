@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nhân sự — RecoHR</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../sales-hub/assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/hr.css">
+</head>
+<body data-page="nhan-su">
+<main class="wrap page">
+  <div class="page-head">
+    <div>
+      <span class="eyebrow">Dữ liệu mô phỏng</span>
+      <h1 class="mt-1">Nhân sự</h1>
+      <p>Danh bạ và tình trạng công trong ngày. Hồ sơ đầy đủ chỉ phòng HR và quản lý trực tiếp xem được.</p>
+    </div>
+    <div class="row">
+      <a class="btn btn-outline btn-sm" href="#" data-toast="Sơ đồ tổ chức — mô phỏng"><i data-i="org"></i>Sơ đồ tổ chức</a>
+      <a class="btn btn-primary btn-sm" href="#" data-toast="Thêm nhân viên — mô phỏng"><i data-i="plus"></i>Thêm nhân viên</a>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="lbl">Đang làm việc</span><span class="num">48</span></div>
+    <div class="stat tone-ok"><span class="lbl">Có mặt hôm nay</span><span class="num">41 <small>/ 48</small></span><div class="bar"><i style="width:85%;background:var(--verified)"></i></div></div>
+    <div class="stat"><span class="lbl">Nghỉ · WFH · công tác</span><span class="num">3 <small>· 2 · 1</small></span></div>
+    <div class="stat tone-warn"><span class="lbl">Chưa chấm công</span><span class="num">1</span></div>
+  </div>
+
+  <section class="card mt-3">
+    <div class="card-body filterbar">
+      <label class="inp-ico"><i data-i="search"></i><input class="inp" id="q" type="search" placeholder="Tìm tên, mã nhân viên, số điện thoại" aria-label="Tìm nhân viên"></label>
+      <select class="inp" id="dept" aria-label="Phòng ban">
+        <option value="">Tất cả phòng ban</option>
+        <option>Kinh doanh</option>
+        <option>HR</option>
+        <option>Marketing</option>
+        <option>Kế toán</option>
+      </select>
+      <div class="seg" data-tabs="people-body" role="toolbar" aria-label="Lọc tình trạng hôm nay">
+        <button type="button" data-filter="all" aria-pressed="true">Tất cả</button>
+        <button type="button" data-filter="in" aria-pressed="false">Có mặt</button>
+        <button type="button" data-filter="away" aria-pressed="false">Vắng</button>
+      </div>
+    </div>
+    <table class="tbl">
+      <thead><tr><th>Nhân viên</th><th>Phòng ban</th><th>Vị trí</th><th>Hôm nay</th><th>Liên hệ</th></tr></thead>
+      <tbody id="people-body">
+        <tr data-type="in" data-dept="Kinh doanh"><td class="first"><div class="person"><span class="avatar sm"><img src="../sales-hub/assets/img/avatar-lan.jpg" alt=""></span><div><b>Nguyễn Thu Lan</b><span>RC0142</span></div></div></td><td data-l="Phòng ban">Kinh doanh</td><td data-l="Vị trí">Trưởng nhóm kinh doanh</td><td data-l="Hôm nay"><span class="st st-ok">Có mặt · 08:21</span></td><td data-l="Liên hệ"><span class="micro">lan.nguyen@reco.demo</span></td></tr>
+        <tr data-type="in" data-dept="Kinh doanh"><td class="first"><div class="person"><span class="avatar sm"><img src="../sales-hub/assets/img/avatar-tung.jpg" alt=""></span><div><b>Trần Minh Tùng</b><span>RC0087</span></div></div></td><td data-l="Phòng ban">Kinh doanh</td><td data-l="Vị trí">Trưởng phòng kinh doanh</td><td data-l="Hôm nay"><span class="st st-ok">Có mặt · 08:05</span></td><td data-l="Liên hệ"><span class="micro">tung.tran@reco.demo</span></td></tr>
+        <tr data-type="in" data-dept="Kinh doanh"><td class="first"><div class="person"><span class="avatar sm"><img src="../sales-hub/assets/img/avatar-dang.jpg" alt=""></span><div><b>Lê Văn Đăng</b><span>RC0193</span></div></div></td><td data-l="Phòng ban">Kinh doanh</td><td data-l="Vị trí">Nhân viên kinh doanh</td><td data-l="Hôm nay"><span class="st st-wait">Đi muộn · 08:44</span></td><td data-l="Liên hệ"><span class="micro">dang.le@reco.demo</span></td></tr>
+        <tr data-type="away" data-dept="Kinh doanh"><td class="first"><div class="person"><span class="avatar sm"><img src="../sales-hub/assets/img/avatar-ngoc.jpg" alt=""></span><div><b>Phạm Hồng Ngọc</b><span>RC0201</span></div></div></td><td data-l="Phòng ban">Kinh doanh</td><td data-l="Vị trí">Nhân viên kinh doanh</td><td data-l="Hôm nay"><span class="st st-wfh">Làm từ xa</span></td><td data-l="Liên hệ"><span class="micro">ngoc.pham@reco.demo</span></td></tr>
+        <tr data-type="in" data-dept="Kinh doanh"><td class="first"><div class="person"><span class="avatar sm"><img src="../sales-hub/assets/img/avatar-thuha.jpg" alt=""></span><div><b>Đỗ Thu Hà</b><span>RC0058</span></div></div></td><td data-l="Phòng ban">Kinh doanh</td><td data-l="Vị trí">Nhân viên kinh doanh</td><td data-l="Hôm nay"><span class="st st-ok">Có mặt · 08:12</span></td><td data-l="Liên hệ"><span class="micro">ha.do@reco.demo</span></td></tr>
+        <tr data-type="away" data-dept="Kinh doanh"><td class="first"><div class="person"><span class="avatar sm">VK</span><div><b>Vũ Minh Khoa</b><span>RC0215</span></div></div></td><td data-l="Phòng ban">Kinh doanh</td><td data-l="Vị trí">Nhân viên kinh doanh</td><td data-l="Hôm nay"><span class="st st-bad">Chưa chấm công</span></td><td data-l="Liên hệ"><span class="micro">khoa.vu@reco.demo</span></td></tr>
+        <tr data-type="away" data-dept="HR"><td class="first"><div class="person"><span class="avatar sm" style="background:var(--wfh)">BT</span><div><b>Bùi Thanh Thảo</b><span>RC0177</span></div></div></td><td data-l="Phòng ban">HR</td><td data-l="Vị trí">Chuyên viên HR</td><td data-l="Hôm nay"><span class="st st-leave">Nghỉ phép</span></td><td data-l="Liên hệ"><span class="micro">thao.bui@reco.demo</span></td></tr>
+        <tr data-type="away" data-dept="Kế toán"><td class="first"><div class="person"><span class="avatar sm" style="background:var(--leave)">HQ</span><div><b>Hoàng Quang Huy</b><span>RC0034</span></div></div></td><td data-l="Phòng ban">Kế toán</td><td data-l="Vị trí">Kế toán trưởng</td><td data-l="Hôm nay"><span class="st st-off">Công tác</span></td><td data-l="Liên hệ"><span class="micro">huy.hoang@reco.demo</span></td></tr>
+      </tbody>
+    </table>
+    <div class="card-body spread" style="border-top:1px solid var(--line)">
+      <span class="micro" id="count">Hiện 8 / 48 nhân viên</span>
+      <a class="btn btn-outline btn-sm" href="#" data-toast="Xuất danh sách (Excel) — mô phỏng"><i data-i="download"></i>Xuất Excel</a>
+    </div>
+  </section>
+</main>
+<script src="assets/hr.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var q = document.getElementById('q');
+  var dept = document.getElementById('dept');
+  var rows = Array.prototype.slice.call(document.querySelectorAll('#people-body tr'));
+  var status = 'all';
+  function norm(s) { return s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase(); }
+  function apply() {
+    var term = norm(q.value.trim());
+    var shown = 0;
+    rows.forEach(function (r) {
+      var ok = (!term || norm(r.textContent).indexOf(term) >= 0) &&
+        (!dept.value || r.getAttribute('data-dept') === dept.value) &&
+        (status === 'all' || r.getAttribute('data-type') === status);
+      r.hidden = !ok;
+      if (ok) shown++;
+    });
+    document.getElementById('count').textContent = 'Hiện ' + shown + ' / 48 nhân viên';
+  }
+  q.addEventListener('input', apply);
+  dept.addEventListener('change', apply);
+  document.querySelector('[data-tabs="people-body"]').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-filter]');
+    if (!b) return;
+    status = b.getAttribute('data-filter');
+    setTimeout(apply, 0);
+  });
+});
+</script>
+</body>
+</html>

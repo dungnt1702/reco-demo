@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Đơn từ — RecoHR</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../sales-hub/assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/hr.css">
+</head>
+<body data-page="don-tu">
+<main class="wrap page">
+  <div class="page-head">
+    <div>
+      <span class="eyebrow">Đơn của tôi</span>
+      <h1 class="mt-1">Đơn từ</h1>
+    </div>
+    <button class="btn btn-primary" type="button" data-open="new"><i data-i="plus"></i>Tạo đơn</button>
+  </div>
+
+  <div class="balance">
+    <div><span>Phép còn</span><b class="num">9,5</b><span>/ 12 ngày</span></div>
+    <div><span>Đã nghỉ</span><b class="num">2,5</b><span>ngày</span></div>
+    <div><span>WFH tháng</span><b class="num">1</b><span>/ 4 ngày</span></div>
+  </div>
+
+  <div class="seg mt-3" data-tabs="reqs" role="toolbar" aria-label="Lọc loại đơn">
+    <button type="button" data-filter="all" aria-pressed="true">Tất cả</button>
+    <button type="button" data-filter="wait" aria-pressed="false">Chờ duyệt<span class="n">2</span></button>
+    <button type="button" data-filter="leave" aria-pressed="false">Vắng mặt</button>
+    <button type="button" data-filter="wfh" aria-pressed="false">Làm từ xa</button>
+    <button type="button" data-filter="trip" aria-pressed="false">Công tác</button>
+    <button type="button" data-filter="explain" aria-pressed="false">Giải trình</button>
+  </div>
+
+  <section class="card mt-2">
+    <ul class="list" id="reqs">
+      <li data-type="trip wait"><span class="ico-tile"><i data-i="plane"></i></span><div class="main"><b>Công tác Đà Nẵng</b><span>20–22/10 · 3 ngày · Gặp đối tác dự án</span></div><div class="end"><span class="st st-wait">Chờ duyệt</span><span class="micro">Cấp 1 · Trần Minh Tùng</span></div></li>
+      <li data-type="explain wait"><span class="ico-tile r"><i data-i="note"></i></span><div class="main"><b>Giải trình thiếu chấm ra</b><span>09/10 · Quên chấm khi rời văn phòng lúc 17:40</span></div><div class="end"><span class="st st-wait">Chờ duyệt</span><span class="micro">Cấp 1 · Trần Minh Tùng</span></div></li>
+      <li data-type="wfh"><span class="ico-tile p"><i data-i="laptop"></i></span><div class="main"><b>Làm từ xa</b><span>07/10 · 1 ngày · Chờ thợ sửa nhà</span></div><div class="end"><span class="st st-ok">Đã duyệt</span><span class="micro">05/10</span></div></li>
+      <li data-type="leave"><span class="ico-tile b"><i data-i="sun"></i></span><div class="main"><b>Nghỉ phép năm</b><span>06/10 · 1 ngày · Việc gia đình</span></div><div class="end"><span class="st st-ok">Đã duyệt</span><span class="micro">02/10</span></div></li>
+      <li data-type="leave"><span class="ico-tile b"><i data-i="sun"></i></span><div class="main"><b>Nghỉ phép năm</b><span>26/09 · Nửa ngày chiều</span></div><div class="end"><span class="st st-off">Đã hủy</span><span class="micro">25/09</span></div></li>
+      <li data-type="leave"><span class="ico-tile b"><i data-i="sun"></i></span><div class="main"><b>Nghỉ không lương</b><span>15/09 · 1 ngày</span></div><div class="end"><span class="st st-bad">Từ chối</span><span class="micro">Trùng lịch mở bán</span></div></li>
+    </ul>
+    <div class="empty-state" hidden><span class="ico-tile"><i data-i="doc"></i></span>Không có đơn nào ở mục này.</div>
+  </section>
+</main>
+
+<dialog class="sheet" id="new" aria-labelledby="n-h">
+  <form method="dialog" id="new-form">
+    <div class="sheet-head"><h3 id="n-h">Tạo đơn</h3><button class="icon-btn" data-close aria-label="Đóng"><i data-i="x"></i></button></div>
+    <div class="sheet-body">
+      <div class="seg" id="kind" role="radiogroup" aria-label="Loại đơn">
+        <button type="button" aria-pressed="true" data-k="leave">Vắng mặt</button>
+        <button type="button" aria-pressed="false" data-k="wfh">Làm từ xa</button>
+        <button type="button" aria-pressed="false" data-k="trip">Công tác</button>
+        <button type="button" aria-pressed="false" data-k="explain">Giải trình</button>
+      </div>
+      <label class="field" id="f-type"><span>Loại vắng mặt</span>
+        <select class="inp"><option>Nghỉ phép năm</option><option>Nghỉ ốm</option><option>Nghỉ không lương</option><option>Nghỉ việc riêng có lương</option></select>
+      </label>
+      <div class="grid-2">
+        <label class="field"><span>Từ ngày</span><input class="inp" type="date" id="f-from" value="2026-10-19"></label>
+        <label class="field"><span>Đến ngày</span><input class="inp" type="date" id="f-to" value="2026-10-20"></label>
+      </div>
+      <label class="check"><input type="checkbox" id="f-half"> Chỉ nghỉ nửa ngày</label>
+      <label class="field"><span>Lý do</span><textarea class="inp" id="f-reason" placeholder="Ví dụ: việc gia đình">Về quê dự đám cưới em gái.</textarea></label>
+      <div class="note-box">
+        <div class="spread"><span class="small muted">Số ngày tính phép</span><b class="num" id="f-days">2 ngày</b></div>
+        <div class="spread mt-1"><span class="small muted">Phép còn sau khi duyệt</span><b class="num" id="f-left">7,5 ngày</b></div>
+        <div class="spread mt-1"><span class="small muted">Người duyệt</span><span class="small"><b>Cấp 1:</b> Trần Minh Tùng → <b>Cấp 2:</b> Phòng HR</span></div>
+      </div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-outline" type="button" id="draft">Lưu nháp</button>
+      <button class="btn btn-primary" type="button" id="send">Gửi đơn</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="assets/hr.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var h = HR.h;
+  var KIND = {
+    leave: { t: 'Nghỉ phép năm', ico: 'sun', tone: 'b' },
+    wfh: { t: 'Làm từ xa', ico: 'laptop', tone: 'p' },
+    trip: { t: 'Công tác', ico: 'plane', tone: '' },
+    explain: { t: 'Giải trình công', ico: 'note', tone: 'r' }
+  };
+  var kind = 'leave';
+  var from = document.getElementById('f-from');
+  var to = document.getElementById('f-to');
+  var half = document.getElementById('f-half');
+
+  function fmt(n) { return String(n).replace('.', ','); }
+  function weekdays() {
+    var a = new Date(from.value), b = new Date(to.value);
+    if (isNaN(a) || isNaN(b) || b < a) return 0;
+    var n = 0;
+    for (var d = new Date(a); d <= b; d.setDate(d.getDate() + 1)) {
+      var w = d.getDay();
+      if (w !== 0 && w !== 6) n++;
+    }
+    return half.checked ? Math.min(n, 1) / 2 : n;
+  }
+  function recalc() {
+    var n = weekdays();
+    document.getElementById('f-days').textContent = fmt(n) + ' ngày';
+    document.getElementById('f-left').textContent = kind === 'leave' ? fmt(9.5 - n) + ' ngày' : 'Không trừ phép';
+  }
+  [from, to, half].forEach(function (el) { el.addEventListener('change', recalc); });
+
+  document.getElementById('kind').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-k]');
+    if (!b) return;
+    kind = b.getAttribute('data-k');
+    this.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    document.getElementById('f-type').hidden = kind !== 'leave';
+    recalc();
+  });
+
+  function addRow(statusCls, statusText) {
+    var k = KIND[kind];
+    var d1 = from.value.split('-'), d2 = to.value.split('-');
+    var range = d1[2] + '/' + d1[1] + (to.value !== from.value ? '–' + d2[2] + '/' + d2[1] : '');
+    var title = kind === 'leave' ? document.querySelector('#f-type select').value : k.t;
+    var li = h('li', { 'data-type': kind + (statusCls === 'st-wait' ? ' wait' : '') }, [
+      h('span.ico-tile' + (k.tone ? '.' + k.tone : ''), {}, [HR.icon(k.ico)]),
+      h('div.main', {}, [h('b', { text: title }), h('span', { text: range + ' · ' + document.getElementById('f-days').textContent + ' · ' + (document.getElementById('f-reason').value || 'Không ghi lý do') })]),
+      h('div.end', {}, [h('span.st.' + statusCls, { text: statusText }), h('span.micro', { text: 'Vừa tạo' })])
+    ]);
+    var list = document.getElementById('reqs');
+    list.insertBefore(li, list.firstChild);
+    document.getElementById('new').close();
+  }
+  document.getElementById('send').addEventListener('click', function () {
+    addRow('st-wait', 'Chờ duyệt');
+    HR.toast('Đã gửi đơn tới Trần Minh Tùng.');
+  });
+  document.getElementById('draft').addEventListener('click', function () {
+    addRow('st-off', 'Nháp');
+    HR.toast('Đã lưu nháp.');
+  });
+
+  if (location.hash === '#tao') document.getElementById('new').showModal();
+  recalc();
+});
+</script>
+</body>
+</html>

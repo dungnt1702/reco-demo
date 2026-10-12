@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chấm công — RecoHR</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../sales-hub/assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/hr.css">
+</head>
+<body data-page="cham-cong">
+<main class="wrap page">
+  <div class="page-head">
+    <div>
+      <span class="eyebrow">Ca hành chính · 08:30 – 17:30</span>
+      <h1 class="mt-1">Chấm công</h1>
+    </div>
+    <a class="btn btn-outline btn-sm" href="#" data-open="outside"><i data-i="users"></i>Chấm công tiếp khách</a>
+  </div>
+
+  <div class="cols">
+    <div class="stack">
+      <section class="card">
+        <div class="map" role="img" aria-label="Bản đồ: bạn đang trong vùng chấm công của Trụ sở RECO">
+          <span class="fence"></span>
+          <span class="office"><i data-i="building"></i>Trụ sở RECO</span>
+          <span class="me-dot"></span>
+          <span class="map-tag"><i data-i="tick"></i>Trong vùng chấm công · cách 38 m</span>
+        </div>
+        <div class="punch">
+          <div>
+            <b class="clock num" data-clock="sec">--:--:--</b>
+            <p class="muted small mt-1" style="margin-bottom:0">Thứ Hai, 12/10/2026</p>
+          </div>
+          <button class="punch-btn out" id="punch" type="button"><i data-i="finger"></i><span id="punch-label">Chấm công ra</span></button>
+          <p class="micro" id="punch-hint" style="margin:0">Đã vào ca lúc 08:21. Bấm để kết thúc ca.</p>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="h-h">
+        <div class="card-head"><h3 id="h-h">5 ngày gần nhất</h3><a class="link" href="bang-cong.html">Bảng công</a></div>
+        <ul class="list">
+          <li><span class="ico-tile r"><i data-i="alert"></i></span><div class="main"><b>Thứ Sáu, 09/10</b><span>08:26 → thiếu chấm ra</span></div><span class="st st-bad">Thiếu công</span></li>
+          <li><span class="ico-tile g"><i data-i="tick"></i></span><div class="main"><b>Thứ Năm, 08/10</b><span>08:18 → 17:42 · 9 giờ 24 phút</span></div><span class="st st-ok">Đủ công</span></li>
+          <li><span class="ico-tile p"><i data-i="laptop"></i></span><div class="main"><b>Thứ Tư, 07/10</b><span>Làm từ xa · đơn đã duyệt</span></div><span class="st st-wfh">WFH</span></li>
+          <li><span class="ico-tile b"><i data-i="sun"></i></span><div class="main"><b>Thứ Ba, 06/10</b><span>Nghỉ phép năm</span></div><span class="st st-leave">Nghỉ phép</span></li>
+          <li><span class="ico-tile g"><i data-i="tick"></i></span><div class="main"><b>Thứ Hai, 05/10</b><span>08:24 → 17:35 · 9 giờ 11 phút</span></div><span class="st st-ok">Đủ công</span></li>
+        </ul>
+      </section>
+    </div>
+
+    <aside class="side stack">
+      <section class="card" aria-labelledby="c-h">
+        <div class="card-head"><h3 id="c-h">Điều kiện chấm công</h3></div>
+        <div class="card-body checks">
+          <div><i data-i="pin"></i>Vị trí GPS chính xác ±12 m</div>
+          <div><i data-i="clock"></i>Trong khung giờ ca làm việc</div>
+          <div><i data-i="eye"></i>Chụp ảnh xác nhận khi chấm (bắt buộc)</div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="t-h">
+        <div class="card-head"><h3 id="t-h">Hôm nay</h3><span class="chip">12/10</span></div>
+        <div class="card-body">
+          <ul class="timeline" id="tl">
+            <li><span class="t">08:21</span><div><b>Vào ca</b><span>Trụ sở RECO · GPS + Wi-Fi</span></div></li>
+            <li class="pending" id="tl-out"><span class="t">17:30</span><div><b>Ra ca</b><span>Chưa chấm</span></div></li>
+          </ul>
+        </div>
+      </section>
+
+      <div class="card"><div class="card-body small">
+        <b style="color:var(--navy)">Quên chấm công?</b>
+        <p class="muted" style="margin:4px 0 10px">Gửi giải trình để quản lý xác nhận ngày công.</p>
+        <a class="btn btn-outline btn-sm" href="don-tu.html#tao"><i data-i="note"></i>Tạo giải trình</a>
+      </div></div>
+    </aside>
+  </div>
+</main>
+
+<dialog class="sheet" id="photo" aria-labelledby="p-h">
+  <form method="dialog">
+    <div class="sheet-head"><h3 id="p-h">Chụp ảnh xác nhận</h3><button class="icon-btn" data-close aria-label="Đóng"><i data-i="x"></i></button></div>
+    <div class="sheet-body">
+      <div class="camera" role="img" aria-label="Khung camera trước (mô phỏng)">
+        <span class="avatar lg"><img src="../sales-hub/assets/img/avatar-lan.jpg" alt=""></span>
+        <span class="micro" style="color:#fff">Camera trước · đưa khuôn mặt vào khung</span>
+      </div>
+      <p class="micro" style="margin:0">Ảnh kèm vị trí GPS được lưu cùng lượt chấm công.</p>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-outline" data-close>Hủy</button>
+      <button class="btn btn-primary" type="button" id="photo-ok"><i data-i="finger"></i>Chụp &amp; chấm công</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="sheet" id="outside" aria-labelledby="o-h">
+  <form method="dialog">
+    <div class="sheet-head"><h3 id="o-h">Chấm công tiếp khách</h3><button class="icon-btn" data-close aria-label="Đóng"><i data-i="x"></i></button></div>
+    <div class="sheet-body">
+      <p class="muted small" style="margin:0">Dùng khi gặp khách ngoài văn phòng. Ghi địa chỉ nơi gặp và chụp ảnh xác nhận.</p>
+      <div class="grid-2">
+        <label class="field"><span>Tỉnh / thành</span><select class="inp"><option>Hà Nội</option><option>TP. Hồ Chí Minh</option><option>Đà Nẵng</option></select></label>
+        <label class="field"><span>Phường / xã</span><select class="inp"><option>Phường Cầu Giấy</option><option>Phường Tây Hồ</option></select></label>
+      </div>
+      <label class="field"><span>Địa chỉ chi tiết</span><input class="inp" value="Nhà mẫu dự án, tầng 1"></label>
+      <label class="field"><span>Ghi chú</span><textarea class="inp">Dẫn khách xem căn mẫu.</textarea></label>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-outline" data-close>Hủy</button>
+      <button class="btn btn-primary" type="button" id="outside-ok"><i data-i="eye"></i>Chụp ảnh &amp; gửi</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="assets/hr.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var btn = document.getElementById('punch');
+  var done = false;
+  btn.addEventListener('click', function () {
+    if (!done) document.getElementById('photo').showModal();
+  });
+  document.getElementById('photo-ok').addEventListener('click', function () {
+    document.getElementById('photo').close();
+    done = true;
+    var d = new Date();
+    var t = HR.pad(d.getHours()) + ':' + HR.pad(d.getMinutes());
+    btn.classList.remove('out');
+    btn.classList.add('done');
+    document.getElementById('punch-label').textContent = 'Đã ra ca ' + t;
+    document.getElementById('punch-hint').textContent = 'Hẹn gặp lại ngày mai.';
+    var li = document.getElementById('tl-out');
+    li.classList.remove('pending');
+    li.querySelector('.t').textContent = t;
+    li.querySelector('span:not(.t)').textContent = 'Trụ sở RECO · GPS + Wi-Fi';
+    HR.toast('Đã chấm công ra lúc ' + t + '.', function () {
+      location.reload();
+    });
+  });
+  document.getElementById('outside-ok').addEventListener('click', function () {
+    document.getElementById('outside').close();
+    HR.toast('Đã ghi nhận lượt chấm công tiếp khách.');
+  });
+});
+</script>
+</body>
+</html>
