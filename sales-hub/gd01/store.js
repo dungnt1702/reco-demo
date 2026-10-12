@@ -10,7 +10,7 @@
 (function () {
   'use strict';
 
-  var KEY = 'reco-salehub-demo-gd01-v10';
+  var KEY = 'reco-salehub-demo-gd01-v11';
 
   /* ---------- Dữ liệu gốc ---------- */
   function seed() {
@@ -1544,7 +1544,10 @@
          thông báo: thông báo là tin báo, việc thì có người giao, có hạn và có trạng thái.
          `obj` nhóm đối tượng, `channel` kênh lấy theo dự án của đối tượng, `pj` dự án ('' = bài
          đăng dùng chung). `by` là người giao, `rcp` là người nhận — mỗi người một trạng thái
-         (`st`), cờ đã xem (`seen`, tắt chấm) và cờ đã tự mở ở trang dự án (`nt`).
+         (`st`), cờ đã xem (`seen`, `seenAt`), cờ đã tự mở ở trang dự án (`nt`).
+         QD-148 (E39): `doneOn` ngày Hoàn thành (quá 30 ngày thì ẩn khỏi danh mục mặc định),
+         `out` người không còn phụ trách dự án, `rm` thời điểm bị người giao gỡ (giữ dòng để báo
+         7 ngày, `rmSeen` đã đọc dòng báo); việc bị xoá có `delAt`.
          Mã người khớp bộ chọn người dùng assets/pick-people.js; tên và mã nhân viên giả (QD-072). */
       tasks: [
         { id: 'tk1', obj: 'du-an', channel: 'moi', pj: 'leparc', target: 'Le Parc Place — ParkCity Hanoi',
@@ -1552,14 +1555,16 @@
           body: 'Lấy ảnh tiến độ Chủ đầu tư gửi ngày 12/08, thay ảnh ở mục Tiến độ của trang dự án.',
           by: 'p04', byName: 'Hoàng Anh Tuấn', due: '2026-08-16', go: 'du-an-chi-tiet.html?pj=leparc',
           rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'chua', seen: false, nt: false, at: '' },
-                { u: 'p01', n: 'Nguyễn Văn An', st: 'dang', seen: true, nt: true, at: '13/08 09:40' },
-                { u: 'p09', n: 'Ngô Thanh Bình', st: 'xong', seen: true, nt: true, at: '13/08 16:05' }] },
+                { u: 'p01', n: 'Nguyễn Văn An', st: 'dang', seen: true, seenAt: '13/08 08:55', nt: true, at: '13/08 09:40' },
+                { u: 'p09', n: 'Ngô Thanh Bình', st: 'xong', seen: true, seenAt: '13/08 15:30', nt: true, at: '13/08 16:05', doneOn: '2026-08-13' }] },
         { id: 'tk2', obj: 'du-an', channel: 'moi', pj: 'celestine', target: 'Celestine Westlake',
           title: 'Gửi lại chính sách đợt 2 cho khách đã xem nhà mẫu',
           body: 'Dùng bản chính sách đã duyệt ngày 10/08. Khách hỏi giá thì hẹn gọi lại, không ghi giá trên tin.',
           by: 'p05', byName: 'Phạm Hải Đăng', due: '2026-08-12', go: 'du-an-chi-tiet.html?pj=celestine',
-          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'dang', seen: true, nt: false, at: '12/08 10:15' },
-                { u: 'p01', n: 'Nguyễn Văn An', st: 'chua', seen: true, nt: false, at: '' }] },
+          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'dang', seen: true, seenAt: '12/08 09:02', nt: false, at: '12/08 10:15' },
+                { u: 'p01', n: 'Nguyễn Văn An', st: 'chua', seen: true, seenAt: '11/08 17:40', nt: false, at: '' },
+                /* Đã rời phòng phụ trách Celestine — hiện mờ, không tính vào n/m (FR-TASK-05 AC-B-8) */
+                { u: 'p12', n: 'Đinh Quốc Huy', st: 'chua', seen: false, nt: false, at: '', out: true }] },
         { id: 'tk3', obj: 'du-an', channel: 'cn', pj: 'opening', target: 'Gold Season — 47 Nguyễn Tuân',
           title: 'Rà soát hồ sơ pháp lý giỏ hàng chuyển nhượng', body: '',
           by: 'p03', byName: 'Trần Thị Bình', due: '', go: 'du-an-chi-tiet.html?pj=opening',
@@ -1575,7 +1580,7 @@
         { id: 'tk5', obj: 'san-pham', channel: 'cn', pj: 'opening', target: 'Căn GS-FS.2501 · Gold Season',
           title: 'Bổ sung ảnh hiện trạng căn', body: 'Chủ nhà đã đồng ý cho chụp chiều thứ Bảy.',
           by: 'p04', byName: 'Hoàng Anh Tuấn', due: '2026-08-20', go: 'san-pham.html',
-          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'xong', seen: true, nt: true, at: '13/08 17:20' }] },
+          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'xong', seen: true, nt: true, at: '13/08 17:20', doneOn: '2026-08-13' }] },
         { id: 'tk6', obj: 'bai-dang', channel: 'moi', pj: 'celestine', target: 'Giới thiệu dự án — bản ngắn · Celestine',
           title: 'Cập nhật số liệu tòa C trong bài giới thiệu', body: '',
           by: 'p03', byName: 'Trần Thị Bình', due: '2026-08-18', go: 'mau.html',
@@ -1597,7 +1602,23 @@
         { id: 'tk9', obj: 'san-pham', channel: 'moi', pj: 'celestine', target: 'Căn T2-09.03 · Celestine', gone: true,
           title: 'Chụp lại ảnh ban công căn mẫu', body: '',
           by: 'p05', byName: 'Phạm Hải Đăng', due: '2026-08-17', go: '',
-          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'chua', seen: true, nt: true, at: '' }] }
+          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'chua', seen: true, nt: true, at: '' }] },
+        /* Hoàn thành từ tháng 6 — quá 30 ngày nên chỉ hiện khi bấm "Xem việc đã xong (n)" (FR-TASK-09 AC-B-3) */
+        { id: 'tk10', obj: 'du-an', channel: 'moi', pj: 'leparc', target: 'Le Parc Place — ParkCity Hanoi',
+          title: 'Gửi khách danh sách căn đợt mở bán tháng 6', body: '',
+          by: 'p04', byName: 'Hoàng Anh Tuấn', due: '2026-06-28', go: 'du-an-chi-tiet.html?pj=leparc',
+          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'xong', seen: true, nt: true, at: '27/06 15:10', doneOn: '2026-06-27' }] },
+        /* Người giao bỏ Lê Thu Hà khỏi việc hôm qua — dòng báo ở đầu hộp trong 7 ngày (FR-TASK-12) */
+        { id: 'tk11', obj: 'du-an', channel: 'moi', pj: 'palmy', target: 'Palmy Biztown',
+          title: 'Gọi lại khách hỏi shophouse Palmy', body: '',
+          by: 'p05', byName: 'Phạm Hải Đăng', due: '2026-08-15', go: 'du-an-chi-tiet.html?pj=palmy',
+          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'dang', seen: true, nt: false, at: '12/08 14:00', rm: '13/08/2026 16:40', rmSeen: false },
+                { u: 'p01', n: 'Nguyễn Văn An', st: 'chua', seen: true, seenAt: '13/08 16:45', nt: false, at: '' }] },
+        /* Việc bị người giao xoá hôm qua */
+        { id: 'tk12', obj: 'bai-dang', channel: 'moi', pj: 'celestine', target: 'Giới thiệu dự án — bản ngắn · Celestine',
+          title: 'Chụp ảnh nhà mẫu cho bài đăng', body: '', deleted: true, delAt: '13/08/2026 11:20',
+          by: 'p03', byName: 'Trần Thị Bình', due: '2026-08-16', go: 'mau.html',
+          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'chua', seen: true, nt: false, at: '', rmSeen: false }] }
       ],
 
       /* Màn vừa xem — phục vụ ô tìm kiếm toàn cục */

@@ -1466,14 +1466,59 @@ h3[id] { scroll-margin-top: calc(var(--proto-h) + var(--header-h) + 16px); }
 .tk-rm { border: 0; background: none; color: var(--muted); font: inherit; font-weight: 700; cursor: pointer; padding: 0 2px; min-width: 24px; min-height: 24px; }
 .tk-rm:hover { color: var(--danger); }
 .tk-ro { margin: 2px 0 0; color: var(--ink); }
+/* QD-148 (E39): huy hiệu số trên icon — có số, có viền, khác chấm của chuông (FR-TASK-10) */
+.icon-btn .tk-badge {
+  position: absolute; top: 2px; right: 1px;
+  min-width: 17px; height: 17px; padding: 0 4px; border-radius: var(--radius-pill);
+  background: var(--orange-button); color: #fff; border: 1.5px solid var(--white);
+  font-size: 0.66rem; font-weight: 800; line-height: 14px; text-align: center; font-style: normal;
+}
+.icon-btn .tk-badge-late { background: var(--danger); }
+/* Bộ chọn trạng thái ba nút: nút đang chọn tô nền theo chip trạng thái (FR-TASK-03 AC-B-3) */
+.tk-seg button { min-height: 32px; }
+.tk-seg .tk-st-chua[aria-pressed="true"] { background: var(--white); color: var(--ink); }
+.tk-seg .tk-st-dang[aria-pressed="true"] { background: var(--notice); color: var(--orange-text); }
+.tk-seg .tk-st-xong[aria-pressed="true"] { background: color-mix(in srgb, var(--verified) 11%, var(--white)); color: var(--verified); }
+/* Lọc nhanh + ô tìm (FR-TASK-09), bộ lọc Việc trong phạm vi (FR-TASK-07) */
+.tk-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.tk-filter .inp { width: auto; flex: 1 1 160px; min-width: 0; }
+.tk-filter .tk-q { flex: 1 1 200px; }
+/* Dòng báo việc bị gỡ trong 7 ngày (FR-TASK-12) */
+.tk-removed { margin: 0 0 12px; padding: 8px 12px; border-radius: var(--radius-md); background: var(--soft); font-size: 0.86rem; }
+.tk-removed summary { cursor: pointer; font-weight: 600; color: var(--navy); min-height: 28px; display: flex; align-items: center; }
+.tk-removed ul { list-style: none; margin: 6px 0 0; padding: 0; }
+.tk-removed li { padding: 4px 0; border-top: 1px solid var(--line); }
+/* Người nhận: chưa xem, không còn phụ trách (FR-TASK-05 AC-B-6…8) */
+.tk-unseen { color: var(--orange-text); font-weight: 700; }
+.tk-who li.tk-out { opacity: .55; }
+/* Ô Đối tượng gõ-chọn (FR-TASK-08 AC-B-1) */
+.tk-combo { position: relative; }
+.tk-suggest {
+  list-style: none; margin: 4px 0 0; padding: 4px; max-height: 240px; overflow-y: auto;
+  border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--white);
+  box-shadow: 0 8px 22px rgb(8 39 67 / .12);
+}
+.tk-suggest li { padding: 7px 10px; border-radius: 7px; cursor: pointer; }
+.tk-suggest li b { display: block; font-size: 0.88rem; color: var(--navy); }
+.tk-suggest li[aria-selected="true"], .tk-suggest li[data-k]:hover { background: var(--soft); }
+.tk-suggest .tk-none { cursor: default; }
+.tk-picked { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--soft); font-weight: 600; }
+/* Xem trước nhóm phụ trách (FR-TASK-08 AC-B-2) */
+.tk-pv { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--white); }
+.tk-pv ul { list-style: none; margin: 6px 0 0; padding: 0; max-height: 220px; overflow-y: auto; }
+.tk-pv li { padding: 5px 0; border-top: 1px solid var(--line); }
+/* Khối Việc được giao ở Trang đầu (FR-TASK-11): dòng .frow như Việc đang chờ, bấm cả dòng */
+.tk-home-row { width: 100%; border-left: 0; border-right: 0; border-top: 0; background: none; font: inherit; text-align: left; cursor: pointer; color: inherit; }
 @media (max-width: 479px) {
   .tk-acts { width: 100%; }
   .tk-acts .btn { flex: 1 1 auto; min-height: 44px; }
+  .tk-acts .tk-seg { display: flex; width: 100%; }
+  .tk-seg button { flex: 1 1 0; justify-content: center; min-height: 44px; padding: 6px 8px; }
 }
 /* Tab trong hộp thoại không mượn kiểu dính của tab đầu màn */
 @media (max-width: 767px) {
   .modal .page-tabs {
-    position: static; margin-inline: 0; padding: 0;
+    position: static; margin-inline: 0; padding: 0; justify-content: flex-start;
     border-bottom: 0; background: none; backdrop-filter: none;
   }
 }
@@ -2494,6 +2539,9 @@ body.modal-on .dock { pointer-events: none; }
 .home-stack { display: flex; flex-direction: column; }
 .home-stack > section { order: 50; }
 .home-stack > #sec-queue { order: 10; }
+/* QD-148 (FR-TASK-11 AC-B-3): Việc được giao ngay sau Việc đang chờ. Bản thật đặt trước các ô số
+   liệu; ở bản mẫu các ô số liệu nằm trong khối đầu màn nên khối này đứng đầu phần dưới. */
+.home-stack > #sec-tasks { order: 11; }
 .home-stack > #sec-accounts,
 .home-stack > #sec-commission { order: 12; }
 .home-stack > #sec-hot { order: 20; }

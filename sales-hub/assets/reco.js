@@ -296,7 +296,7 @@
               '<div class="gs-panel" id="gs-panel" hidden></div>' +
             '</div>' +
             '<button type="button" class="icon-btn gs-open" id="gs-open" aria-label="Tìm kiếm">' + svg('search') + '</button>' +
-            '<button type="button" class="icon-btn" id="tasks-icon" aria-label="Công việc được giao">' + svg('tasks') + '<i class="dot" hidden></i></button>' +
+            '<button type="button" class="icon-btn" id="tasks-icon" aria-label="Công việc được giao">' + svg('tasks') + '<span class="tk-badge" hidden></span></button>' +
             '<div class="gs">' +
               '<button type="button" class="icon-btn" id="bell" aria-label="Thông báo" aria-expanded="false">' + svg('bell') + '<i class="dot" hidden></i></button>' +
               '<div class="gs-panel gs-right" id="bell-panel" hidden></div>' +
@@ -548,24 +548,34 @@
     });
   }
 
-  /* ---------- Việc được giao — MH-24 (QD-117 BS2-03, QD-145, reco-devops#108) ----------
+  /* ---------- Việc được giao — MH-24 (QD-117 BS2-03, QD-145, QD-148; reco-devops#108, E39 #416) ----------
      Kho riêng `tasks`, không dùng chung với chuông: việc có người giao, có hạn và có
      trạng thái phải cập nhật, còn thông báo chỉ đọc rồi thôi. Giao việc không ghi gì vào chuông.
      Mỗi việc có danh sách người nhận `rcp`, mỗi người một trạng thái riêng — một người bấm
-     Hoàn thành không làm người khác mất việc (QD-145 (3)). */
+     Hoàn thành không làm người khác mất việc (QD-145 (3)).
+     QD-148 (E39): huy hiệu số thay chấm; tab Tất cả + lọc nhanh + tìm; bộ chọn trạng thái ba nút
+     kèm Hoàn tác, bỏ Để sau; người giao thấy đã xem / quá hạn / không còn phụ trách; tab Việc
+     trong phạm vi cho TGĐ, GĐDA; ô Đối tượng gõ-chọn và xem trước nhóm phụ trách; dòng báo việc
+     bị gỡ trong 7 ngày; khối Việc được giao ở Trang đầu. */
   var TASK_OBJ = [
+    { id: 'tat-ca', label: 'Tất cả' },
     { id: 'du-an', label: 'Dự án' },
     { id: 'san-pham', label: 'Sản phẩm' },
     { id: 'bai-dang', label: 'Bài đăng' }
   ];
+  var TASK_KINDS = TASK_OBJ.slice(1);
   var TASK_CH = [{ id: 'moi', label: 'Sơ cấp' }, { id: 'cn', label: 'Thứ cấp' }];
   var TASK_STATE = { chua: 'Chưa làm', dang: 'Đang làm', xong: 'Hoàn thành' };
   var TASK_CHIP = { chua: 'st st-off', dang: 'st st-wait', xong: 'st st-live' };
-  var TASK_NEXT = { chua: 'dang', dang: 'xong', xong: 'chua' };
   /* Vai trò đang xem → người tương ứng trong bộ chọn người dùng (assets/pick-people.js) */
   var TASK_ME = { gd: 'p10', gddu: 'p04', tkkd: 'p03', qlkd: 'p05', nvbh: 'p06', hcns: 'p08', ktoan: 'p09', mkt: 'p07' };
   /* Năng lực task.manage (QD-145 (2)) — TGĐ, GĐDA, TKKD, Trưởng phòng KD */
   var TASK_MANAGERS = 'gd gddu tkkd qlkd';
+  /* Việc trong phạm vi (FR-TASK-07): TGĐ mọi việc, sửa/xoá được; GĐDA chỉ xem việc của dự án
+     trong phạm vi task.manage của mình — bản mô phỏng ghi sẵn các dự án GĐDA phụ trách. */
+  var TASK_OVERSEE = 'gd gddu';
+  var TASK_PD_PJ = ['leparc', 'celestine', 'palmy'];
+  var TASK_PJ_NAME = { leparc: 'Le Parc Place', celestine: 'Celestine Westlake', palmy: 'Palmy Biztown', opening: 'Gold Season' };
   /* Đối tượng giao được; kênh lấy theo dự án của đối tượng. Bài đăng dùng chung (pj rỗng) chỉ
      người giữ mã ở phạm vi toàn công ty giao được, và người giao tự chọn kênh. */
   var TASK_TARGETS = {
@@ -577,6 +587,7 @@
     ],
     'san-pham': [
       { name: 'Căn A-12.08 · Le Parc Place', pj: 'leparc', ch: 'moi', go: 'san-pham.html' },
+      { name: 'Căn A-15.02 · Le Parc Place', pj: 'leparc', ch: 'moi', go: 'san-pham.html' },
       { name: 'Căn T2-15.05 · Celestine', pj: 'celestine', ch: 'moi', go: 'san-pham.html' },
       { name: 'Căn GS-FS.2501 · Gold Season', pj: 'opening', ch: 'cn', go: 'san-pham.html' }
     ],
@@ -594,7 +605,10 @@
     opening: ['p02', 'p09', 'p11']
   };
   var TASK_KD3 = ['p01', 'p05', 'p06', 'p09'];
-  var taskObj = 'du-an', taskCh = 'moi', taskHl = [], taskPicked = false;
+  var DAY_MS = 86400000;
+  var taskObj = 'tat-ca', taskCh = 'moi', taskHl = [], taskPicked = false;
+  var taskView = 'mine', taskF = { late: false, soon: false, open: false }, taskQ = '', taskOld = false;
+  var ovPj = '', ovState = '', ovQ = '';
 
   function tkEsc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -602,11 +616,14 @@
     });
   }
   function tkMe() { return TASK_ME[role] || ''; }
-  function myRcp(t) {
+  /* Người nhận đang còn trong việc — người bị người giao gỡ (`rm`) giữ dòng để báo 7 ngày */
+  function liveRcp(t) { return (t.rcp || []).filter(function (r) { return !r.rm; }); }
+  function myRcpAny(t) {
     var list = t.rcp || [];
     for (var i = 0; i < list.length; i++) if (list[i].u === tkMe()) return list[i];
     return null;
   }
+  function myRcp(t) { var r = myRcpAny(t); return r && !r.rm ? r : null; }
   function myTasks() {
     var S = window.RECO.store;
     if (!S) return [];
@@ -621,6 +638,15 @@
     var S = window.RECO.store;
     return (S && S.parseVN && S.parseVN(S.TODAY)) || new Date();
   }
+  function isoDate(s) {
+    if (!s) return null;
+    var p = s.split('-');
+    return new Date(+p[0], +p[1] - 1, +p[2]);
+  }
+  function vnDate(s) {
+    var S = window.RECO.store;
+    return (S && S.parseVN && S.parseVN(s)) || null;
+  }
   function dueText(t) {
     if (!t.due) return 'Không hạn';
     var p = t.due.split('-');
@@ -628,8 +654,19 @@
   }
   function isLate(t, st) {
     if (!t.due || st === 'xong') return false;
-    var p = t.due.split('-');
-    return new Date(+p[0], +p[1] - 1, +p[2]) < tkToday();
+    return isoDate(t.due) < tkToday();
+  }
+  /* Sắp đến hạn: hạn trong 3 ngày tới, chưa Hoàn thành (FR-TASK-09 AC-B-2) */
+  function isSoon(t, st) {
+    if (!t.due || st === 'xong') return false;
+    var d = isoDate(t.due) - tkToday();
+    return d >= 0 && d <= 3 * DAY_MS;
+  }
+  /* Hoàn thành quá 30 ngày: không còn trong danh mục mặc định (FR-TASK-09 AC-B-3) */
+  function isOldDone(t) {
+    var r = myRcp(t);
+    if (!r || r.st !== 'xong' || !r.doneOn) return false;
+    return tkToday() - isoDate(r.doneOn) > 30 * DAY_MS;
   }
   /* Chưa làm và Đang làm trước (hạn gần trước, không hạn sau cùng), Hoàn thành cuối (FR-TASK-02 AC-B-4) */
   function taskOrder(a, b) {
@@ -639,6 +676,9 @@
     return x < y ? -1 : x > y ? 1 : 0;
   }
   function openCount(list) { return list.filter(function (t) { return myRcp(t).st !== 'xong'; }).length; }
+  function inTab(t, obj, ch) {
+    return obj === 'tat-ca' || (t.obj === obj && (ch == null || t.channel === ch));
+  }
   function selectTab(bar, attr, val) {
     if (!bar) return;
     bar.querySelectorAll('[role="tab"]').forEach(function (b) {
@@ -647,6 +687,30 @@
       b.tabIndex = on ? 0 : -1;
       var panel = b.getAttribute('aria-controls') && document.getElementById(b.getAttribute('aria-controls'));
       if (panel) panel.hidden = !on;
+    });
+  }
+  /* Việc bị gỡ khỏi danh mục của tôi trong 7 ngày, chưa đọc (FR-TASK-12) */
+  function removedTasks() {
+    var S = window.RECO.store;
+    if (!S) return [];
+    var today = tkToday();
+    return S.get('tasks').filter(function (t) {
+      var r = myRcpAny(t);
+      if (!r || r.rmSeen) return false;
+      var at = t.deleted ? t.delAt : r.rm;
+      var d = at && vnDate(at.split(' ')[0]);
+      return !!d && (t.deleted || r.rm) && today - d <= 7 * DAY_MS;
+    });
+  }
+  /* Việc trong phạm vi (FR-TASK-07): TGĐ mọi việc; GĐDA việc của dự án mình phụ trách,
+     không thấy bài đăng dùng chung */
+  function overseeTasks() {
+    var S = window.RECO.store;
+    if (!S) return [];
+    return S.get('tasks').filter(function (t) {
+      if (t.deleted) return false;
+      if (role === 'gd') return true;
+      return !!t.pj && TASK_PD_PJ.indexOf(t.pj) >= 0;
     });
   }
 
@@ -661,28 +725,60 @@
       return '<button type="button" role="tab" data-tch="' + c.id + '" aria-selected="' + on + '"' +
         (on ? '' : ' tabindex="-1"') + '>' + c.label + ' <span class="n"></span></button>';
     }).join('');
+    var pjOpts = Object.keys(TASK_PJ_NAME).map(function (k) {
+      return '<option value="' + k + '"' + (role === 'gd' || TASK_PD_PJ.indexOf(k) >= 0 ? '' : ' hidden') + '>' + TASK_PJ_NAME[k] + '</option>';
+    }).join('');
     var x = '<button class="icon-btn" data-close="1" aria-label="Đóng">' + svg('x') + '</button>';
     return '' +
       '<div class="modal" id="m-tasks" hidden role="dialog" aria-modal="true" aria-labelledby="m-tasks-t">' +
         '<div class="modal-box" style="max-width:760px">' +
           '<div class="modal-head">' +
-            '<div><span class="eyebrow">Tách khỏi chuông thông báo</span><h3 id="m-tasks-t">Công việc được giao</h3></div>' + x +
+            '<div><span class="eyebrow">Tách khỏi chuông thông báo</span><h3 id="m-tasks-t">Công việc được giao</h3></div>' +
+            '<div class="row-tight">' +
+              /* FR-TASK-13 AC-B-3: bản thật mở /huong-dan/cong-viec */
+              '<button type="button" class="btn btn-quiet btn-sm" id="task-help">Hướng dẫn</button>' + x +
+            '</div>' +
           '</div>' +
           '<div class="modal-body">' +
-            '<div class="tk-bar" data-roles="' + TASK_MANAGERS + '">' +
-              '<div class="seg-channel" id="task-view" role="tablist" aria-label="Danh mục việc">' +
+            /* FR-TASK-12: việc bị người giao gỡ hoặc xoá trong 7 ngày — chỉ đọc, mở hộp là đã đọc */
+            '<details class="tk-removed" id="task-removed" hidden><summary></summary><ul></ul></details>' +
+            '<div class="tk-bar">' +
+              '<div class="seg-channel" id="task-view" role="tablist" aria-label="Danh mục việc" data-roles="' + TASK_MANAGERS + '">' +
                 '<button type="button" role="tab" data-tview="mine" aria-controls="task-mine" aria-selected="true">Việc giao cho tôi <span class="n"></span></button>' +
                 '<button type="button" role="tab" data-tview="sent" aria-controls="task-sent" aria-selected="false" tabindex="-1">Việc tôi đã giao <span class="n"></span></button>' +
+                '<button type="button" role="tab" data-tview="scope" aria-controls="task-scope" aria-selected="false" tabindex="-1" data-roles="' + TASK_OVERSEE + '">Việc trong phạm vi <span class="n"></span></button>' +
               '</div>' +
-              '<button type="button" class="btn btn-primary btn-sm" id="task-new">+ Giao việc</button>' +
+              '<button type="button" class="btn btn-primary btn-sm" id="task-new" data-roles="' + TASK_MANAGERS + '">+ Giao việc</button>' +
             '</div>' +
             '<div id="task-mine" role="tabpanel">' +
               '<p class="tk-note small" id="task-hl-note" hidden></p>' +
               '<div class="page-tabs" id="task-obj" role="tablist" aria-label="Nhóm đối tượng">' + objTabs + '</div>' +
               '<div class="seg-channel mt-2" id="task-ch" role="tablist" aria-label="Kênh bán">' + chTabs + '</div>' +
+              /* FR-TASK-09 AC-B-2: lọc trong tab đang chọn, số trên tab không đổi theo bộ lọc */
+              '<div class="tk-filter mt-3">' +
+                '<div class="chipbar" role="group" aria-label="Lọc nhanh">' +
+                  '<button type="button" class="fchip" data-tf="late" aria-pressed="false">Quá hạn</button>' +
+                  '<button type="button" class="fchip" data-tf="soon" aria-pressed="false">Sắp đến hạn</button>' +
+                  '<button type="button" class="fchip" data-tf="open" aria-pressed="false">Chưa xong</button>' +
+                '</div>' +
+                '<input class="inp tk-q" type="search" id="task-q" placeholder="Tìm theo tiêu đề, đối tượng" aria-label="Tìm việc">' +
+              '</div>' +
               '<div id="task-list" class="mt-3"></div>' +
+              '<button type="button" class="btn btn-quiet btn-sm mt-2" id="task-old" hidden></button>' +
             '</div>' +
             '<div id="task-sent" role="tabpanel" hidden><div id="task-sent-list"></div></div>' +
+            '<div id="task-scope" role="tabpanel" hidden>' +
+              '<p class="small muted mt-0" id="task-scope-note"></p>' +
+              '<div class="tk-filter">' +
+                '<select class="inp" id="ov-pj" aria-label="Dự án"><option value="">Mọi dự án</option>' + pjOpts + '</select>' +
+                '<select class="inp" id="ov-state" aria-label="Trạng thái">' +
+                  '<option value="">Mọi trạng thái</option><option value="open">Còn việc chưa xong</option>' +
+                  '<option value="late">Quá hạn</option><option value="done">Đã xong hết</option></select>' +
+                '<input class="inp tk-q" type="search" id="ov-q" placeholder="Tìm theo tiêu đề" aria-label="Tìm việc trong phạm vi">' +
+              '</div>' +
+              '<div id="task-scope-list" class="mt-3"></div>' +
+              '<p class="micro muted mt-2">Mới nhất lên đầu · 50 việc mỗi trang.</p>' +
+            '</div>' +
           '</div>' +
           '<div class="modal-foot">' +
             '<button class="btn btn-outline" data-close="1">Đóng</button>' +
@@ -697,12 +793,18 @@
           '</div>' +
           '<div class="modal-body" id="task-form">' +
             '<label class="field"><span class="lab">Loại đối tượng</span>' +
-              '<select class="inp" id="tf-obj">' + TASK_OBJ.map(function (o) {
+              '<select class="inp" id="tf-obj">' + TASK_KINDS.map(function (o) {
                 return '<option value="' + o.id + '">' + o.label + '</option>';
               }).join('') + '</select></label>' +
-            '<label class="field"><span class="lab">Đối tượng</span>' +
-              '<select class="inp" id="tf-target" data-required data-msg="Chọn dự án, sản phẩm hoặc bài đăng cần làm."></select>' +
-              '<span class="hint" id="tf-scope"></span></label>' +
+            /* FR-TASK-08 AC-B-1: ô gõ-chọn (combobox WAI-ARIA), tối đa 20 gợi ý trong phạm vi giao */
+            '<div class="field tk-combo"><label class="lab" for="tf-target-q">Đối tượng</label>' +
+              '<input class="inp" type="text" id="tf-target-q" role="combobox" autocomplete="off" aria-autocomplete="list" ' +
+                'aria-expanded="false" aria-controls="tf-target-list" placeholder="Gõ tên để tìm" data-required data-msg="Chọn dự án, sản phẩm hoặc bài đăng cần làm.">' +
+              '<ul class="tk-suggest" id="tf-target-list" role="listbox" aria-label="Gợi ý đối tượng" hidden></ul>' +
+              '<div class="tk-picked" id="tf-target-picked" hidden><span></span>' +
+                '<button type="button" class="tk-rm" id="tf-target-clear" aria-label="Bỏ chọn đối tượng">×</button></div>' +
+              '<input type="hidden" id="tf-target" value="">' +
+              '<span class="hint" id="tf-scope"></span></div>' +
             '<div class="field"><span class="lab">Kênh</span>' +
               '<p class="small tk-ro" id="tf-ch-ro"></p>' +
               '<select class="inp" id="tf-ch" hidden aria-label="Kênh"><option value="moi">Sơ cấp</option><option value="cn">Thứ cấp</option></select></div>' +
@@ -715,8 +817,19 @@
             '<div class="field"><span class="lab" id="tf-rcp-lab">Người nhận</span>' +
               '<ul class="tk-rcp" id="tf-rcp" aria-labelledby="tf-rcp-lab"></ul>' +
               '<div class="row-tight mt-2">' +
-                '<button type="button" class="btn btn-outline btn-sm" id="tf-pick">+ Chọn người</button>' +
-                '<button type="button" class="btn btn-outline btn-sm" id="tf-team">+ Mọi nhân viên KD phụ trách</button>' +
+                '<button type="button" class="btn btn-outline btn-sm" id="tf-pick" aria-describedby="tf-lock">+ Chọn người</button>' +
+                '<button type="button" class="btn btn-outline btn-sm" id="tf-team" aria-describedby="tf-lock">+ Mọi nhân viên KD phụ trách</button>' +
+              '</div>' +
+              /* FR-TASK-08 AC-B-3: chưa chọn đối tượng thì hai nút chọn người khoá */
+              '<span class="hint" id="tf-lock">Chọn đối tượng trước để biết ai nhận được việc.</span>' +
+              /* FR-TASK-08 AC-B-2: xem trước nhóm phụ trách, mặc định chọn hết */
+              '<div class="tk-pv" id="tf-team-pv" hidden>' +
+                '<p class="small mt-0" id="tf-team-pv-t"></p>' +
+                '<ul id="tf-team-pv-list"></ul>' +
+                '<div class="row-tight mt-2">' +
+                  '<button type="button" class="btn btn-primary btn-sm" id="tf-team-add"></button>' +
+                  '<button type="button" class="btn btn-quiet btn-sm" id="tf-team-cancel">Huỷ</button>' +
+                '</div>' +
               '</div>' +
               '<span class="hint" id="tf-rcp-n"></span></div>' +
           '</div>' +
@@ -728,6 +841,13 @@
       '</div>';
   }
 
+  /* Bộ chọn trạng thái ba nút (FR-TASK-03 AC-B-3): nút đang chọn tô nền theo chip trạng thái */
+  function statusSeg(st) {
+    return '<div class="seg tk-seg" role="group" aria-label="Trạng thái của tôi">' +
+      ['chua', 'dang', 'xong'].map(function (k) {
+        return '<button type="button" data-tst="' + k + '" class="tk-st-' + k + '" aria-pressed="' + (st === k) + '">' + TASK_STATE[k] + '</button>';
+      }).join('') + '</div>';
+  }
   function taskRow(t) {
     var r = myRcp(t);
     var late = isLate(t, r.st);
@@ -735,58 +855,134 @@
     var xem = t.gone
       ? '<button type="button" class="btn btn-outline btn-sm" disabled title="Đối tượng không còn">Xem</button>'
       : '<a class="btn btn-outline btn-sm" data-tact="xem" href="' + link(t.go || 'trang-dau.html') + '">Xem</a>';
+    var kind = taskObj === 'tat-ca'
+      ? TASK_OBJ.filter(function (o) { return o.id === t.obj; })[0].label + ' · ' + (t.channel === 'cn' ? 'Thứ cấp' : 'Sơ cấp') + ' · '
+      : '';
     return '<div class="tk-row' + (r.st === 'xong' ? ' tk-done' : '') + (hl ? ' tk-hl' : '') + '" data-tid="' + t.id + '">' +
       '<div class="tk-main">' +
         '<b>' + (r.st === 'xong' ? svg('check', 'tk-tick') : '') + tkEsc(t.title) + '</b>' +
-        '<small class="micro muted">' + (t.gone ? '<span class="tk-late">Đối tượng không còn</span> · ' : '') + tkEsc(t.target) + '</small>' +
+        '<small class="micro muted">' + (t.gone ? '<span class="tk-late">Đối tượng không còn</span> · ' : '') + kind + tkEsc(t.target) + '</small>' +
         '<small class="micro muted">Người giao: ' + tkEsc(t.byName) + ' · ' +
           '<span class="' + (late ? 'tk-late' : '') + '">' + dueText(t) + (late ? ' · Quá hạn' : '') + '</span></small>' +
         (t.body ? '<details class="tk-body"><summary>Nội dung</summary><p>' + tkEsc(t.body) + '</p></details>' : '') +
       '</div>' +
-      '<div class="row-tight tk-acts">' +
-        '<span class="' + TASK_CHIP[r.st] + '">' + TASK_STATE[r.st] + '</span>' +
-        xem +
-        '<button type="button" class="btn btn-quiet btn-sm" data-tact="sau">Để sau</button>' +
-        '<button type="button" class="btn btn-primary btn-sm" data-tact="tiep">Cập nhật trạng thái</button>' +
-      '</div>' +
+      '<div class="row-tight tk-acts">' + statusSeg(r.st) + xem + '</div>' +
     '</div>';
   }
-  function sentRow(t) {
-    var done = t.rcp.filter(function (r) { return r.st === 'xong'; }).length;
-    var who = t.rcp.map(function (r) {
-      return '<li><span>' + tkEsc(r.n) + '</span><span class="' + TASK_CHIP[r.st] + '">' + TASK_STATE[r.st] + '</span>' +
-        (r.at ? '<span class="micro muted">' + tkEsc(r.at) + '</span>' : '') + '</li>';
+  /* Một dòng của Việc tôi đã giao / Việc trong phạm vi (FR-TASK-05 AC-B-6…8, FR-TASK-07 AC-B-3) */
+  function sentRow(t, scope) {
+    var rcp = liveRcp(t);
+    var counted = rcp.filter(function (r) { return !r.out; });
+    var done = counted.filter(function (r) { return r.st === 'xong'; }).length;
+    var late = counted.filter(function (r) { return isLate(t, r.st); }).length;
+    var canEdit = !scope || role === 'gd';
+    var who = rcp.map(function (r) {
+      var rl = !r.out && isLate(t, r.st);
+      return '<li class="' + (r.out ? 'tk-out' : '') + '">' +
+        '<span>' + tkEsc(r.n) + (r.out ? ' <span class="micro">· Không còn phụ trách dự án</span>' : '') + '</span>' +
+        '<span class="' + TASK_CHIP[r.st] + '">' + TASK_STATE[r.st] + '</span>' +
+        (rl ? '<span class="tk-late micro">Quá hạn</span>' : '') +
+        '<span class="micro ' + (r.seen ? 'muted' : 'tk-unseen') + '">' + (r.seen ? 'Đã xem' + (r.seenAt ? ' ' + tkEsc(r.seenAt) : '') : 'Chưa xem') + '</span>' +
+        (r.at ? '<span class="micro muted">Đổi trạng thái ' + tkEsc(r.at) + '</span>' : '') + '</li>';
     }).join('');
     return '<div class="tk-row" data-sid="' + t.id + '">' +
       '<div class="tk-main">' +
         '<b>' + tkEsc(t.title) + '</b>' +
         '<small class="micro muted">' + tkEsc(t.target) + ' · ' + (t.channel === 'cn' ? 'Thứ cấp' : 'Sơ cấp') + ' · ' + dueText(t) + '</small>' +
-        '<details class="tk-who"><summary>' + done + '/' + t.rcp.length + ' Hoàn thành · xem người nhận</summary><ul>' + who + '</ul></details>' +
+        (scope ? '<small class="micro muted">Người giao: ' + tkEsc(t.byName) + '</small>' : '') +
+        '<details class="tk-who"><summary><span>' + done + '/' + counted.length + ' Hoàn thành' +
+          (late ? ' · <span class="tk-late">' + late + ' quá hạn</span>' : '') + ' · xem người nhận</span></summary><ul>' + who + '</ul></details>' +
       '</div>' +
-      '<div class="row-tight tk-acts">' +
-        '<button type="button" class="btn btn-outline btn-sm" data-sact="sua">Sửa</button>' +
-        '<button type="button" class="btn btn-quiet btn-sm tk-del" data-sact="xoa">Xoá</button>' +
-      '</div>' +
+      (canEdit
+        ? '<div class="row-tight tk-acts">' +
+            '<button type="button" class="btn btn-outline btn-sm" data-sact="sua">Sửa</button>' +
+            '<button type="button" class="btn btn-quiet btn-sm tk-del" data-sact="xoa">Xoá</button>' +
+          '</div>'
+        : '') +
     '</div>';
   }
 
+  /* Huy hiệu số (FR-TASK-10): số việc chưa xem và chưa Hoàn thành, 9+ khi lớn hơn 9; có việc quá
+     hạn thì nền đỏ — chỉ quá hạn mà đã xem hết thì ghi "!". Khác hẳn chấm của chuông. */
+  function taskCounts() {
+    var all = myTasks();
+    return {
+      unseen: all.filter(function (t) { var r = myRcp(t); return !r.seen && r.st !== 'xong'; }).length,
+      late: all.filter(function (t) { return isLate(t, myRcp(t).st); }).length,
+      open: openCount(all)
+    };
+  }
   function paintDot() {
-    var dot = document.querySelector('#tasks-icon .dot');
-    if (!dot) return;
-    dot.hidden = !myTasks().some(function (t) { var r = myRcp(t); return !r.seen && r.st !== 'xong'; });
+    var btn = document.getElementById('tasks-icon');
+    var badge = btn && btn.querySelector('.tk-badge');
+    if (!badge) return;
+    var c = taskCounts();
+    var show = c.unseen > 0 || c.late > 0;
+    badge.hidden = !show;
+    badge.textContent = c.unseen > 9 ? '9+' : c.unseen > 0 ? String(c.unseen) : '!';
+    badge.classList.toggle('tk-badge-late', c.late > 0);
+    btn.setAttribute('aria-label', 'Công việc được giao' +
+      (c.unseen ? ', ' + c.unseen + ' việc mới' : '') + (c.late ? ', ' + c.late + ' việc quá hạn' : ''));
+  }
+  function matchesFilter(t) {
+    var st = myRcp(t).st;
+    if (taskF.late && !isLate(t, st)) return false;
+    if (taskF.soon && !isSoon(t, st)) return false;
+    if (taskF.open && st === 'xong') return false;
+    if (taskQ && norm(t.title + ' ' + t.target).indexOf(norm(taskQ)) < 0) return false;
+    return true;
+  }
+  function renderRemoved() {
+    var box = document.getElementById('task-removed');
+    if (!box) return;
+    var list = removedTasks();
+    box.hidden = !list.length;
+    if (!list.length) return;
+    box.querySelector('summary').textContent = list.length + ' việc đã bị người giao gỡ khỏi danh mục của anh/chị';
+    box.querySelector('ul').innerHTML = list.map(function (t) {
+      var r = myRcpAny(t);
+      return '<li><b>' + tkEsc(t.title) + '</b> <span class="micro muted">· ' + tkEsc(t.byName) + ' · ' +
+        (t.deleted ? 'đã xoá việc ' + tkEsc(t.delAt) : 'gỡ anh/chị khỏi việc ' + tkEsc(r.rm)) + '</span></li>';
+    }).join('');
+  }
+  function renderScope() {
+    var box = document.getElementById('task-scope-list');
+    if (!box) return;
+    var note = document.getElementById('task-scope-note');
+    if (note) note.textContent = role === 'gd'
+      ? 'Mọi việc trong công ty — Tổng giám đốc sửa, xoá được mọi việc.'
+      : 'Việc của các dự án anh/chị phụ trách giao việc — chỉ xem, không sửa, xoá việc người khác giao.';
+    var list = overseeTasks().filter(function (t) {
+      if (ovPj && t.pj !== ovPj) return false;
+      if (ovQ && norm(t.title).indexOf(norm(ovQ)) < 0) return false;
+      var rcp = liveRcp(t).filter(function (r) { return !r.out; });
+      var open = rcp.some(function (r) { return r.st !== 'xong'; });
+      if (ovState === 'open' && !open) return false;
+      if (ovState === 'done' && open) return false;
+      if (ovState === 'late' && !rcp.some(function (r) { return isLate(t, r.st); })) return false;
+      return true;
+    }).reverse();
+    box.innerHTML = list.length
+      ? list.map(function (t) { return sentRow(t, true); }).join('')
+      : '<p class="gs-none">Không có việc nào khớp bộ lọc.</p>';
   }
   function renderTasks() {
     paintDot();
     var box = document.getElementById('task-list');
     if (!box) return;
+    renderRemoved();
     var all = myTasks();
-    /* Số việc chưa Hoàn thành trên từng tab (FR-TASK-02 AC-B-3) */
+    var shown = all.filter(function (t) { return taskOld || !isOldDone(t); });
+    var old = all.filter(isOldDone);
+    /* Số việc chưa Hoàn thành trên từng tab (FR-TASK-02 AC-B-3, FR-TASK-09 AC-B-1) */
     document.querySelectorAll('#task-obj [data-tobj]').forEach(function (b) {
-      var n = openCount(all.filter(function (t) { return t.obj === b.getAttribute('data-tobj'); }));
+      var n = openCount(all.filter(function (t) { return inTab(t, b.getAttribute('data-tobj')); }));
       b.querySelector('.n').textContent = n ? n : '';
     });
+    var ch = document.getElementById('task-ch');
+    if (ch) ch.hidden = taskObj === 'tat-ca';
     document.querySelectorAll('#task-ch [data-tch]').forEach(function (b) {
-      var n = openCount(all.filter(function (t) { return t.obj === taskObj && t.channel === b.getAttribute('data-tch'); }));
+      var n = openCount(all.filter(function (t) { return inTab(t, taskObj, b.getAttribute('data-tch')); }));
       b.querySelector('.n').textContent = n ? n : '';
     });
     var sent = sentTasks();
@@ -794,19 +990,30 @@
     var vs = document.querySelector('#task-view [data-tview="sent"] .n');
     if (vm) vm.textContent = openCount(all) || '';
     if (vs) vs.textContent = sent.length || '';
-    var list = all.filter(function (t) { return t.obj === taskObj && t.channel === taskCh; }).sort(taskOrder);
+    var inTabList = shown.filter(function (t) { return inTab(t, taskObj, taskObj === 'tat-ca' ? null : taskCh); });
+    var list = inTabList.filter(matchesFilter).sort(taskOrder);
     box.innerHTML = list.length
       ? list.map(taskRow).join('')
-      : '<p class="gs-none">Không có việc nào được giao ở nhóm này.</p>';
+      : inTabList.length
+        ? '<p class="gs-none">Không có việc nào khớp bộ lọc.</p>'
+        : '<p class="gs-none">Không có việc nào được giao ở nhóm này.</p>';
+    var oldBtn = document.getElementById('task-old');
+    if (oldBtn) {
+      oldBtn.hidden = !old.length;
+      oldBtn.textContent = taskOld ? 'Ẩn việc đã xong quá 30 ngày' : 'Xem việc đã xong (' + old.length + ')';
+    }
     var sbox = document.getElementById('task-sent-list');
     if (sbox) sbox.innerHTML = sent.length
-      ? sent.map(sentRow).join('')
+      ? sent.map(function (t) { return sentRow(t, false); }).join('')
       : '<p class="gs-none">Anh/chị chưa giao việc nào.</p>';
+    renderScope();
+    renderHomeTasks();
   }
-  /* Mở lần đầu: tab đầu tiên còn việc chưa Hoàn thành (FR-TASK-02 AC-B-3) */
+  /* Mở lần đầu: tab đầu tiên còn việc chưa Hoàn thành, xét Tất cả trước (FR-TASK-09 AC-B-1) */
   function pickFirstTab() {
     var open = myTasks().filter(function (t) { return myRcp(t).st !== 'xong'; });
-    for (var i = 0; i < TASK_OBJ.length; i++) {
+    if (open.length) { taskObj = 'tat-ca'; return; }
+    for (var i = 1; i < TASK_OBJ.length; i++) {
       for (var j = 0; j < TASK_CH.length; j++) {
         var o = TASK_OBJ[i].id, c = TASK_CH[j].id;
         if (open.some(function (t) { return t.obj === o && t.channel === c; })) { taskObj = o; taskCh = c; return; }
@@ -816,6 +1023,7 @@
   function openTasks() {
     if (!taskPicked && !taskHl.length) pickFirstTab();
     taskPicked = true;
+    taskView = 'mine';
     selectTab(document.getElementById('task-view'), 'data-tview', 'mine');
     selectTab(document.getElementById('task-obj'), 'data-tobj', taskObj);
     selectTab(document.getElementById('task-ch'), 'data-tch', taskCh);
@@ -828,18 +1036,55 @@
     }
     renderTasks();
     openModal('m-tasks');
-    /* Mở hộp là đã xem mọi việc đang liệt kê — tắt chấm (FR-TASK-02 AC-B-2) */
+    /* Mở hộp là đã xem mọi việc đang liệt kê — huy hiệu bớt số (FR-TASK-02 AC-B-2), và đã đọc
+       dòng báo việc bị gỡ (FR-TASK-12 AC-B-2) */
     var S = window.RECO.store;
     myTasks().forEach(function (t) {
       var r = myRcp(t);
-      if (!r.seen) { r.seen = true; S.update('tasks', t.id, { rcp: t.rcp }); }
+      if (!r.seen) { r.seen = true; r.seenAt = 'vừa xong'; S.update('tasks', t.id, { rcp: t.rcp }); }
+    });
+    removedTasks().forEach(function (t) {
+      myRcpAny(t).rmSeen = true;
+      S.update('tasks', t.id, { rcp: t.rcp });
     });
     paintDot();
     taskHl = [];
   }
+  /* Mở hộp ở đúng tab của một việc, làm nổi bật việc đó (FR-TASK-11 AC-B-2) */
+  function openTaskAt(id) {
+    var S = window.RECO.store;
+    var t = id && S && S.find('tasks', id);
+    if (t) { taskHl = [t.id]; taskObj = 'tat-ca'; taskPicked = true; }
+    taskF = { late: false, soon: false, open: false };
+    taskQ = '';
+    document.querySelectorAll('[data-tf]').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+    var q = document.getElementById('task-q');
+    if (q) q.value = '';
+    openTasks();
+  }
+
+  /* Khối Việc được giao ở Trang đầu (FR-TASK-11): số việc chưa xong, số quá hạn, ba việc gần hạn */
+  function renderHomeTasks() {
+    var sec = document.getElementById('sec-tasks');
+    if (!sec) return;
+    var open = myTasks().filter(function (t) { return myRcp(t).st !== 'xong'; }).sort(taskOrder);
+    sec.hidden = !open.length;
+    if (!open.length) return;
+    var late = open.filter(function (t) { return isLate(t, myRcp(t).st); }).length;
+    document.getElementById('home-tasks-n').innerHTML = open.length + ' việc chưa xong' +
+      (late ? ' · <span class="tk-late">' + late + ' quá hạn</span>' : '');
+    document.getElementById('home-tasks-list').innerHTML = open.slice(0, 3).map(function (t) {
+      var r = myRcp(t), l = isLate(t, r.st);
+      return '<button type="button" class="frow tk-home-row" data-home-task="' + t.id + '">' +
+        '<span class="fico">' + svg('tasks') + '</span>' +
+        '<span class="fmeta"><span class="fname">' + tkEsc(t.title) + '</span>' +
+        '<span class="fsub"><span>' + tkEsc(t.target) + ' · <span class="' + (l ? 'tk-late' : '') + '">' + dueText(t) + (l ? ' · Quá hạn' : '') + '</span></span></span></span>' +
+        '<span class="fend"><span class="' + TASK_CHIP[r.st] + '">' + TASK_STATE[r.st] + '</span></span></button>';
+    }).join('');
+  }
 
   /* ---------- Biểu mẫu giao việc / sửa việc ---------- */
-  var tfEdit = null, tfRcp = [];
+  var tfEdit = null, tfRcp = [], tfFound = [], tfActive = -1;
   /* Bộ chọn người dùng chung chỉ nạp khi cần — các màn không có thẻ script riêng cho nó */
   function ensurePicker(cb) {
     if (window.RECO.pickPeople) { cb(); return; }
@@ -849,11 +1094,12 @@
     s.onerror = function () { toast('Không tải được bộ chọn người dùng — tải lại trang rồi thử lại.', { danger: true }); };
     document.head.appendChild(s);
   }
-  function personName(id) {
+  function personOf(id) {
     var L = window.RECO.PICK_PEOPLE || [];
-    for (var i = 0; i < L.length; i++) if (L[i].id === id) return L[i].name;
-    return id;
+    for (var i = 0; i < L.length; i++) if (L[i].id === id) return L[i];
+    return null;
   }
+  function personName(id) { var p = personOf(id); return p ? p.name : id; }
   function tfTargets(obj) {
     return TASK_TARGETS[obj].filter(function (x) { return x.pj || role === 'gd'; });
   }
@@ -862,16 +1108,52 @@
     var v = document.getElementById('tf-target').value;
     return v === '' ? null : tfTargets(tfObj())[+v];
   }
+  function tfSetTarget(index) {
+    var hidden = document.getElementById('tf-target');
+    var q = document.getElementById('tf-target-q');
+    var picked = document.getElementById('tf-target-picked');
+    hidden.value = index == null ? '' : String(index);
+    var t = tfTarget();
+    q.hidden = !!t;
+    q.value = '';
+    picked.hidden = !t;
+    picked.querySelector('span').textContent = t ? t.name + (t.pj ? '' : ' (không gắn dự án)') : '';
+    if (t) fieldError(q, '');
+    tfCloseList();
+    tfSyncChannel();
+  }
+  function tfCloseList() {
+    var ul = document.getElementById('tf-target-list');
+    ul.hidden = true;
+    document.getElementById('tf-target-q').setAttribute('aria-expanded', 'false');
+    document.getElementById('tf-target-q').removeAttribute('aria-activedescendant');
+    tfActive = -1;
+  }
+  function tfSuggest() {
+    var q = document.getElementById('tf-target-q');
+    var ul = document.getElementById('tf-target-list');
+    var all = tfTargets(tfObj());
+    var term = norm(q.value.trim());
+    tfFound = all.map(function (x, i) { return { x: x, i: i }; })
+      .filter(function (o) { return !term || norm(o.x.name).indexOf(term) >= 0; }).slice(0, 20);
+    ul.innerHTML = tfFound.length
+      ? tfFound.map(function (o, k) {
+          var meta = (o.x.pj ? TASK_PJ_NAME[o.x.pj] : 'Không gắn dự án') + ' · ' +
+            (o.x.ch === 'cn' ? 'Thứ cấp' : o.x.ch === 'moi' ? 'Sơ cấp' : 'Người giao chọn kênh');
+          return '<li role="option" id="tf-opt-' + k + '" data-k="' + k + '" aria-selected="' + (k === tfActive) + '">' +
+            '<b>' + tkEsc(o.x.name) + '</b><small class="micro muted">' + tkEsc(meta) + '</small></li>';
+        }).join('')
+      : '<li class="micro muted tk-none">Không có đối tượng nào trong phạm vi giao của anh/chị.</li>';
+    ul.hidden = false;
+    q.setAttribute('aria-expanded', 'true');
+    if (tfActive >= 0) q.setAttribute('aria-activedescendant', 'tf-opt-' + tfActive);
+    else q.removeAttribute('aria-activedescendant');
+  }
   function tfFillTargets(keep) {
-    var sel = document.getElementById('tf-target');
-    sel.innerHTML = '<option value="">— Chọn —</option>' + tfTargets(tfObj()).map(function (x, i) {
-      return '<option value="' + i + '">' + tkEsc(x.name + (x.pj ? '' : ' (không gắn dự án)')) + '</option>';
-    }).join('');
-    sel.value = keep == null ? '' : keep;
+    tfSetTarget(keep);
     document.getElementById('tf-scope').textContent = role === 'gd'
       ? 'Phạm vi toàn công ty: giao được cả bài đăng dùng chung.'
       : 'Chỉ đối tượng trong phạm vi anh/chị phụ trách. Bài đăng dùng chung chỉ người giao phạm vi toàn công ty giao được.';
-    tfSyncChannel();
   }
   function tfSyncChannel() {
     var t = tfTarget(), ro = document.getElementById('tf-ch-ro'), sel = document.getElementById('tf-ch');
@@ -879,7 +1161,10 @@
     sel.hidden = !free;
     ro.hidden = free;
     ro.textContent = !t ? 'Theo dự án của đối tượng.' : (t.ch === 'cn' ? 'Thứ cấp' : 'Sơ cấp') + ' — theo dự án của đối tượng.';
+    document.getElementById('tf-pick').disabled = !t;
     document.getElementById('tf-team').disabled = !t || !t.pj;
+    document.getElementById('tf-lock').hidden = !!t;
+    document.getElementById('tf-team-pv').hidden = true;
   }
   function tfPaintRcp() {
     var ul = document.getElementById('tf-rcp');
@@ -909,6 +1194,29 @@
     ids.forEach(function (id) { if (tfRcp.indexOf(id) < 0) tfRcp.push(id); });
     tfPaintRcp();
   }
+  /* Xem trước nhóm phụ trách: tên, chức danh, phòng; ô đánh dấu từng người, mặc định chọn hết */
+  function tfPreviewTeam() {
+    var t = tfTarget();
+    if (!t || !t.pj) return;
+    var ids = (TASK_TEAM[t.pj] || []).filter(function (id) { return role !== 'qlkd' || TASK_KD3.indexOf(id) >= 0; });
+    document.getElementById('tf-team-pv-t').textContent =
+      ids.length + ' nhân viên KD phụ trách ' + TASK_PJ_NAME[t.pj] + ' — chốt theo danh sách hôm nay, người vào sau không tự nhận.';
+    document.getElementById('tf-team-pv-list').innerHTML = ids.map(function (id) {
+      var p = personOf(id) || { name: id, title: '', dept: '' };
+      var has = tfRcp.indexOf(id) >= 0;
+      return '<li><label class="check"><input type="checkbox" value="' + id + '"' + (has ? ' disabled' : ' checked') + '>' +
+        '<span><b>' + tkEsc(p.name) + '</b> <span class="micro muted">' + tkEsc([p.title, p.dept].filter(Boolean).join(' · ')) + '</span>' +
+        (has ? ' <span class="st st-off">Đã có</span>' : '') + '</span></label></li>';
+    }).join('');
+    document.getElementById('tf-team-pv').hidden = false;
+    tfSyncTeamAdd();
+  }
+  function tfSyncTeamAdd() {
+    var n = document.querySelectorAll('#tf-team-pv-list input:checked:not(:disabled)').length;
+    var b = document.getElementById('tf-team-add');
+    b.textContent = 'Thêm ' + n + ' người';
+    b.disabled = n === 0;
+  }
   function openTaskForm(t) {
     ensurePicker(function () {
       tfEdit = t || null;
@@ -920,11 +1228,11 @@
       obj.disabled = !!t;
       var keep = null;
       if (t) {
-        tfTargets(t.obj).forEach(function (x, i) { if (x.name === t.target) keep = String(i); });
+        tfTargets(t.obj).forEach(function (x, i) { if (x.name === t.target) keep = i; });
       }
       tfFillTargets(keep);
       /* Sửa việc không đổi đối tượng (FR-TASK-05 AC-B-2) */
-      document.getElementById('tf-target').disabled = !!t;
+      document.getElementById('tf-target-clear').hidden = !!t;
       document.getElementById('tf-ch').value = t ? t.channel : 'moi';
       document.getElementById('tf-title').value = t ? t.title : '';
       document.getElementById('tf-body').value = t ? (t.body || '') : '';
@@ -932,7 +1240,8 @@
       due.value = t ? (t.due || '') : '';
       var d = tkToday();
       due.min = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
-      tfRcp = t ? t.rcp.map(function (r) { return r.u; }) : [];
+      /* Sửa: người không còn phụ trách vẫn hiện để người giao bỏ khỏi việc (FR-TASK-05 AC-B-8) */
+      tfRcp = t ? liveRcp(t).map(function (r) { return r.u; }) : [];
       tfPaintRcp();
       document.getElementById('m-task-form-t').textContent = t ? 'Sửa việc' : 'Giao việc';
       document.getElementById('tf-save').textContent = t ? 'Lưu thay đổi' : 'Giao việc';
@@ -940,125 +1249,213 @@
     });
   }
   function showSent() {
+    taskView = 'sent';
     selectTab(document.getElementById('task-view'), 'data-tview', 'sent');
   }
   function saveTaskForm(btn) {
-    var ok = validate(document.getElementById('task-form'));
+    var ok = true;
+    if (!tfTarget()) { fieldError(document.getElementById('tf-target-q'), 'Chọn dự án, sản phẩm hoặc bài đăng cần làm.'); ok = false; }
+    var title = document.getElementById('tf-title');
+    if (!title.value.trim()) { fieldError(title, 'Nhập việc cần làm.'); ok = false; }
     if (!tfRcp.length) {
       fieldError(document.getElementById('tf-rcp'), 'Chọn ít nhất một người nhận.');
       ok = false;
     }
     if (!ok) return;
     var S = window.RECO.store;
-    var title = document.getElementById('tf-title').value.trim();
+    var tt = title.value.trim();
     var body = document.getElementById('tf-body').value.trim();
     var due = document.getElementById('tf-due').value;
+    var now = window.RECO.store.TODAY + ' ' + '10:30';
     busy(btn, tfEdit ? 'Đang lưu…' : 'Đang giao…', 700, function () {
       if (tfEdit) {
         var old = tfEdit.rcp;
-        var changed = title !== tfEdit.title || body !== (tfEdit.body || '') || due !== (tfEdit.due || '');
-        /* Người còn lại giữ trạng thái, người mới bắt đầu ở Chưa làm; sửa nội dung thì về lại chưa xem */
-        var rcp = tfRcp.map(function (id) {
-          for (var i = 0; i < old.length; i++) {
-            if (old[i].u !== id) continue;
-            if (changed && old[i].st !== 'xong') old[i].seen = false;
-            return old[i];
+        var changed = tt !== tfEdit.title || body !== (tfEdit.body || '') || due !== (tfEdit.due || '');
+        /* Người còn lại giữ trạng thái; người mới bắt đầu ở Chưa làm; sửa nội dung thì về lại chưa
+           xem. Người bị bớt giữ dòng kèm thời điểm gỡ để báo 7 ngày (FR-TASK-12); thêm lại thì về
+           Chưa làm, chưa xem (AC-B-3). */
+        var rcp = old.map(function (r) {
+          if (tfRcp.indexOf(r.u) < 0) {
+            if (!r.rm) { r.rm = now; r.rmSeen = false; }
+            return r;
           }
-          return { u: id, n: personName(id), st: 'chua', seen: false, nt: false, at: '' };
+          if (r.rm) return { u: r.u, n: r.n, st: 'chua', seen: false, nt: false, at: '' };
+          if (changed && r.st !== 'xong') r.seen = false;
+          return r;
         });
-        S.update('tasks', tfEdit.id, { title: title, body: body, due: due, rcp: rcp });
-        toast('Đã lưu “' + title + '” · ' + rcp.length + ' người nhận');
+        tfRcp.forEach(function (id) {
+          if (!old.some(function (r) { return r.u === id; })) rcp.push({ u: id, n: personName(id), st: 'chua', seen: false, nt: false, at: '' });
+        });
+        S.update('tasks', tfEdit.id, { title: tt, body: body, due: due, rcp: rcp });
+        toast('Đã lưu “' + tt + '” · ' + tfRcp.length + ' người nhận');
       } else {
         var t = tfTarget();
         S.add('tasks', {
           obj: tfObj(), channel: t.pj ? t.ch : document.getElementById('tf-ch').value,
           pj: t.pj, target: t.name, go: t.go,
-          title: title, body: body, due: due, by: tkMe(), byName: R.who,
+          title: tt, body: body, due: due, by: tkMe(), byName: R.who,
           rcp: tfRcp.map(function (id) { return { u: id, n: personName(id), st: 'chua', seen: false, nt: false, at: '' }; })
         });
-        toast('Đã giao “' + title + '” cho ' + tfRcp.length + ' người');
+        toast('Đã giao “' + tt + '” cho ' + tfRcp.length + ' người');
       }
       closeModal('m-task-form');
-      showSent();
+      if (taskView !== 'scope') showSent();
       renderTasks();
     });
   }
 
   function initTasks() {
     var btn = document.getElementById('tasks-icon');
+    renderHomeTasks();
+    var home = document.getElementById('sec-tasks');
+    if (home) home.addEventListener('click', function (e) {
+      var row = e.target.closest('[data-home-task]');
+      if (row) { openTaskAt(row.getAttribute('data-home-task')); return; }
+      if (e.target.closest('#home-tasks-all')) openTaskAt(null);
+    });
     if (!btn) return;
     /* Khách hàng không có icon việc (FR-TASK-02 AC-B-1) */
     if (role === 'khach') { btn.hidden = true; return; }
     renderTasks();
-    btn.addEventListener('click', openTasks);
+    btn.addEventListener('click', function () { openTaskAt(null); });
     /* Chọn tab (chuột lẫn mũi tên) do initTabs() xử lý; ở đây chỉ đọc lại rồi vẽ */
-    [document.getElementById('task-obj'), document.getElementById('task-ch')].forEach(function (bar) {
+    [document.getElementById('task-obj'), document.getElementById('task-ch'), document.getElementById('task-view')].forEach(function (bar) {
       if (!bar) return;
       function after() {
         setTimeout(function () {
           var o = document.querySelector('#task-obj [aria-selected="true"]');
           var c = document.querySelector('#task-ch [aria-selected="true"]');
+          var v = document.querySelector('#task-view [aria-selected="true"]');
           if (o) taskObj = o.getAttribute('data-tobj');
           if (c) taskCh = c.getAttribute('data-tch');
+          if (v) taskView = v.getAttribute('data-tview');
           renderTasks();
         }, 0);
       }
       bar.addEventListener('click', function (e) { if (e.target.closest('[role="tab"]')) after(); });
       bar.addEventListener('keydown', function (e) { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') after(); });
     });
+    document.querySelectorAll('[data-tf]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var k = b.getAttribute('data-tf');
+        taskF[k] = !taskF[k];
+        b.setAttribute('aria-pressed', taskF[k] ? 'true' : 'false');
+        renderTasks();
+      });
+    });
+    var q = document.getElementById('task-q');
+    if (q) q.addEventListener('input', function () { taskQ = q.value.trim(); renderTasks(); });
+    var oldBtn = document.getElementById('task-old');
+    if (oldBtn) oldBtn.addEventListener('click', function () { taskOld = !taskOld; renderTasks(); });
+    var help = document.getElementById('task-help');
+    if (help) help.addEventListener('click', function () {
+      toast('Bản thật mở Trung tâm Hướng dẫn — chủ đề Công việc được giao (/huong-dan/cong-viec).');
+    });
+    ['ov-pj', 'ov-state', 'ov-q'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener(id === 'ov-q' ? 'input' : 'change', function () {
+        ovPj = document.getElementById('ov-pj').value;
+        ovState = document.getElementById('ov-state').value;
+        ovQ = document.getElementById('ov-q').value.trim();
+        renderScope();
+      });
+    });
     var box = document.getElementById('task-list');
     if (box) box.addEventListener('click', function (e) {
-      var b = e.target.closest('[data-tact]');
+      var b = e.target.closest('[data-tact], [data-tst]');
       if (!b) return;
       var row = b.closest('[data-tid]');
       var S = window.RECO.store;
       var rec = row && S.find('tasks', row.getAttribute('data-tid'));
       if (!rec) return;
       var r = myRcp(rec);
-      var act = b.getAttribute('data-tact');
-      if (act === 'sau') {
-        closeModal('m-tasks');
-        toast('Đã để sau — việc vẫn nằm trong danh sách được giao');
-        return;
-      }
-      if (act === 'xem') {
+      if (b.getAttribute('data-tact') === 'xem') {
         /* Xem mở đối tượng và chuyển Chưa làm → Đang làm; trạng thái khác giữ nguyên (FR-TASK-03 AC-B-1) */
         if (r.st === 'chua') { r.st = 'dang'; r.at = 'vừa xong'; S.update('tasks', rec.id, { rcp: rec.rcp }); }
         return;
       }
-      r.st = TASK_NEXT[r.st] || 'dang';
-      r.at = 'vừa xong';
-      S.update('tasks', rec.id, { rcp: rec.rcp });
-      renderTasks();
-      toast('“' + rec.title + '” · ' + TASK_STATE[r.st]);
+      /* Chọn trạng thái trực tiếp, có Hoàn tác về trạng thái trước (FR-TASK-03 AC-B-3, V-02) */
+      var next = b.getAttribute('data-tst');
+      if (next === r.st) return;
+      var prev = { st: r.st, at: r.at, doneOn: r.doneOn };
+      function apply(st, at, doneOn) {
+        var cur = myRcp(S.find('tasks', rec.id));
+        cur.st = st; cur.at = at; cur.doneOn = doneOn;
+        S.update('tasks', rec.id, { rcp: S.find('tasks', rec.id).rcp });
+        renderTasks();
+      }
+      apply(next, 'vừa xong', next === 'xong' ? '2026-08-14' : '');
+      toast('Đã chuyển “' + rec.title + '” sang ' + TASK_STATE[next] + '.', {
+        undo: function () { apply(prev.st, prev.at, prev.doneOn); toast('Đã hoàn tác — “' + rec.title + '” về ' + TASK_STATE[prev.st] + '.'); }
+      });
     });
-    var sbox = document.getElementById('task-sent-list');
-    if (sbox) sbox.addEventListener('click', function (e) {
+    function sentClick(e) {
       var b = e.target.closest('[data-sact]');
       if (!b) return;
       var S = window.RECO.store;
       var rec = S.find('tasks', b.closest('[data-sid]').getAttribute('data-sid'));
       if (!rec) return;
       if (b.getAttribute('data-sact') === 'sua') { openTaskForm(rec); return; }
-      var open = rec.rcp.filter(function (x) { return x.st !== 'xong'; }).length;
+      var live = liveRcp(rec);
+      var open = live.filter(function (x) { return x.st !== 'xong'; }).length;
       confirmBox({
-        eyebrow: 'Việc tôi đã giao',
+        eyebrow: taskView === 'scope' ? 'Việc trong phạm vi' : 'Việc tôi đã giao',
         title: 'Xoá việc “' + tkEsc(rec.title) + '”?',
-        body: '<p class="small">' + rec.rcp.length + ' người nhận (' + open + ' người chưa Hoàn thành) sẽ không còn thấy việc này trong danh mục. Không hoàn tác được.</p>',
+        body: '<p class="small">' + live.length + ' người nhận (' + open + ' người chưa Hoàn thành) sẽ không còn thấy việc này trong danh mục. Không hoàn tác được.</p>',
         okText: 'Xoá việc', danger: true,
         onOk: function () {
-          S.update('tasks', rec.id, { deleted: true });
+          rec.rcp.forEach(function (x) { x.rmSeen = false; });
+          S.update('tasks', rec.id, { deleted: true, delAt: S.TODAY + ' 10:30', rcp: rec.rcp });
           renderTasks();
           toast('Đã xoá việc “' + rec.title + '”');
         }
       });
+    }
+    ['task-sent-list', 'task-scope-list'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('click', sentClick);
     });
     var nw = document.getElementById('task-new');
     if (nw) nw.addEventListener('click', function () { openTaskForm(null); });
     var obj = document.getElementById('tf-obj');
     if (obj) obj.addEventListener('change', function () { tfFillTargets(null); });
-    var tg = document.getElementById('tf-target');
-    if (tg) tg.addEventListener('change', tfSyncChannel);
+    /* Ô Đối tượng gõ-chọn: gõ để lọc, mũi tên lên/xuống, Enter chọn, Esc đóng gợi ý */
+    var tq = document.getElementById('tf-target-q');
+    if (tq) {
+      tq.addEventListener('input', function () { tfActive = -1; tfSuggest(); });
+      tq.addEventListener('focus', tfSuggest);
+      tq.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (document.getElementById('tf-target-list').hidden) tfSuggest();
+          if (!tfFound.length) return;
+          tfActive = e.key === 'ArrowDown'
+            ? (tfActive + 1) % tfFound.length
+            : (tfActive - 1 + tfFound.length) % tfFound.length;
+          tfSuggest();
+          var opt = document.getElementById('tf-opt-' + tfActive);
+          if (opt) opt.scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Enter') {
+          if (tfActive >= 0 && tfFound[tfActive]) { e.preventDefault(); tfSetTarget(tfFound[tfActive].i); }
+        } else if (e.key === 'Escape' && !document.getElementById('tf-target-list').hidden) {
+          e.stopPropagation();
+          tfCloseList();
+        }
+      });
+      tq.addEventListener('blur', function () { setTimeout(tfCloseList, 150); });
+    }
+    var tl = document.getElementById('tf-target-list');
+    if (tl) tl.addEventListener('mousedown', function (e) {
+      var li = e.target.closest('[data-k]');
+      if (!li) return;
+      e.preventDefault();
+      tfSetTarget(tfFound[+li.getAttribute('data-k')].i);
+    });
+    var clear = document.getElementById('tf-target-clear');
+    if (clear) clear.addEventListener('click', function () {
+      tfSetTarget(null);
+      document.getElementById('tf-target-q').focus();
+    });
     var pick = document.getElementById('tf-pick');
     if (pick) pick.addEventListener('click', function () {
       window.RECO.pickPeople({
@@ -1070,18 +1467,26 @@
       });
     });
     var team = document.getElementById('tf-team');
-    if (team) team.addEventListener('click', function () {
-      var t = tfTarget();
-      if (!t || !t.pj) return;
-      var ids = (TASK_TEAM[t.pj] || []).filter(function (id) { return role !== 'qlkd' || TASK_KD3.indexOf(id) >= 0; });
+    if (team) team.addEventListener('click', tfPreviewTeam);
+    var pvList = document.getElementById('tf-team-pv-list');
+    if (pvList) pvList.addEventListener('change', tfSyncTeamAdd);
+    var pvAdd = document.getElementById('tf-team-add');
+    if (pvAdd) pvAdd.addEventListener('click', function () {
+      var ids = Array.prototype.map.call(
+        document.querySelectorAll('#tf-team-pv-list input:checked:not(:disabled)'),
+        function (i) { return i.value; });
       tfAdd(ids);
-      toast('Đã thêm ' + ids.length + ' nhân viên KD phụ trách — chốt theo danh sách hôm nay, người vào sau không tự nhận');
+      document.getElementById('tf-team-pv').hidden = true;
+      toast('Đã thêm ' + ids.length + ' nhân viên KD phụ trách');
     });
+    var pvCancel = document.getElementById('tf-team-cancel');
+    if (pvCancel) pvCancel.addEventListener('click', function () { document.getElementById('tf-team-pv').hidden = true; });
     var save = document.getElementById('tf-save');
     if (save) save.addEventListener('click', function () { saveTaskForm(save); });
 
     whenStore(function () {
       paintDot();
+      renderHomeTasks();
       /* Tự mở một lần khi đang xem đúng dự án của việc (FR-TASK-04) */
       if (page !== 'du-an-chi-tiet') return;
       var pj = qs.get('pj') || 'leparc';
@@ -1089,8 +1494,7 @@
       var due = myTasks().filter(function (t) { var r = myRcp(t); return t.pj === pj && r.st !== 'xong' && !r.nt; });
       if (!due.length) return;
       taskHl = due.map(function (t) { return t.id; });
-      taskObj = due[0].obj;
-      taskCh = due[0].channel;
+      taskObj = 'tat-ca';
       due.forEach(function (t) { myRcp(t).nt = true; S.update('tasks', t.id, { rcp: t.rcp }); });
       setTimeout(openTasks, 400);
     });
