@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vai trò & phân quyền — RecoHR Admin</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../sales-hub/assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/hr.css">
+<link rel="stylesheet" href="assets/admin.css">
+</head>
+<body data-shell="admin" data-page="vai-tro" data-crumbs='[["Quản trị","quan-tri.html"],["Cấu hình & hệ thống"],["Vai trò & phân quyền"]]'>
+<main class="adm-body">
+  <div class="adm-head">
+    <div>
+      <h1>Vai trò & phân quyền</h1>
+      <p>Mỗi chức danh gắn một vai trò mặc định. Cấp trên tự có đủ quyền của cấp dưới (QD-150) — ô <span class="perm inherited" style="width:20px;height:20px;vertical-align:middle;display:inline-flex"><i data-i="tick"></i></span> là quyền kế thừa, không tắt được ở cấp trên.</p>
+    </div>
+    <div class="row">
+      <a class="btn btn-outline btn-sm" href="#" data-toast="Áp lại bảng Chức danh → Vai trò cho tài khoản đã có (QD-150) — mô phỏng"><i data-i="sync"></i>Áp lại theo chức danh</a>
+      <a class="btn btn-outline btn-sm" href="#" data-toast="Tạo vai trò mới — mô phỏng"><i data-i="plus"></i>Vai trò mới</a>
+    </div>
+  </div>
+
+  <div class="roles-layout">
+    <section class="card" aria-label="Danh sách vai trò">
+      <div class="card-head"><h3>Vai trò</h3><span class="micro">Từ thấp đến cao</span></div>
+      <ul class="role-list" id="roles"></ul>
+    </section>
+
+    <section class="card">
+      <div class="card-head" style="flex-wrap:wrap">
+        <div><span class="eyebrow" id="r-code"></span><h2 class="mt-1" id="r-name" style="font-size:1.25rem"></h2><p class="micro" id="r-desc" style="margin:4px 0 0"></p></div>
+        <div class="seg" role="toolbar" aria-label="Phần" id="tabs">
+          <button type="button" aria-pressed="true" data-t="perm">Quyền</button>
+          <button type="button" aria-pressed="false" data-t="mem">Thành viên<span class="n" id="mem-n"></span></button>
+        </div>
+      </div>
+
+      <div id="tab-perm">
+        <div class="toolbar">
+          <label class="inp-ico"><i data-i="search"></i><input class="inp" id="pq" type="search" placeholder="Tìm module, ví dụ: vắng mặt" aria-label="Tìm module"></label>
+          <label class="switch"><input type="checkbox" id="only"><span class="track"></span><span class="small">Chỉ hiện module có quyền</span></label>
+        </div>
+        <div class="table-scroll">
+          <table class="matrix" id="mx">
+            <thead><tr><th>Module</th><th>Xem</th><th>Tạo</th><th>Sửa</th><th>Xóa</th><th>Duyệt</th><th>Xuất</th><th style="min-width:150px">Phạm vi dữ liệu</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="tab-mem" hidden>
+        <ul class="list" id="members"></ul>
+      </div>
+
+      <div class="savebar" style="margin:0;position:sticky;bottom:0;border-radius:0 0 var(--radius-lg) var(--radius-lg)">
+        <span class="state" id="state">Không có thay đổi</span>
+        <button class="btn btn-outline" type="button" id="reset">Hoàn tác</button>
+        <button class="btn btn-primary" type="button" id="review"><i data-i="save"></i>Xem lại & lưu</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<dialog class="sheet" id="diff" aria-labelledby="d-h">
+  <form method="dialog">
+    <div class="sheet-head"><h3 id="d-h">Xem lại thay đổi quyền</h3><button class="icon-btn" data-close aria-label="Đóng"><i data-i="x"></i></button></div>
+    <div class="sheet-body">
+      <p class="small" style="margin:0" id="d-sum"></p>
+      <ul class="list" id="d-list" style="border:1px solid var(--line);border-radius:var(--radius-md)"></ul>
+      <div class="note-box small">Thay đổi có hiệu lực ngay ở lần tải trang tiếp theo của người dùng, được ghi vào nhật ký kiểm toán và áp cho cả Sales Hub qua đồng bộ vai trò.</div>
+    </div>
+    <div class="sheet-foot"><button class="btn btn-outline" data-close>Quay lại</button><button class="btn btn-primary" type="button" id="d-ok">Lưu thay đổi</button></div>
+  </form>
+</dialog>
+
+<script src="assets/hr.js"></script>
+<script src="assets/admin.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var h = HR.h, icon = HR.icon;
+  var ACTS = ['view', 'add', 'change', 'delete', 'approve', 'export'];
+  var ACT_VI = { view: 'Xem', add: 'Tạo', change: 'Sửa', delete: 'Xóa', approve: 'Duyệt', export: 'Xuất' };
+  var SCOPES = ['Của tôi', 'Nhóm của tôi', 'Phòng ban', 'Văn phòng', 'Toàn công ty'];
+  var MODS = [
+    ['Chấm công & đơn từ', [['checkin', 'Chấm công'], ['attendance', 'Bảng công'], ['absence', 'Vắng mặt'], ['wfh', 'Làm từ xa'], ['trip', 'Công tác'], ['ot', 'Làm thêm giờ']]],
+    ['Nhân sự', [['users', 'Tài khoản người dùng'], ['contract', 'Hợp đồng lao động'], ['profile', 'Duyệt thay đổi hồ sơ'], ['org', 'Văn phòng & phòng ban']]],
+    ['Nội dung', [['intranet', 'Tin nội bộ'], ['events', 'Sự kiện']]],
+    ['Hệ thống', [['reports', 'Báo cáo & dashboard'], ['settings', 'Cấu hình hệ thống'], ['audit', 'Nhật ký kiểm toán']]]
+  ];
+  function p(acts, scope) { return { a: acts, s: scope }; }
+  var EMP = { checkin: p('view add', 0), attendance: p('view', 0), absence: p('view add change', 0), wfh: p('view add change', 0), trip: p('view add change', 0), ot: p('view add', 0), intranet: p('view', 4), events: p('view', 4) };
+  var ROLES = [
+    { code: 'NV', name: 'Nhân viên', desc: 'Mọi nhân viên đang làm việc', n: 31, own: EMP },
+    { code: 'TN', name: 'Trưởng nhóm', desc: 'Có cấp dưới trực tiếp trong nhóm kinh doanh', n: 6, base: 'NV', own: { checkin: p('view', 1), attendance: p('view', 1), absence: p('view approve', 1), wfh: p('view approve', 1), trip: p('view approve', 1), ot: p('view approve', 1), reports: p('view', 1) } },
+    { code: 'TP', name: 'Trưởng phòng', desc: 'Quản lý phòng ban', n: 4, base: 'TN', own: { checkin: p('view export', 2), attendance: p('view export', 2), absence: p('view approve export', 2), wfh: p('view approve export', 2), trip: p('view approve export', 2), reports: p('view export', 2), users: p('view', 2) } },
+    { code: 'TK', name: 'Thư ký', desc: 'Hỗ trợ ban giám đốc', n: 1, base: 'NV', own: { events: p('view add change', 4), intranet: p('view add change', 4) } },
+    { code: 'HR', name: 'HR', desc: 'Nhân sự (hiển thị thay HCNS — QD-150)', n: 3, base: 'NV', own: { checkin: p('view export', 4), attendance: p('view change export', 4), absence: p('view approve export', 4), wfh: p('view add change approve export', 4), trip: p('view approve export', 4), ot: p('view approve export', 4), users: p('view add change export', 4), contract: p('view add change delete export', 4), profile: p('view approve', 4), org: p('view add change', 4), intranet: p('view add change', 4), events: p('view add change', 4), reports: p('view export', 4) } },
+    { code: 'CEO', name: 'Lãnh đạo', desc: 'Ban giám đốc', n: 2, base: 'TP', own: { checkin: p('view export', 4), attendance: p('view export', 4), absence: p('view approve export', 4), wfh: p('view approve export', 4), trip: p('view approve export', 4), users: p('view', 4), reports: p('view export', 4) } },
+    { code: 'ADMIN', name: 'Quản trị hệ thống', desc: 'Cấu hình, phân quyền, nhật ký', n: 1, base: 'HR', own: { settings: p('view add change delete', 4), audit: p('view export', 4), users: p('view add change delete export', 4), org: p('view add change delete', 4) } }
+  ];
+  var byCode = {}; ROLES.forEach(function (r) { byCode[r.code] = r; });
+  ROLES.forEach(function (r) {
+    r.cur = {};
+    Object.keys(r.own).forEach(function (m) { r.cur[m] = { a: r.own[m].a.split(' ').filter(Boolean), s: r.own[m].s }; });
+    r.orig = JSON.stringify(r.cur);
+  });
+  function inherited(r, m) {
+    var out = [], s = -1;
+    for (var b = r.base && byCode[r.base]; b; b = b.base && byCode[b.base]) {
+      if (b.cur[m]) { out = out.concat(b.cur[m].a); s = Math.max(s, b.cur[m].s); }
+    }
+    return { a: out, s: s };
+  }
+  var cur = ROLES[1];
+
+  function renderRoles() {
+    var ul = document.getElementById('roles');
+    while (ul.firstChild) ul.removeChild(ul.firstChild);
+    ROLES.forEach(function (r) {
+      var dirty = JSON.stringify(r.cur) !== r.orig;
+      var b = h('button', { type: 'button', 'aria-pressed': String(r === cur) }, [h('b', { text: r.name + (dirty ? ' •' : '') }), h('span.code', { text: r.code }), h('span.m', { text: r.n + ' người' + (r.base ? ' · kế thừa ' + byCode[r.base].name : '') })]);
+      b.addEventListener('click', function () { cur = r; renderAll(); });
+      ul.appendChild(h('li', {}, [b]));
+    });
+  }
+
+  function renderMatrix() {
+    var tb = document.querySelector('#mx tbody');
+    while (tb.firstChild) tb.removeChild(tb.firstChild);
+    var q = document.getElementById('pq').value.trim().toLowerCase();
+    var only = document.getElementById('only').checked;
+    var origCur = JSON.parse(cur.orig);
+    MODS.forEach(function (grp) {
+      var rows = grp[1].filter(function (m) {
+        var inh = inherited(cur, m[0]);
+        var has = (cur.cur[m[0]] && cur.cur[m[0]].a.length) || inh.a.length;
+        return (!q || m[1].toLowerCase().indexOf(q) >= 0) && (!only || has);
+      });
+      if (!rows.length) return;
+      tb.appendChild(h('tr.grp-row', {}, [h('td', { colspan: '8', text: grp[0] })]));
+      rows.forEach(function (m) {
+        var key = m[0];
+        var own = cur.cur[key] || { a: [], s: 0 };
+        var inh = inherited(cur, key);
+        var o = origCur[key] || { a: [], s: 0 };
+        var tr = h('tr', {}, [h('td', { text: m[1] })]);
+        ACTS.forEach(function (act) {
+          var isInh = inh.a.indexOf(act) >= 0;
+          var on = isInh || own.a.indexOf(act) >= 0;
+          var b = h('button.perm' + (isInh ? '.inherited' : ''), { type: 'button', 'aria-pressed': String(on), 'aria-label': ACT_VI[act] + ' ' + m[1] + (isInh ? ' (kế thừa)' : ''), title: isInh ? 'Kế thừa từ ' + byCode[cur.base].name : '' }, [icon('tick')]);
+          if (!isInh && (o.a.indexOf(act) >= 0) !== on) b.classList.add('changed');
+          if (!isInh) b.addEventListener('click', function () {
+            var cell = cur.cur[key] || (cur.cur[key] = { a: [], s: Math.max(inh.s, 0) });
+            var i = cell.a.indexOf(act);
+            if (i >= 0) cell.a.splice(i, 1); else cell.a.push(act);
+            if (act === 'view' && i >= 0) cell.a = [];
+            if (act !== 'view' && i < 0 && cell.a.indexOf('view') < 0 && inh.a.indexOf('view') < 0) cell.a.push('view');
+            renderAll();
+          });
+          tr.appendChild(h('td', {}, [b]));
+        });
+        var sel = h('select.inp', { 'aria-label': 'Phạm vi ' + m[1], style: 'min-height:34px;padding:4px 8px;font-size:0.82rem' });
+        SCOPES.forEach(function (s, i) {
+          var opt = h('option', { value: String(i), text: s });
+          if (i < inh.s) opt.disabled = true;
+          sel.appendChild(opt);
+        });
+        sel.value = String(Math.max(own.s, inh.s, 0));
+        if (!own.a.length && !inh.a.length) sel.disabled = true;
+        if (o.s !== own.s && own.a.length) sel.style.boxShadow = '0 0 0 3px color-mix(in srgb, var(--orange) 45%, transparent)';
+        sel.addEventListener('change', function () { (cur.cur[key] || (cur.cur[key] = { a: [], s: 0 })).s = +sel.value; renderAll(); });
+        tr.appendChild(h('td', {}, [sel]));
+        tb.appendChild(tr);
+      });
+    });
+  }
+
+  function diffs() {
+    var out = [];
+    ROLES.forEach(function (r) {
+      var o = JSON.parse(r.orig);
+      var keys = Object.keys(Object.assign({}, o, r.cur));
+      keys.forEach(function (k) {
+        var a = (o[k] && o[k].a) || [], b = (r.cur[k] && r.cur[k].a) || [];
+        var name = MODS.reduce(function (acc, g) { return acc.concat(g[1]); }, []).filter(function (m) { return m[0] === k; })[0][1];
+        b.filter(function (x) { return a.indexOf(x) < 0; }).forEach(function (x) { out.push([r, '+', ACT_VI[x] + ' · ' + name]); });
+        a.filter(function (x) { return b.indexOf(x) < 0; }).forEach(function (x) { out.push([r, '−', ACT_VI[x] + ' · ' + name]); });
+        if (o[k] && r.cur[k] && o[k].s !== r.cur[k].s && b.length) out.push([r, '~', 'Phạm vi ' + name + ': ' + SCOPES[o[k].s] + ' → ' + SCOPES[r.cur[k].s]]);
+      });
+    });
+    return out;
+  }
+
+  function renderMembers() {
+    var ul = document.getElementById('members');
+    while (ul.firstChild) ul.removeChild(ul.firstChild);
+    var sample = [['Nguyễn Thu Lan', 'Trưởng nhóm kinh doanh', 'avatar-lan.jpg'], ['Trần Minh Tùng', 'Trưởng phòng kinh doanh', 'avatar-tung.jpg'], ['Đỗ Thu Hà', 'Chuyên viên HR', 'avatar-thuha.jpg'], ['Lê Văn Đăng', 'Nhân viên kinh doanh', 'avatar-dang.jpg']];
+    for (var i = 0; i < Math.min(cur.n, 4); i++) {
+      var s = sample[i];
+      ul.appendChild(h('li', {}, [h('span.avatar.sm', {}, [h('img', { src: '../sales-hub/assets/img/' + s[2], alt: '' })]), h('div.main', {}, [h('b', { text: s[0] }), h('span', { text: s[1] + ' · vai trò từ chức danh' })]), h('a.link', { href: 'qt-tai-khoan-sua.html', text: 'Mở' })]));
+    }
+    if (cur.n > 4) ul.appendChild(h('li', {}, [h('div.main', {}, [h('span', { text: '+ ' + (cur.n - 4) + ' người khác (dữ liệu mẫu)' })])]));
+  }
+
+  function renderAll() {
+    document.getElementById('r-code').textContent = 'Mã ' + cur.code + (cur.base ? ' · kế thừa ' + byCode[cur.base].name : '');
+    document.getElementById('r-name').textContent = cur.name;
+    document.getElementById('r-desc').textContent = cur.desc + ' · ' + cur.n + ' người';
+    document.getElementById('mem-n').textContent = String(cur.n);
+    renderRoles(); renderMatrix(); renderMembers();
+    var n = diffs().length;
+    var st = document.getElementById('state');
+    st.textContent = n ? n + ' thay đổi chưa lưu' : 'Không có thay đổi';
+    st.classList.toggle('dirty', !!n);
+  }
+
+  document.getElementById('pq').addEventListener('input', renderMatrix);
+  document.getElementById('only').addEventListener('change', renderMatrix);
+  document.getElementById('tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-t]'); if (!b) return;
+    this.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    document.getElementById('tab-perm').hidden = b.getAttribute('data-t') !== 'perm';
+    document.getElementById('tab-mem').hidden = b.getAttribute('data-t') !== 'mem';
+  });
+  document.getElementById('reset').addEventListener('click', function () {
+    ROLES.forEach(function (r) { r.cur = JSON.parse(r.orig); }); renderAll(); HR.toast('Đã hoàn tác mọi thay đổi chưa lưu.');
+  });
+  document.getElementById('review').addEventListener('click', function () {
+    var d = diffs();
+    if (!d.length) { HR.toast('Không có thay đổi để lưu.'); return; }
+    var ul = document.getElementById('d-list');
+    while (ul.firstChild) ul.removeChild(ul.firstChild);
+    d.forEach(function (x) {
+      var cls = x[1] === '+' ? 'st-ok' : x[1] === '−' ? 'st-bad' : 'st-wait';
+      ul.appendChild(h('li', {}, [h('span.st.' + cls, { text: x[1] === '+' ? 'Thêm' : x[1] === '−' ? 'Bỏ' : 'Đổi' }), h('div.main', {}, [h('b', { text: x[2] }), h('span', { text: x[0].name + ' · ảnh hưởng ' + x[0].n + ' người' })])]));
+    });
+    var people = d.reduce(function (acc, x) { if (acc.ids.indexOf(x[0].code) < 0) { acc.ids.push(x[0].code); acc.n += x[0].n; } return acc; }, { ids: [], n: 0 });
+    document.getElementById('d-sum').textContent = d.length + ' thay đổi trên ' + people.ids.length + ' vai trò, ảnh hưởng ' + people.n + ' người (chưa tính vai trò cấp trên kế thừa).';
+    document.getElementById('diff').showModal();
+  });
+  document.getElementById('d-ok').addEventListener('click', function () {
+    ROLES.forEach(function (r) { r.orig = JSON.stringify(r.cur); });
+    document.getElementById('diff').close(); renderAll(); HR.toast('Đã lưu quyền và ghi nhật ký kiểm toán.');
+  });
+  renderAll();
+});
+</script>
+</body>
+</html>

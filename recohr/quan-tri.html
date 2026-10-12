@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quản trị — RecoHR</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../sales-hub/assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/hr.css">
+<link rel="stylesheet" href="assets/admin.css">
+</head>
+<body data-shell="admin" data-page="tong-quan" data-crumbs='[["Quản trị"],["Bảng điều khiển"]]'>
+<main class="adm-body">
+  <div class="adm-head">
+    <div>
+      <span class="eyebrow">Thứ Hai, 12/10/2026 · 10:42</span>
+      <h1 class="mt-1">Bảng điều khiển quản trị</h1>
+      <p>Sức khỏe hệ thống, việc cần xử lý và lối vào nhanh tới mọi khu quản trị. Gõ <span class="code">Ctrl K</span> để tìm bất kỳ trang hay người nào.</p>
+    </div>
+    <div class="row">
+      <a class="btn btn-outline btn-sm" href="qt-nhat-ky.html"><i data-i="history"></i>Nhật ký</a>
+      <a class="btn btn-primary btn-sm" href="qt-tai-khoan-sua.html"><i data-i="plus"></i>Thêm tài khoản</a>
+    </div>
+  </div>
+
+  <section class="kpis" aria-label="Sức khỏe hệ thống">
+    <a class="kpi" href="qt-tai-khoan.html"><span class="lbl"><i data-i="users"></i>Tài khoản đang hoạt động</span><b class="num">48</b><span class="sub">+3 tháng này · 1 tài khoản bị khóa</span></a>
+    <a class="kpi ok" href="#" data-toast="Tích hợp Sales Hub — mô phỏng"><span class="lbl"><span class="dot ok"></span>Đồng bộ Sales Hub</span><b class="num">Ổn định</b><span class="sub">Lần cuối 2 phút trước · 0 xung đột</span></a>
+    <a class="kpi" href="#" data-toast="Nhật ký gửi thông báo — mô phỏng"><span class="lbl"><i data-i="bell"></i>Thông báo gửi lỗi (24 giờ)</span><b class="num">2</b><span class="sub">Push thiếu token thiết bị</span></a>
+    <a class="kpi bad" href="qt-nhat-ky.html"><span class="lbl"><i data-i="shield"></i>Đăng nhập thất bại (24 giờ)</span><b class="num">7</b><span class="sub">5 từ cùng một IP · xem nhật ký</span></a>
+  </section>
+
+  <div class="cols mt-3">
+    <div class="stack">
+      <section class="card" aria-labelledby="todo-h">
+        <div class="card-head"><h3 id="todo-h">Việc cần xử lý</h3><span class="st st-wait">8 việc</span></div>
+        <ul class="list">
+          <li><span class="ico-tile o"><i data-i="user"></i></span><div class="main"><b>2 yêu cầu thay đổi hồ sơ chờ HR duyệt</b><span>Số CCCD, địa chỉ thường trú · cũ nhất 2 ngày</span></div><a class="btn btn-outline btn-sm" href="#" data-toast="Duyệt thay đổi hồ sơ — mô phỏng">Duyệt</a></li>
+          <li><span class="ico-tile r"><i data-i="briefcase"></i></span><div class="main"><b>3 hợp đồng hết hạn trong 30 ngày</b><span>Vũ Minh Khoa (25/10), Bùi Thanh Thảo (02/11), +1</span></div><a class="btn btn-outline btn-sm" href="#" data-toast="Danh sách hợp đồng — mô phỏng">Xem</a></li>
+          <li><span class="ico-tile"><i data-i="key"></i></span><div class="main"><b>2 tài khoản chưa kích hoạt quá 7 ngày</b><span>Đã gửi lời mời qua email, chưa đặt mật khẩu</span></div><a class="btn btn-outline btn-sm" href="qt-tai-khoan.html">Gửi lại</a></li>
+          <li><span class="ico-tile b"><i data-i="cal"></i></span><div class="main"><b>Chưa khai báo ngày lễ năm 2027</b><span>Bảng công tháng 1/2027 sẽ tính sai nếu thiếu</span></div><a class="btn btn-outline btn-sm" href="qt-cau-hinh.html#gio">Khai báo</a></li>
+          <li><span class="ico-tile"><i data-i="help"></i></span><div class="main"><b>4 yêu cầu hỗ trợ đang mở</b><span>1 yêu cầu quá hạn phản hồi</span></div><a class="btn btn-outline btn-sm" href="#" data-toast="Yêu cầu hỗ trợ — mô phỏng">Mở</a></li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="g-h">
+        <div class="spread" style="margin-bottom:10px"><h3 id="g-h">Khu quản trị</h3><span class="micro">Bấm tên để mở · số là bản ghi</span></div>
+        <div class="groups">
+          <div class="grp"><h3><span class="ico-tile"><i data-i="users"></i></span>Nhân sự</h3><ul><li><a href="qt-tai-khoan.html">Tài khoản <span>48</span></a></li><li><a href="#" data-toast="Mô phỏng">Văn phòng & phòng ban <span>3 · 9</span></a></li><li><a href="#" data-toast="Mô phỏng">Hợp đồng lao động <span>52</span></a></li><li><a href="#" data-toast="Mô phỏng">Tuyển dụng <span>2 tin</span></a></li></ul></div>
+          <div class="grp"><h3><span class="ico-tile o"><i data-i="finger"></i></span>Chấm công</h3><ul><li><a href="#" data-toast="Mô phỏng">Địa điểm chấm công <span>4</span></a></li><li><a href="#" data-toast="Mô phỏng">Ca làm việc <span>3 mẫu</span></a></li><li><a href="#" data-toast="Mô phỏng">Quy tắc chấm công <span>5</span></a></li><li><a href="#" data-toast="Mô phỏng">Vi phạm <span>11</span></a></li></ul></div>
+          <div class="grp"><h3><span class="ico-tile b"><i data-i="doc"></i></span>Đơn từ & phê duyệt</h3><ul><li><a href="#" data-toast="Mô phỏng">Loại vắng mặt <span>6</span></a></li><li><a href="#" data-toast="Mô phỏng">Luồng duyệt <span>9</span></a></li><li><a href="#" data-toast="Mô phỏng">Chính sách WFH <span>2</span></a></li><li><a href="#" data-toast="Mô phỏng">Cấu hình thông báo <span>14</span></a></li></ul></div>
+          <div class="grp"><h3><span class="ico-tile p"><i data-i="gear"></i></span>Hệ thống</h3><ul><li><a href="qt-vai-tro.html">Vai trò & phân quyền <span>7</span></a></li><li><a href="qt-cau-hinh.html">Module & cờ tính năng <span>10 · 12</span></a></li><li><a href="qt-nhat-ky.html">Nhật ký kiểm toán <span>1.284</span></a></li><li><a href="#" data-toast="Mô phỏng">Tích hợp Sales Hub <span>Ổn định</span></a></li></ul></div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="side stack">
+      <section class="card" aria-labelledby="f-h">
+        <div class="card-head"><h3 id="f-h">Hoạt động gần đây</h3><a class="link" href="qt-nhat-ky.html">Tất cả</a></div>
+        <ul class="feed">
+          <li><span class="avatar sm"><img src="../sales-hub/assets/img/avatar-thuha.jpg" alt=""></span><div><b>Đỗ Thu Hà</b> đổi phòng ban của <b>Lê Văn Đăng</b></div><span class="t">5 phút</span></li>
+          <li><span class="ico-tile r" style="width:32px;height:32px"><i data-i="lock"></i></span><div>5 lần đăng nhập thất bại cho <b>khoa.vu@reco.demo</b></div><span class="t">38 phút</span></li>
+          <li><span class="avatar sm"><img src="../sales-hub/assets/img/avatar-tung.jpg" alt=""></span><div><b>Trần Minh Tùng</b> bật cờ <span class="code">explanation_approval_mobile</span></div><span class="t">1 giờ</span></li>
+          <li><span class="ico-tile g" style="width:32px;height:32px"><i data-i="sync"></i></span><div>Sales Hub đồng bộ 3 thay đổi tài khoản</div><span class="t">2 giờ</span></li>
+          <li><span class="avatar sm"><img src="../sales-hub/assets/img/avatar-thuha.jpg" alt=""></span><div><b>Đỗ Thu Hà</b> tạo tài khoản <b>Hoàng Quang Huy</b></div><span class="t">Hôm qua</span></li>
+        </ul>
+      </section>
+      <section class="card"><div class="card-body small">
+        <div class="spread"><b style="color:var(--navy)">Phiên bản</b><span class="code">main 5cc0bcb1</span></div>
+        <div class="spread mt-1"><span class="muted">Sao lưu gần nhất</span><span>Hôm nay 02:00 <span class="st st-ok">Thành công</span></span></div>
+        <div class="spread mt-1"><span class="muted">Chế độ bảo trì</span><label class="switch"><input type="checkbox" data-toast="Bật chế độ bảo trì cần xác nhận — mô phỏng"><span class="track"></span></label></div>
+      </div></section>
+    </aside>
+  </div>
+</main>
+<script src="assets/hr.js"></script>
+<script src="assets/admin.js"></script>
+</body>
+</html>

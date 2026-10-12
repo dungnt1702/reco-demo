@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Module & cấu hình — RecoHR Admin</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../sales-hub/assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/hr.css">
+<link rel="stylesheet" href="assets/admin.css">
+</head>
+<body data-shell="admin" data-page="cau-hinh" data-crumbs='[["Quản trị","quan-tri.html"],["Cấu hình & hệ thống"],["Module & cấu hình"]]'>
+<main class="adm-body">
+  <div class="adm-head">
+    <div>
+      <h1>Module & cấu hình</h1>
+      <p>Bật/tắt module, cờ tính năng và giờ làm việc dùng để tính công. Mọi thay đổi được ghi nhật ký kiểm toán.</p>
+    </div>
+  </div>
+
+  <div class="views card" role="tablist" aria-label="Phần cấu hình" id="tabs" style="border-radius:var(--radius-lg);margin-bottom:16px;border:1px solid var(--line)">
+    <button type="button" role="tab" aria-pressed="true" data-t="mod">Module<span class="n">10</span></button>
+    <button type="button" role="tab" aria-pressed="false" data-t="co">Cờ tính năng<span class="n">6</span></button>
+    <button type="button" role="tab" aria-pressed="false" data-t="gio">Giờ làm việc & ngày lễ</button>
+  </div>
+
+  <!-- MODULE -->
+  <section id="p-mod">
+    <div class="mod-grid" id="mods"></div>
+  </section>
+
+  <!-- CỜ TÍNH NĂNG -->
+  <section id="p-co" hidden>
+    <div class="card">
+      <div class="toolbar">
+        <label class="inp-ico"><i data-i="search"></i><input class="inp" id="fq" type="search" placeholder="Tìm cờ theo tên hoặc mô tả" aria-label="Tìm cờ tính năng"></label>
+        <div class="seg" role="toolbar" aria-label="Lọc trạng thái" id="fstate">
+          <button type="button" aria-pressed="true" data-s="all">Tất cả</button><button type="button" aria-pressed="false" data-s="on">Đang bật</button><button type="button" aria-pressed="false" data-s="off">Đang tắt</button>
+        </div>
+      </div>
+      <div id="flags"></div>
+    </div>
+  </section>
+
+  <!-- GIỜ LÀM VIỆC -->
+  <section id="p-gio" hidden>
+    <div class="cols">
+      <div class="stack">
+        <section class="card">
+          <div class="card-head"><div><h3>Ngày làm việc trong tuần</h3><p class="micro" style="margin:2px 0 0">Ngày không chọn được tính là ngày nghỉ trên bảng công.</p></div></div>
+          <div class="card-body">
+            <div class="week" id="week">
+              <label><span>T2</span><input type="checkbox" checked></label><label><span>T3</span><input type="checkbox" checked></label><label><span>T4</span><input type="checkbox" checked></label><label><span>T5</span><input type="checkbox" checked></label><label><span>T6</span><input type="checkbox" checked></label><label><span>T7</span><input type="checkbox"></label><label><span>CN</span><input type="checkbox"></label>
+            </div>
+          </div>
+        </section>
+        <section class="card">
+          <div class="card-head"><h3>Giờ hành chính</h3><span class="chip">Áp khi nhân viên không có phân ca riêng</span></div>
+          <div class="card-body fgrid">
+            <label class="field"><span>Giờ bắt đầu</span><input class="inp gio" type="time" value="08:30"></label>
+            <label class="field"><span>Giờ kết thúc</span><input class="inp gio" type="time" value="17:30"></label>
+            <label class="field"><span>Nghỉ trưa từ</span><input class="inp gio" type="time" value="12:00"></label>
+            <label class="field"><span>Nghỉ trưa đến</span><input class="inp gio" type="time" value="13:00"></label>
+            <div class="field full"><span>Ngưỡng đi muộn</span><span class="ro">15 phút sau giờ bắt đầu · hiện cố định trong mã nguồn (<span class="code">attendance/utils.py</span>), chưa chỉnh được ở đây</span></div>
+            <div class="note-box small full" id="gio-sum"></div>
+          </div>
+        </section>
+      </div>
+      <aside class="side">
+        <section class="card">
+          <div class="card-head"><div><h3>Ngày lễ 2026</h3><p class="micro" style="margin:2px 0 0">Dữ liệu mẫu — bản thật đọc từ bảng ngày lễ</p></div><button class="btn btn-outline btn-sm" type="button" data-open="hol"><i data-i="plus"></i>Thêm</button></div>
+          <ul class="list" id="hols"></ul>
+          <div class="card-body" style="padding-top:0"><div class="note-box small"><b style="color:var(--orange-text)">Chưa có ngày lễ 2027.</b> Khai báo trước 31/12 để bảng công tháng 1 tính đúng.</div></div>
+        </section>
+      </aside>
+    </div>
+    <div class="savebar" style="margin-top:20px">
+      <span class="state" id="g-state">Không có thay đổi</span>
+      <button class="btn btn-primary" type="button" id="g-save"><i data-i="save"></i>Lưu giờ làm việc</button>
+    </div>
+  </section>
+</main>
+
+<dialog class="sheet" id="confirm" aria-labelledby="cf-h">
+  <form method="dialog">
+    <div class="sheet-head"><h3 id="cf-h">Tắt module?</h3><button class="icon-btn" data-close aria-label="Đóng"><i data-i="x"></i></button></div>
+    <div class="sheet-body">
+      <p class="small" style="margin:0" id="cf-msg"></p>
+      <ul class="list" id="cf-list" style="border:1px solid var(--line);border-radius:var(--radius-md)"></ul>
+      <label class="field"><span>Gõ tên module để xác nhận</span><input class="inp" id="cf-in" autocomplete="off"></label>
+    </div>
+    <div class="sheet-foot"><button class="btn btn-outline" data-close>Giữ bật</button><button class="btn btn-primary" type="button" id="cf-ok" style="background:var(--danger)" disabled>Tắt module</button></div>
+  </form>
+</dialog>
+
+<dialog class="sheet" id="hol" aria-labelledby="h-h">
+  <form method="dialog">
+    <div class="sheet-head"><h3 id="h-h">Thêm ngày lễ</h3><button class="icon-btn" data-close aria-label="Đóng"><i data-i="x"></i></button></div>
+    <div class="sheet-body">
+      <label class="field"><span>Tên ngày lễ</span><input class="inp" id="h-name" value="Tết Dương lịch 2027"></label>
+      <div class="grid-2"><label class="field"><span>Từ ngày</span><input class="inp" type="date" id="h-from" value="2027-01-01"></label><label class="field"><span>Đến ngày</span><input class="inp" type="date" id="h-to" value="2027-01-01"></label></div>
+      <label class="check"><input type="checkbox" checked> Có hưởng lương (tính công)</label>
+    </div>
+    <div class="sheet-foot"><button class="btn btn-outline" data-close>Hủy</button><button class="btn btn-primary" type="button" id="h-ok">Thêm</button></div>
+  </form>
+</dialog>
+
+<script src="assets/hr.js"></script>
+<script src="assets/admin.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var h = HR.h, icon = HR.icon;
+  /* 10 module theo ModuleSettings.MODULE_CHOICES */
+  var MODS = [
+    { k: 'users', n: 'Người dùng', d: 'Tài khoản, hồ sơ, tổ chức', i: 'users', on: true, core: true, used: '48 tài khoản' },
+    { k: 'checkin', n: 'Chấm công', d: 'Chấm vào/ra, tiếp khách, ảnh xác nhận', i: 'finger', t: 'o', on: true, needs: ['location'], used: '41 lượt hôm nay' },
+    { k: 'location', n: 'Địa điểm', d: 'Vùng chấm công, khu vực', i: 'map', on: true, usedBy: ['checkin'], used: '4 địa điểm' },
+    { k: 'attendance', n: 'Bảng công', d: 'Tính công, ca, giải trình', i: 'cal', t: 'g', on: true, needs: ['checkin'], used: 'Tháng 10 đang mở' },
+    { k: 'absence', n: 'Vắng mặt', d: 'Đơn nghỉ, số phép, luồng duyệt', i: 'sun', t: 'b', on: true, used: '6 đơn chờ duyệt' },
+    { k: 'notifications', n: 'Thông báo', d: 'In-app, email, push', i: 'bell', on: true, core: true, used: '2 lỗi gửi 24 giờ' },
+    { k: 'dashboard', n: 'Dashboard', d: 'Trang tổng quan theo vai trò', i: 'grid', on: true, used: '8 dashboard' },
+    { k: 'reports', n: 'Báo cáo', d: 'Báo cáo và xuất Excel', i: 'download', on: true, used: '—' },
+    { k: 'analytics', n: 'Phân tích', d: 'Xu hướng công, làm thêm giờ', i: 'sliders', t: 'p', on: false, used: 'Đang tắt' },
+    { k: 'automation_test', n: 'Kiểm thử tự động', d: 'Công cụ nội bộ cho đội phát triển', i: 'gear', on: false, used: 'Chỉ dùng ở staging' }
+  ];
+  var byK = {}; MODS.forEach(function (m) { byK[m.k] = m; });
+  var pending = null;
+
+  function renderMods() {
+    var box = document.getElementById('mods');
+    while (box.firstChild) box.removeChild(box.firstChild);
+    MODS.forEach(function (m) {
+      var sw = h('input', { type: 'checkbox', 'aria-label': 'Bật module ' + m.n });
+      sw.checked = m.on; if (m.core) sw.disabled = true;
+      sw.addEventListener('change', function () {
+        if (!sw.checked) { sw.checked = true; askOff(m); return; }
+        var miss = (m.needs || []).filter(function (k) { return !byK[k].on; });
+        if (miss.length) { sw.checked = false; HR.toast('Cần bật trước: ' + miss.map(function (k) { return byK[k].n; }).join(', ')); return; }
+        m.on = true; renderMods(); HR.toast('Đã bật module ' + m.n + '.');
+      });
+      var meta = h('div.meta', {}, [h('span.code', { text: m.k })]);
+      if (m.core) meta.appendChild(h('span.chip', {}, [icon('lock'), h('span', { text: 'Lõi — không tắt được' })]));
+      if (m.needs) meta.appendChild(h('span.chip', { text: 'Cần: ' + m.needs.map(function (k) { return byK[k].n; }).join(', ') }));
+      meta.appendChild(h('span', { text: m.used }));
+      box.appendChild(h('div.mod' + (m.on ? '' : '.off'), {}, [
+        h('div.mod-top', {}, [h('span.ico-tile' + (m.t ? '.' + m.t : ''), {}, [icon(m.i)]), h('div.main', {}, [h('b', { text: m.n }), h('span', { text: m.d })]), h('label.switch', {}, [sw, h('span.track')])]),
+        meta
+      ]));
+    });
+  }
+  /* Mọi module đang bật phụ thuộc (trực tiếp hoặc bắc cầu) vào module k */
+  function dependents(k) {
+    var out = [], queue = [k];
+    while (queue.length) {
+      var cur = queue.shift();
+      MODS.forEach(function (x) {
+        if (x.on && out.indexOf(x) < 0 && (x.needs || []).indexOf(cur) >= 0) { out.push(x); queue.push(x.k); }
+      });
+    }
+    return out;
+  }
+  function askOff(m) {
+    pending = m;
+    var deps = dependents(m.k);
+    document.getElementById('cf-h').textContent = 'Tắt module ' + m.n + '?';
+    document.getElementById('cf-msg').textContent = 'Menu, trang và API của module sẽ bị ẩn với mọi người (trang hiển thị "Module đang tắt"). Dữ liệu được giữ nguyên.';
+    var ul = document.getElementById('cf-list');
+    while (ul.firstChild) ul.removeChild(ul.firstChild);
+    ul.appendChild(h('li', {}, [h('span.ico-tile.r', {}, [icon('alert')]), h('div.main', {}, [h('b', { text: 'Ảnh hưởng ngay' }), h('span', { text: m.used })])]));
+    deps.forEach(function (d) { ul.appendChild(h('li', {}, [h('span.ico-tile.o', {}, [icon('link')]), h('div.main', {}, [h('b', { text: d.n + ' phụ thuộc module này' }), h('span', { text: 'Sẽ bị tắt theo' })])])); });
+    var inp = document.getElementById('cf-in'); inp.value = ''; inp.placeholder = m.n;
+    document.getElementById('cf-ok').disabled = true;
+    document.getElementById('confirm').showModal(); inp.focus();
+  }
+  document.getElementById('cf-in').addEventListener('input', function () { document.getElementById('cf-ok').disabled = this.value.trim().toLowerCase() !== pending.n.toLowerCase(); });
+  document.getElementById('cf-ok').addEventListener('click', function () {
+    var m = pending, off = [m].concat(dependents(m.k));
+    off.forEach(function (x) { x.on = false; });
+    document.getElementById('confirm').close(); renderMods();
+    HR.toast('Đã tắt ' + off.map(function (x) { return x.n; }).join(', ') + '.', function () { off.forEach(function (x) { x.on = true; }); renderMods(); });
+  });
+
+  /* Cờ tính năng (FeatureFlag: name, display_name, description, is_enabled) — mô tả mẫu */
+  var FLAGS = [
+    { n: 'otp_login_enabled', t: 'Đăng nhập bằng OTP', d: 'Gửi mã OTP khi đăng nhập. Tắt từ 12/10/2026 theo QD-153.', on: false, by: 'Đỗ Thu Hà', at: '12/10 09:05' },
+    { n: 'force_password_change_enabled', t: 'Bắt đổi mật khẩu lần đầu', d: 'Tài khoản mới phải đổi mật khẩu ở lần đăng nhập đầu tiên.', on: true, by: 'Đỗ Thu Hà', at: '02/10 14:20' },
+    { n: 'explanation_approval_mobile', t: 'Duyệt giải trình trên app', d: 'Cho quản lý duyệt giải trình công trên ứng dụng di động.', on: true, by: 'Trần Minh Tùng', at: '12/10 09:41' },
+    { n: 'saleshub_sso', t: 'Đăng nhập Sales Hub bằng RecoHR', d: 'Sales Hub dùng tài khoản RecoHR (OIDC).', on: true, by: 'Hệ thống', at: '01/10 22:10' },
+    { n: 'visitor_checkin', t: 'Chấm công tiếp khách', d: 'Cho phép chấm công tại địa điểm gặp khách ngoài văn phòng.', on: true, by: 'Đỗ Thu Hà', at: '15/09 10:02' },
+    { n: 'event_qr_attendance', t: 'Điểm danh sự kiện bằng QR', d: 'Hiện mã QR điểm danh trên trang sự kiện.', on: false, by: 'Lý Thị Mai', at: '20/08 16:30' }
+  ];
+  var fstate = 'all';
+  function renderFlags() {
+    var box = document.getElementById('flags');
+    while (box.firstChild) box.removeChild(box.firstChild);
+    var q = document.getElementById('fq').value.trim().toLowerCase();
+    var list = FLAGS.filter(function (f) { return (!q || (f.n + ' ' + f.t + ' ' + f.d).toLowerCase().indexOf(q) >= 0) && (fstate === 'all' || (fstate === 'on') === f.on); });
+    if (!list.length) box.appendChild(h('div.empty-state', { text: 'Không có cờ nào khớp.' }));
+    list.forEach(function (f) {
+      var sw = h('input', { type: 'checkbox', 'aria-label': f.t });
+      sw.checked = f.on;
+      sw.addEventListener('change', function () {
+        f.on = sw.checked; f.by = 'Đỗ Thu Hà'; f.at = 'vừa xong'; renderFlags();
+        HR.toast((f.on ? 'Đã bật ' : 'Đã tắt ') + f.t + '.', function () { f.on = !f.on; renderFlags(); });
+      });
+      box.appendChild(h('div.flag-row', {}, [
+        h('b', { text: f.t }), h('label.switch', {}, [sw, h('span.track')]),
+        h('span.desc', { text: f.d }),
+        h('span.meta', {}, [h('span.code', { text: f.n }), h('span', { text: 'Sửa bởi ' + f.by + ' · ' + f.at })])
+      ]));
+    });
+  }
+  document.getElementById('fq').addEventListener('input', renderFlags);
+  document.getElementById('fstate').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-s]'); if (!b) return;
+    this.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    fstate = b.getAttribute('data-s'); renderFlags();
+  });
+
+  /* Giờ làm việc */
+  var HOLS = [['Tết Dương lịch', '01/01'], ['Tết Nguyên đán', 'theo lịch nghỉ công bố'], ['Giỗ Tổ Hùng Vương', '10/3 âm lịch'], ['Giải phóng miền Nam', '30/04'], ['Quốc tế Lao động', '01/05'], ['Quốc khánh', '02/09 và 1 ngày liền kề']];
+  function renderHols() {
+    var ul = document.getElementById('hols');
+    while (ul.firstChild) ul.removeChild(ul.firstChild);
+    HOLS.forEach(function (x) { ul.appendChild(h('li', {}, [h('span.ico-tile.b', {}, [icon('cal')]), h('div.main', {}, [h('b', { text: x[0] }), h('span', { text: x[1] })]), h('span.st.st-ok', { text: 'Có lương' })])); });
+  }
+  var gInit = null;
+  function gSnap() { return Array.prototype.map.call(document.querySelectorAll('#week input, .gio'), function (el) { return el.type === 'checkbox' ? el.checked : el.value; }).join('|'); }
+  function gSum() {
+    var days = Array.prototype.filter.call(document.querySelectorAll('#week input'), function (x) { return x.checked; }).length;
+    var t = Array.prototype.map.call(document.querySelectorAll('.gio'), function (x) { return x.value.split(':').reduce(function (a, b) { return a * 60 + +b; }); });
+    var hours = ((t[1] - t[0]) - (t[3] - t[2])) / 60;
+    document.getElementById('gio-sum').textContent = days + ' ngày làm việc/tuần · ' + hours.toLocaleString('vi-VN') + ' giờ/ngày · ' + (days * hours).toLocaleString('vi-VN') + ' giờ/tuần';
+    var dirty = gSnap() !== gInit;
+    var st = document.getElementById('g-state');
+    st.textContent = dirty ? 'Có thay đổi chưa lưu — áp dụng từ ngày mai, không tính lại công đã chốt' : 'Không có thay đổi';
+    st.classList.toggle('dirty', dirty);
+  }
+  document.getElementById('p-gio').addEventListener('change', gSum);
+  document.getElementById('p-gio').addEventListener('input', gSum);
+  document.getElementById('g-save').addEventListener('click', function () { gInit = gSnap(); gSum(); HR.toast('Đã lưu giờ làm việc.'); });
+  document.getElementById('h-ok').addEventListener('click', function () {
+    var f = document.getElementById('h-from').value.split('-'), t = document.getElementById('h-to').value.split('-');
+    HOLS.push([document.getElementById('h-name').value, f[2] + '/' + f[1] + '/' + f[0] + (t.join() !== f.join() ? ' – ' + t[2] + '/' + t[1] : '')]);
+    document.getElementById('hol').close(); renderHols(); HR.toast('Đã thêm ngày lễ.');
+  });
+
+  /* Tab theo hash */
+  function show(t) {
+    document.querySelectorAll('#tabs button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-t') === t)); });
+    ['mod', 'co', 'gio'].forEach(function (x) { document.getElementById('p-' + x).hidden = x !== t; });
+  }
+  document.getElementById('tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-t]'); if (!b) return;
+    history.replaceState(null, '', '#' + b.getAttribute('data-t')); show(b.getAttribute('data-t'));
+  });
+
+  renderMods(); renderFlags(); renderHols();
+  gInit = gSnap(); gSum();
+  var hs = location.hash.slice(1); if (['mod', 'co', 'gio'].indexOf(hs) >= 0) show(hs);
+});
+</script>
+</body>
+</html>

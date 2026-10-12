@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nhật ký kiểm toán — RecoHR Admin</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../sales-hub/assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/hr.css">
+<link rel="stylesheet" href="assets/admin.css">
+</head>
+<body data-shell="admin" data-page="nhat-ky" data-crumbs='[["Quản trị","quan-tri.html"],["Cấu hình & hệ thống"],["Nhật ký kiểm toán"]]'>
+<main class="adm-body">
+  <div class="adm-head">
+    <div>
+      <h1>Nhật ký kiểm toán</h1>
+      <p>Ai làm gì, lúc nào, từ đâu. Bấm một dòng để xem trước/sau và chi tiết request. Nhật ký chỉ đọc, không sửa hay xóa được.</p>
+    </div>
+    <div class="row">
+      <a class="btn btn-outline btn-sm" href="#" data-toast="Xuất CSV theo bộ lọc hiện tại — mô phỏng"><i data-i="download"></i>Xuất CSV</a>
+    </div>
+  </div>
+
+  <div class="note-box small" style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;border-color:color-mix(in srgb,var(--danger) 35%,var(--line));background:color-mix(in srgb,var(--danger) 5%,var(--white))">
+    <span class="ico-tile r" style="width:34px;height:34px"><i data-i="shield"></i></span>
+    <div style="flex:1"><b style="color:var(--danger)">5 lần đăng nhập thất bại cho khoa.vu@reco.demo từ cùng IP 203.0.113.24 trong 10 phút</b><br><span class="muted">09:58 – 10:04 hôm nay · tài khoản chưa bị khóa</span></div>
+    <button class="btn btn-outline btn-sm" type="button" id="see-fail">Xem các lần</button>
+  </div>
+
+  <section class="card">
+    <div class="toolbar">
+      <label class="inp-ico"><i data-i="search"></i><input class="inp" id="q" type="search" placeholder="Người, IP, đối tượng, mô tả" aria-label="Tìm trong nhật ký"></label>
+      <select class="inp" id="range" aria-label="Khoảng thời gian" style="width:auto"><option value="1">Hôm nay</option><option value="2" selected>2 ngày gần nhất</option><option value="7">7 ngày</option><option value="30">30 ngày</option></select>
+      <select class="inp" id="res" aria-label="Kết quả" style="width:auto"><option value="">Mọi kết quả</option><option value="ok">Thành công</option><option value="fail">Thất bại</option></select>
+    </div>
+    <div class="views" role="toolbar" aria-label="Nhóm sự kiện" id="cats"></div>
+    <div class="table-scroll">
+      <table class="dtable" id="tbl">
+        <thead><tr><th>Thời gian</th><th>Người thực hiện</th><th>Sự kiện</th><th>Đối tượng</th><th>IP</th><th>Kết quả</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="empty-state" id="empty" hidden><span class="ico-tile"><i data-i="history"></i></span>Không có sự kiện khớp bộ lọc.</div>
+    <div class="pager"><span id="shown"></span><span class="micro">Lưu 365 ngày · cũ hơn được lưu trữ</span></div>
+  </section>
+</main>
+
+<aside class="drawer-r" id="drawer" aria-labelledby="dw-h" role="dialog" aria-modal="true" hidden>
+  <div class="dh"><div style="flex:1;min-width:0"><span class="eyebrow" id="dw-cat"></span><h3 id="dw-h" class="mt-1"></h3></div><button class="icon-btn" type="button" id="dw-x" aria-label="Đóng"><i data-i="x"></i></button></div>
+  <div class="db">
+    <dl class="kv" id="dw-kv"></dl>
+    <div id="dw-diff-wrap"><h4 style="margin-bottom:8px">Thay đổi</h4><table class="diff"><thead><tr><th>Trường</th><th>Trước</th><th>Sau</th></tr></thead><tbody id="dw-diff"></tbody></table></div>
+    <details><summary class="small" style="cursor:pointer;font-weight:700;color:var(--navy)">Dữ liệu gốc (JSON)</summary><pre class="raw" id="dw-raw"></pre></details>
+    <div class="row"><a class="btn btn-outline btn-sm" href="#" id="dw-filter"><i data-i="filter"></i>Lọc theo người này</a><a class="btn btn-outline btn-sm" href="#" data-toast="Đã sao chép ID sự kiện — mô phỏng"><i data-i="copy"></i>Sao chép ID</a></div>
+  </div>
+</aside>
+<div class="side-scrim" id="dw-scrim" hidden style="z-index:59"></div>
+
+<script src="assets/hr.js"></script>
+<script src="assets/admin.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var h = HR.h, icon = HR.icon;
+  var A = '../sales-hub/assets/img/';
+  /* event_type theo AuditLog.EVENT_TYPES; nhóm để lọc */
+  var CAT = {
+    login: ['auth', 'Đăng nhập'], logout: ['auth', 'Đăng xuất'], login_failed: ['auth', 'Đăng nhập thất bại'],
+    password_change: ['acct', 'Đổi mật khẩu'], password_reset_issued: ['acct', 'Cấp link đặt lại mật khẩu'],
+    profile_update: ['acct', 'Cập nhật hồ sơ'], permission_change: ['perm', 'Đổi quyền'],
+    data_create: ['data', 'Tạo dữ liệu'], data_update: ['data', 'Sửa dữ liệu'], data_delete: ['data', 'Xóa dữ liệu'], data_access: ['data', 'Truy cập dữ liệu'],
+    admin_action: ['admin', 'Thao tác quản trị'], session_terminated: ['auth', 'Kết thúc phiên']
+  };
+  var CATS = [['', 'Tất cả'], ['auth', 'Đăng nhập & phiên'], ['acct', 'Tài khoản'], ['perm', 'Phân quyền'], ['data', 'Dữ liệu'], ['admin', 'Quản trị']];
+  var L = [
+    { id: 90412, t: '10:31', d: 0, who: 'Đỗ Thu Hà', av: 'avatar-thuha.jpg', ev: 'data_update', obj: 'User #193 · Lê Văn Đăng', ip: '10.0.4.21', ok: true, desc: 'Đổi phòng ban', ch: { department: ['Kinh doanh 1', 'Kinh doanh 2'], direct_manager: ['Trần Minh Tùng', 'Nguyễn Thu Lan'] }, m: 'POST', path: '/admin/users/user/193/change/' },
+    { id: 90405, t: '10:04', d: 0, who: 'khoa.vu@reco.demo', ev: 'login_failed', obj: '—', ip: '203.0.113.24', ok: false, desc: 'Sai mật khẩu', m: 'POST', path: '/accounts/login/', err: 'Invalid credentials' },
+    { id: 90404, t: '10:02', d: 0, who: 'khoa.vu@reco.demo', ev: 'login_failed', obj: '—', ip: '203.0.113.24', ok: false, desc: 'Sai mật khẩu', m: 'POST', path: '/accounts/login/', err: 'Invalid credentials' },
+    { id: 90401, t: '10:01', d: 0, who: 'khoa.vu@reco.demo', ev: 'login_failed', obj: '—', ip: '203.0.113.24', ok: false, desc: 'Sai mật khẩu', m: 'POST', path: '/accounts/login/', err: 'Invalid credentials' },
+    { id: 90399, t: '09:59', d: 0, who: 'khoa.vu@reco.demo', ev: 'login_failed', obj: '—', ip: '203.0.113.24', ok: false, desc: 'Sai mật khẩu', m: 'POST', path: '/accounts/login/', err: 'Invalid credentials' },
+    { id: 90398, t: '09:58', d: 0, who: 'khoa.vu@reco.demo', ev: 'login_failed', obj: '—', ip: '203.0.113.24', ok: false, desc: 'Sai mật khẩu', m: 'POST', path: '/accounts/login/', err: 'Invalid credentials' },
+    { id: 90377, t: '09:41', d: 0, who: 'Trần Minh Tùng', av: 'avatar-tung.jpg', ev: 'admin_action', obj: 'FeatureFlag · explanation_approval_mobile', ip: '10.0.4.35', ok: true, desc: 'Bật cờ tính năng', ch: { is_enabled: ['false', 'true'] }, m: 'POST', path: '/module-settings/feature-flags/toggle/explanation_approval_mobile/' },
+    { id: 90350, t: '09:05', d: 0, who: 'Đỗ Thu Hà', av: 'avatar-thuha.jpg', ev: 'permission_change', obj: 'Vai trò TN · Trưởng nhóm', ip: '10.0.4.21', ok: true, desc: 'Thêm quyền Duyệt làm thêm giờ', ch: { 'ot.approve': ['—', 'Nhóm của tôi'] }, m: 'POST', path: '/module-settings/roles/TN/' },
+    { id: 90322, t: '08:19', d: 0, who: 'Nguyễn Thu Lan', av: 'avatar-lan.jpg', ev: 'login', obj: '—', ip: '113.161.0.42', ok: true, desc: 'Đăng nhập app RecoHR (iPhone)', m: 'POST', path: '/api/auth/login/' },
+    { id: 90210, t: '17:52', d: 1, who: 'Đỗ Thu Hà', av: 'avatar-thuha.jpg', ev: 'data_create', obj: 'User #34 · Hoàng Quang Huy', ip: '10.0.4.21', ok: true, desc: 'Tạo tài khoản', ch: { email: ['—', 'huy.hoang@reco.demo'], department: ['—', 'Ban giám đốc'] }, m: 'POST', path: '/admin/users/user/add/' },
+    { id: 90198, t: '16:40', d: 1, who: 'Bùi Thanh Thảo', ev: 'password_reset_issued', obj: 'User #229 · Trịnh Gia Bảo', ip: '10.0.4.27', ok: true, desc: 'Gửi link đặt lại mật khẩu qua email', m: 'POST', path: '/users/229/reset-password/' },
+    { id: 90177, t: '15:12', d: 1, who: 'Đỗ Thu Hà', av: 'avatar-thuha.jpg', ev: 'data_delete', obj: 'Holiday #12 · Nghỉ bù thử nghiệm', ip: '10.0.4.21', ok: true, desc: 'Xóa ngày lễ', ch: { name: ['Nghỉ bù thử nghiệm', '—'] }, m: 'POST', path: '/admin/module_settings/holiday/12/delete/' },
+    { id: 90150, t: '14:03', d: 1, who: 'Sales Hub (tích hợp)', ev: 'data_update', obj: 'User #142 · Nguyễn Thu Lan', ip: '10.0.9.5', ok: true, desc: 'Đồng bộ số điện thoại từ Sales Hub', ch: { phone: ['0912 345 000', '0912 345 142'] }, m: 'POST', path: '/api/integrations/webhook/' },
+    { id: 90122, t: '11:47', d: 1, who: 'Đỗ Thu Hà', av: 'avatar-thuha.jpg', ev: 'session_terminated', obj: 'User #120 · Đặng Minh Phúc', ip: '10.0.4.21', ok: true, desc: 'Kết thúc mọi phiên khi khóa tài khoản', m: 'POST', path: '/security/sessions/terminate-all/' }
+  ];
+  var st = { cat: '', q: '', res: '', range: 2 };
+
+  var cats = document.getElementById('cats');
+  CATS.forEach(function (c, i) {
+    var n = L.filter(function (x) { return !c[0] || CAT[x.ev][0] === c[0]; }).length;
+    var b = h('button', { type: 'button', 'aria-pressed': String(i === 0) }, [h('span', { text: c[1] }), h('span.n', { text: String(n) })]);
+    b.addEventListener('click', function () { cats.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); st.cat = c[0]; render(); });
+    cats.appendChild(b);
+  });
+
+  function render() {
+    var tb = document.getElementById('rows');
+    while (tb.firstChild) tb.removeChild(tb.firstChild);
+    var q = st.q.toLowerCase();
+    var list = L.filter(function (x) {
+      return x.d < st.range && (!st.cat || CAT[x.ev][0] === st.cat) && (!st.res || (st.res === 'ok') === x.ok) &&
+        (!q || (x.who + ' ' + x.ip + ' ' + x.obj + ' ' + x.desc).toLowerCase().indexOf(q) >= 0);
+    });
+    var lastDay = -1;
+    list.forEach(function (x) {
+      if (x.d !== lastDay) { lastDay = x.d; tb.appendChild(h('tr.grp-row', {}, [h('td', { colspan: '6', style: 'background:color-mix(in srgb,var(--soft) 45%,var(--white));font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700', text: x.d === 0 ? 'Hôm nay · 12/10/2026' : 'Hôm qua · 11/10/2026' })])); }
+      var who = x.av ? h('span.person', {}, [h('span.avatar.sm', {}, [h('img', { src: A + x.av, alt: '' })]), h('b', { text: x.who })]) : h('span.person', {}, [h('span.avatar.sm', { style: 'background:var(--soft);color:var(--navy)' }, [icon(x.who.indexOf('Sales Hub') >= 0 ? 'sync' : 'user')]), h('b', { text: x.who })]);
+      var tr = h('tr', { tabindex: '0', style: 'cursor:pointer' }, [
+        h('td.muted-cell', { 'data-l': 'Lúc', text: x.t }),
+        h('td.first', {}, [who]),
+        h('td', { 'data-l': 'Sự kiện' }, [h('span', { text: CAT[x.ev][1] }), h('div.micro', { text: x.desc })]),
+        h('td', { 'data-l': 'Đối tượng', text: x.obj }),
+        h('td.muted-cell.hide-sm', { 'data-l': 'IP' }, [h('span.code', { text: x.ip })]),
+        h('td', { 'data-l': 'Kết quả' }, [h('span.st.' + (x.ok ? 'st-ok' : 'st-bad'), { text: x.ok ? 'Thành công' : 'Thất bại' })])
+      ]);
+      tr.addEventListener('click', function () { open(x); });
+      tr.addEventListener('keydown', function (e) { if (e.key === 'Enter') open(x); });
+      tb.appendChild(tr);
+    });
+    document.getElementById('empty').hidden = list.length > 0;
+    document.getElementById('shown').textContent = list.length + ' sự kiện (dữ liệu mẫu)';
+  }
+
+  var dw = document.getElementById('drawer'), scrim = document.getElementById('dw-scrim');
+  function open(x) {
+    document.getElementById('dw-cat').textContent = CAT[x.ev][1] + ' · #' + x.id;
+    document.getElementById('dw-h').textContent = x.desc;
+    var kv = document.getElementById('dw-kv');
+    while (kv.firstChild) kv.removeChild(kv.firstChild);
+    [['Thời gian', (x.d ? '11/10/2026 ' : '12/10/2026 ') + x.t], ['Người thực hiện', x.who], ['Đối tượng', x.obj], ['Kết quả', x.ok ? 'Thành công' : 'Thất bại' + (x.err ? ' — ' + x.err : '')],
+     ['Request', x.m + ' ' + x.path], ['IP', x.ip], ['Thiết bị', x.ip.indexOf('113.') === 0 ? 'RecoHR iOS 1.0.3' : 'Chrome 129 · Windows'], ['event_type', x.ev]].forEach(function (r) {
+      kv.appendChild(h('dt', { text: r[0] })); kv.appendChild(h('dd', { text: r[1] }));
+    });
+    var tb = document.getElementById('dw-diff');
+    while (tb.firstChild) tb.removeChild(tb.firstChild);
+    document.getElementById('dw-diff-wrap').hidden = !x.ch;
+    Object.keys(x.ch || {}).forEach(function (k) { tb.appendChild(h('tr', {}, [h('td', {}, [h('span.code', { text: k })]), h('td.old', { text: x.ch[k][0] }), h('td.new', { text: x.ch[k][1] })])); });
+    document.getElementById('dw-raw').textContent = JSON.stringify({ id: x.id, event_type: x.ev, description: x.desc, object: x.obj, changes: x.ch || {}, ip_address: x.ip, request_method: x.m, request_path: x.path, success: x.ok, error_message: x.err || '' }, null, 2);
+    document.getElementById('dw-filter').onclick = function (e) { e.preventDefault(); close(); document.getElementById('q').value = x.who; st.q = x.who; render(); };
+    dw.hidden = false; scrim.hidden = false;
+    requestAnimationFrame(function () { dw.classList.add('open'); });
+    document.getElementById('dw-x').focus();
+  }
+  function close() { dw.classList.remove('open'); scrim.hidden = true; setTimeout(function () { dw.hidden = true; }, 220); }
+  document.getElementById('dw-x').addEventListener('click', close);
+  scrim.addEventListener('click', close);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !dw.hidden) close(); });
+
+  document.getElementById('q').addEventListener('input', function () { st.q = this.value; render(); });
+  document.getElementById('res').addEventListener('change', function () { st.res = this.value; render(); });
+  document.getElementById('range').addEventListener('change', function () { st.range = +this.value; render(); });
+  document.getElementById('see-fail').addEventListener('click', function () {
+    document.getElementById('q').value = '203.0.113.24'; st.q = '203.0.113.24'; st.res = 'fail'; document.getElementById('res').value = 'fail'; render();
+  });
+  render();
+});
+</script>
+</body>
+</html>

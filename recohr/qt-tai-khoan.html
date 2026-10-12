@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tài khoản người dùng — RecoHR Admin</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../sales-hub/assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/hr.css">
+<link rel="stylesheet" href="assets/admin.css">
+</head>
+<body data-shell="admin" data-page="tai-khoan" data-crumbs='[["Quản trị","quan-tri.html"],["Quản lý nhân sự"],["Tài khoản người dùng"]]'>
+<main class="adm-body">
+  <div class="adm-head">
+    <div>
+      <h1>Tài khoản người dùng</h1>
+      <p>Mọi tài khoản đăng nhập RecoHR và Sales Hub. Tìm theo tên, email, số điện thoại, mã nhân viên hoặc CCCD.</p>
+    </div>
+    <div class="row">
+      <a class="btn btn-outline btn-sm" href="#" data-toast="Nhập từ Excel (có tải file mẫu) — mô phỏng"><i data-i="download" style="transform:rotate(180deg)"></i>Nhập Excel</a>
+      <a class="btn btn-outline btn-sm" href="#" data-toast="Xuất Excel theo bộ lọc hiện tại — mô phỏng"><i data-i="download"></i>Xuất Excel</a>
+      <a class="btn btn-primary btn-sm" href="qt-tai-khoan-sua.html"><i data-i="plus"></i>Thêm tài khoản</a>
+    </div>
+  </div>
+
+  <div class="list-layout">
+    <aside class="filters card" aria-label="Bộ lọc">
+      <div class="card-head"><h3>Bộ lọc</h3><button class="link" type="button" id="clear">Xóa lọc</button></div>
+      <div class="card-body" id="fpanel"></div>
+    </aside>
+
+    <section class="card">
+      <div class="views" role="toolbar" aria-label="Chế độ xem" id="views">
+        <button type="button" aria-pressed="true" data-v="all">Tất cả<span class="n" data-count="all"></span></button>
+        <button type="button" aria-pressed="false" data-v="active">Đang làm việc<span class="n" data-count="active"></span></button>
+        <button type="button" aria-pressed="false" data-v="pending">Chưa kích hoạt<span class="n" data-count="pending"></span></button>
+        <button type="button" aria-pressed="false" data-v="locked">Đã khóa / nghỉ<span class="n" data-count="locked"></span></button>
+        <button type="button" aria-pressed="false" data-v="staff">Quản trị<span class="n" data-count="staff"></span></button>
+      </div>
+      <div class="toolbar">
+        <label class="inp-ico"><i data-i="search"></i><input class="inp" id="q" type="search" placeholder="Tên, email, SĐT, mã NV, CCCD" aria-label="Tìm tài khoản"></label>
+        <button class="btn btn-outline btn-sm only-mobile-filter" type="button" data-open="fsheet"><i data-i="filter"></i>Bộ lọc</button>
+        <button class="btn btn-outline btn-sm" type="button" data-open="cols"><i data-i="columns"></i>Cột</button>
+      </div>
+      <div class="chips-active" id="chips"></div>
+      <div class="table-scroll">
+        <table class="dtable" id="tbl">
+          <thead><tr>
+            <th class="cb"><input type="checkbox" id="all" aria-label="Chọn tất cả"></th>
+            <th><button type="button" data-sort="name">Nhân viên</button></th>
+            <th data-col="role">Vai trò</th>
+            <th data-col="pos">Chức danh</th>
+            <th data-col="dept"><button type="button" data-sort="dept">Phòng ban</button></th>
+            <th data-col="block">Khối</th>
+            <th data-col="mgr">Quản lý trực tiếp</th>
+            <th data-col="phone">Điện thoại</th>
+            <th data-col="joined"><button type="button" data-sort="joined">Ngày vào</button></th>
+            <th>Trạng thái</th>
+            <th class="act"><span class="sr" style="position:absolute;left:-9999px">Thao tác</span></th>
+          </tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div class="empty-state" id="empty" hidden><span class="ico-tile"><i data-i="search"></i></span>Không có tài khoản khớp bộ lọc.</div>
+      <div class="pager">
+        <span id="shown"></span>
+        <div class="row">
+          <label class="small">Mỗi trang <select aria-label="Số dòng mỗi trang"><option>25</option><option>50</option><option>100</option></select></label>
+          <div class="pages"><button type="button" aria-current="page">1</button><button type="button" data-toast="Trang 2 — mô phỏng">2</button></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="bulk-float" id="bulk" hidden role="toolbar" aria-label="Thao tác hàng loạt">
+    <b id="bulk-n">0 đã chọn</b>
+    <button class="btn btn-light" type="button" data-bulk="Gửi lại lời mời kích hoạt">Gửi lại lời mời</button>
+    <button class="btn btn-light" type="button" data-bulk="Gán nhóm quyền">Gán nhóm quyền</button>
+    <button class="btn btn-light" type="button" data-bulk="Xuất Excel các dòng đã chọn">Xuất</button>
+    <button class="btn btn-danger-quiet" type="button" data-open="lock">Khóa tài khoản</button>
+    <button class="icon-btn" type="button" id="bulk-x" aria-label="Bỏ chọn" style="background:transparent;color:#fff;border-color:rgb(255 255 255 / .3)"><i data-i="x"></i></button>
+  </div>
+</main>
+
+<dialog class="sheet" id="fsheet" aria-labelledby="fs-h">
+  <form method="dialog">
+    <div class="sheet-head"><h3 id="fs-h">Bộ lọc</h3><button class="icon-btn" data-close aria-label="Đóng"><i data-i="x"></i></button></div>
+    <div class="sheet-body" id="fpanel-m"></div>
+    <div class="sheet-foot"><button class="btn btn-outline" type="button" id="clear-m">Xóa lọc</button><button class="btn btn-primary" data-close>Xem kết quả</button></div>
+  </form>
+</dialog>
+
+<dialog class="sheet" id="cols" aria-labelledby="c-h">
+  <form method="dialog">
+    <div class="sheet-head"><h3 id="c-h">Cột hiển thị</h3><button class="icon-btn" data-close aria-label="Đóng"><i data-i="x"></i></button></div>
+    <div class="sheet-body" id="colpick"></div>
+    <div class="sheet-foot"><button class="btn btn-primary" data-close>Xong</button></div>
+  </form>
+</dialog>
+
+<dialog class="sheet" id="lock" aria-labelledby="l-h">
+  <form method="dialog">
+    <div class="sheet-head"><h3 id="l-h">Khóa tài khoản</h3><button class="icon-btn" data-close aria-label="Đóng"><i data-i="x"></i></button></div>
+    <div class="sheet-body">
+      <p class="small" style="margin:0" id="lock-msg"></p>
+      <div class="note-box small">Người bị khóa bị đăng xuất khỏi mọi thiết bị, không đăng nhập được RecoHR và Sales Hub. Dữ liệu chấm công và đơn từ được giữ nguyên. Mở lại bất cứ lúc nào.</div>
+      <label class="field"><span>Lý do (ghi vào nhật ký)</span><input class="inp" value="Nghỉ việc từ 15/10/2026"></label>
+    </div>
+    <div class="sheet-foot"><button class="btn btn-outline" data-close>Hủy</button><button class="btn btn-primary" type="button" id="lock-ok" style="background:var(--danger)">Khóa</button></div>
+  </form>
+</dialog>
+
+<style>
+  .only-mobile-filter { display: inline-flex; }
+  @media (min-width: 1180px) { .only-mobile-filter { display: none; } }
+</style>
+<script src="assets/hr.js"></script>
+<script src="assets/admin.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var h = HR.h, icon = HR.icon;
+  var A = '../sales-hub/assets/img/';
+  var U = [
+    { id: 142, name: 'Nguyễn Thu Lan', email: 'lan.nguyen@reco.demo', av: A + 'avatar-lan.jpg', role: ['Trưởng nhóm', 'TN'], pos: ['Trưởng nhóm kinh doanh', 'TNKD'], dept: 'Kinh doanh 2', block: 'Kinh doanh', mgr: 'Trần Minh Tùng', phone: '0912 *** 142', joined: '2023-03-06', st: 'active' },
+    { id: 87, name: 'Trần Minh Tùng', email: 'tung.tran@reco.demo', av: A + 'avatar-tung.jpg', role: ['Trưởng phòng', 'TP'], pos: ['Trưởng phòng kinh doanh', 'TPKD'], dept: 'Kinh doanh 2', block: 'Kinh doanh', mgr: 'Hoàng Quang Huy', phone: '0903 *** 087', joined: '2021-08-16', st: 'active' },
+    { id: 193, name: 'Lê Văn Đăng', email: 'dang.le@reco.demo', av: A + 'avatar-dang.jpg', role: ['Nhân viên', 'NV'], pos: ['Nhân viên kinh doanh', 'NVKD'], dept: 'Kinh doanh 2', block: 'Kinh doanh', mgr: 'Nguyễn Thu Lan', phone: '0988 *** 193', joined: '2024-05-20', st: 'active' },
+    { id: 201, name: 'Phạm Hồng Ngọc', email: 'ngoc.pham@reco.demo', av: A + 'avatar-ngoc.jpg', role: ['Nhân viên', 'NV'], pos: ['Nhân viên kinh doanh', 'NVKD'], dept: 'Kinh doanh 2', block: 'Kinh doanh', mgr: 'Nguyễn Thu Lan', phone: '0977 *** 201', joined: '2024-09-02', st: 'active' },
+    { id: 58, name: 'Đỗ Thu Hà', email: 'ha.do@reco.demo', av: A + 'avatar-thuha.jpg', role: ['Quản trị hệ thống', 'ADMIN'], pos: ['Chuyên viên HR', 'CVHR'], dept: 'HR', block: 'Văn phòng', mgr: 'Hoàng Quang Huy', phone: '0934 *** 058', joined: '2020-11-09', st: 'active', staff: true },
+    { id: 215, name: 'Vũ Minh Khoa', email: 'khoa.vu@reco.demo', ini: 'VK', role: ['Nhân viên', 'NV'], pos: ['Nhân viên kinh doanh', 'NVKD'], dept: 'Kinh doanh 2', block: 'Kinh doanh', mgr: 'Nguyễn Thu Lan', phone: '0966 *** 215', joined: '2025-01-13', st: 'active' },
+    { id: 177, name: 'Bùi Thanh Thảo', email: 'thao.bui@reco.demo', ini: 'BT', role: ['HR', 'HR'], pos: ['Chuyên viên HR', 'CVHR'], dept: 'HR', block: 'Văn phòng', mgr: 'Đỗ Thu Hà', phone: '0905 *** 177', joined: '2022-06-01', st: 'active', staff: true },
+    { id: 34, name: 'Hoàng Quang Huy', email: 'huy.hoang@reco.demo', ini: 'HQ', role: ['Lãnh đạo', 'CEO'], pos: ['Giám đốc', 'GD'], dept: 'Ban giám đốc', block: 'Văn phòng', mgr: '—', phone: '0901 *** 034', joined: '2019-02-18', st: 'active', staff: true },
+    { id: 228, name: 'Ngô Bảo Châu', email: 'chau.ngo@reco.demo', ini: 'NC', role: ['Nhân viên', 'NV'], pos: ['Nhân viên kinh doanh', 'NVKD'], dept: 'Kinh doanh 1', block: 'Kinh doanh', mgr: 'Trần Minh Tùng', phone: '0919 *** 228', joined: '2026-10-05', st: 'pending' },
+    { id: 229, name: 'Trịnh Gia Bảo', email: 'bao.trinh@reco.demo', ini: 'TB', role: ['Nhân viên', 'NV'], pos: ['Kế toán viên', 'KTV'], dept: 'Kế toán', block: 'Văn phòng', mgr: 'Hoàng Quang Huy', phone: '0938 *** 229', joined: '2026-10-01', st: 'pending' },
+    { id: 120, name: 'Đặng Minh Phúc', email: 'phuc.dang@reco.demo', ini: 'ĐP', role: ['Nhân viên', 'NV'], pos: ['Nhân viên kinh doanh', 'NVKD'], dept: 'Kinh doanh 1', block: 'Kinh doanh', mgr: 'Trần Minh Tùng', phone: '0972 *** 120', joined: '2022-04-11', st: 'locked' },
+    { id: 165, name: 'Lý Thị Mai', email: 'mai.ly@reco.demo', ini: 'LM', role: ['Thư ký', 'TK'], pos: ['Thư ký giám đốc', 'TKGD'], dept: 'Ban giám đốc', block: 'Văn phòng', mgr: 'Hoàng Quang Huy', phone: '0913 *** 165', joined: '2023-07-24', st: 'active' }
+  ];
+  var ST = { active: ['st-ok', 'Đang hoạt động'], pending: ['st-wait', 'Chưa kích hoạt'], locked: ['st-off', 'Đã khóa'] };
+  var FILTERS = [
+    { k: 'block', t: 'Khối' }, { k: 'dept', t: 'Phòng ban' }, { k: 'mgr', t: 'Quản lý trực tiếp', top: 4 }
+  ];
+  var COLS = [['role', 'Vai trò'], ['pos', 'Chức danh'], ['dept', 'Phòng ban'], ['block', 'Khối'], ['mgr', 'Quản lý trực tiếp'], ['phone', 'Điện thoại'], ['joined', 'Ngày vào']];
+  var state = { view: 'all', q: '', f: {}, sort: 'joined', dir: -1, hidden: { block: true, phone: true, mgr: true } };
+
+  function norm(s) { return String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase(); }
+  function inView(u, v) { return v === 'all' || (v === 'staff' ? u.staff : u.st === v || (v === 'active' && u.st === 'active')); }
+  function fmt(d) { var p = d.split('-'); return p[2] + '/' + p[1] + '/' + p[0]; }
+
+  function buildFilters(target) {
+    while (target.firstChild) target.removeChild(target.firstChild);
+    FILTERS.forEach(function (F) {
+      var counts = {};
+      U.forEach(function (u) { counts[u[F.k]] = (counts[u[F.k]] || 0) + 1; });
+      var g = h('div.fgroup', {}, [h('h4', { text: F.t })]);
+      Object.keys(counts).sort().forEach(function (val) {
+        var cb = h('input', { type: 'checkbox', value: val });
+        cb.checked = !!(state.f[F.k] && state.f[F.k].indexOf(val) >= 0);
+        cb.addEventListener('change', function () {
+          var arr = state.f[F.k] || (state.f[F.k] = []);
+          if (cb.checked) arr.push(val); else arr.splice(arr.indexOf(val), 1);
+          render(); syncFilters();
+        });
+        g.appendChild(h('label', {}, [cb, h('span', { text: val }), h('span.c', { text: String(counts[val]) })]));
+      });
+      target.appendChild(g);
+    });
+    var g2 = h('div.fgroup', {}, [h('h4', { text: 'Ngày vào' })]);
+    [['', 'Mọi lúc'], ['30', '30 ngày qua'], ['365', '12 tháng qua']].forEach(function (o, i) {
+      var r = h('input', { type: 'radio', name: 'joined-' + target.id, value: o[0] });
+      r.checked = (state.f.since || '') === o[0];
+      r.addEventListener('change', function () { state.f.since = o[0]; render(); syncFilters(); });
+      g2.appendChild(h('label', {}, [r, h('span', { text: o[1] })]));
+    });
+    target.appendChild(g2);
+  }
+  function syncFilters() { buildFilters(document.getElementById('fpanel')); buildFilters(document.getElementById('fpanel-m')); }
+
+  function rowsFiltered() {
+    var q = norm(state.q);
+    var now = new Date(2026, 9, 12);
+    return U.filter(function (u) {
+      if (!inView(u, state.view)) return false;
+      if (q && norm([u.name, u.email, u.phone, 'RC' + u.id].join(' ')).indexOf(q) < 0) return false;
+      for (var k in state.f) {
+        if (k === 'since') { if (state.f.since && (now - new Date(u.joined)) / 864e5 > +state.f.since) return false; continue; }
+        if (state.f[k].length && state.f[k].indexOf(u[k]) < 0) return false;
+      }
+      return true;
+    }).sort(function (a, b) {
+      var x = state.sort === 'name' ? a.name.split(' ').pop() : a[state.sort], y = state.sort === 'name' ? b.name.split(' ').pop() : b[state.sort];
+      return x < y ? -state.dir : x > y ? state.dir : 0;
+    });
+  }
+
+  function render() {
+    var tb = document.getElementById('rows');
+    while (tb.firstChild) tb.removeChild(tb.firstChild);
+    var list = rowsFiltered();
+    list.forEach(function (u) {
+      var av = u.av ? h('span.avatar.sm', {}, [h('img', { src: u.av, alt: '' })]) : h('span.avatar.sm', { text: u.ini });
+      var cb = h('input', { type: 'checkbox', 'aria-label': 'Chọn ' + u.name });
+      var tr = h('tr', {}, [
+        h('td.cb', {}, [cb]),
+        h('td.first', {}, [h('a.person', { href: 'qt-tai-khoan-sua.html', style: 'text-decoration:none' }, [av, h('div', {}, [h('b', { text: u.name }), h('span', { text: u.email + ' · RC' + String(u.id).padStart(4, '0') })])])]),
+        h('td', { 'data-l': 'Vai trò', 'data-col': 'role' }, [h('span', { text: u.role[0] + ' ' }), h('span.code', { text: u.role[1] })]),
+        h('td', { 'data-l': 'Chức danh', 'data-col': 'pos' }, [h('span', { text: u.pos[0] + ' ' }), h('span.code', { text: u.pos[1] })]),
+        h('td', { 'data-l': 'Phòng ban', 'data-col': 'dept', text: u.dept }),
+        h('td', { 'data-l': 'Khối', 'data-col': 'block', text: u.block }),
+        h('td', { 'data-l': 'Quản lý', 'data-col': 'mgr', text: u.mgr }),
+        h('td.muted-cell', { 'data-l': 'Điện thoại', 'data-col': 'phone', text: u.phone }),
+        h('td.muted-cell', { 'data-l': 'Ngày vào', 'data-col': 'joined', text: fmt(u.joined) }),
+        h('td', { 'data-l': 'Trạng thái' }, [h('span.st.' + ST[u.st][0], { text: ST[u.st][1] }), u.staff ? h('span.chip', { style: 'margin-left:6px', text: 'Quản trị' }) : null]),
+        h('td.act', {}, [h('a.icon-btn', { href: '#', 'aria-label': 'Thao tác khác cho ' + u.name, 'data-toast': 'Menu: Sửa · Đặt lại mật khẩu · Gửi lời mời · Khóa · Nhật ký — mô phỏng', style: 'width:34px;height:34px' }, [icon('dots')])])
+      ]);
+      tr.dataset.id = u.id;
+      cb.addEventListener('change', function () { tr.classList.toggle('sel', cb.checked); bulk(); });
+      tb.appendChild(tr);
+    });
+    applyCols();
+    document.getElementById('empty').hidden = list.length > 0;
+    document.getElementById('shown').textContent = 'Hiện ' + list.length + ' / ' + U.length + ' tài khoản (dữ liệu mẫu)';
+    document.querySelectorAll('[data-count]').forEach(function (s) {
+      s.textContent = String(U.filter(function (u) { return inView(u, s.getAttribute('data-count')); }).length);
+    });
+    chips(); bulk();
+  }
+
+  function chips() {
+    var box = document.getElementById('chips');
+    while (box.firstChild) box.removeChild(box.firstChild);
+    Object.keys(state.f).forEach(function (k) {
+      if (k === 'since') return;
+      state.f[k].forEach(function (v) {
+        var c = h('button.chip-x', { type: 'button', 'aria-label': 'Bỏ lọc ' + v }, [h('span', { text: v }), icon('x')]);
+        c.addEventListener('click', function () { state.f[k].splice(state.f[k].indexOf(v), 1); render(); syncFilters(); });
+        box.appendChild(c);
+      });
+    });
+    if (state.f.since) {
+      var c = h('button.chip-x', { type: 'button' }, [h('span', { text: 'Vào trong ' + state.f.since + ' ngày' }), icon('x')]);
+      c.addEventListener('click', function () { state.f.since = ''; render(); syncFilters(); });
+      box.appendChild(c);
+    }
+    box.hidden = !box.childNodes.length;
+  }
+
+  function selected() { return Array.prototype.slice.call(document.querySelectorAll('#rows tr.sel')); }
+  function bulk() {
+    var n = selected().length;
+    document.getElementById('bulk').hidden = n === 0;
+    document.getElementById('bulk-n').textContent = n + ' đã chọn';
+    var all = document.getElementById('all');
+    var total = document.querySelectorAll('#rows tr').length;
+    all.checked = n > 0 && n === total; all.indeterminate = n > 0 && n < total;
+  }
+
+  function applyCols() {
+    COLS.forEach(function (c) {
+      document.querySelectorAll('[data-col="' + c[0] + '"]').forEach(function (el) { el.hidden = !!state.hidden[c[0]]; });
+    });
+  }
+  var cp = document.getElementById('colpick');
+  COLS.forEach(function (c) {
+    var sw = h('input', { type: 'checkbox' });
+    sw.checked = !state.hidden[c[0]];
+    sw.addEventListener('change', function () { state.hidden[c[0]] = !sw.checked; applyCols(); });
+    cp.appendChild(h('label.switch', {}, [sw, h('span.track'), h('span', { text: c[1] })]));
+  });
+
+  document.getElementById('q').addEventListener('input', function () { state.q = this.value; render(); });
+  document.getElementById('views').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-v]'); if (!b) return;
+    this.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    state.view = b.getAttribute('data-v'); render();
+  });
+  document.querySelectorAll('[data-sort]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var k = b.getAttribute('data-sort');
+      state.dir = state.sort === k ? -state.dir : 1; state.sort = k; render();
+    });
+  });
+  document.getElementById('all').addEventListener('change', function () {
+    var on = this.checked;
+    document.querySelectorAll('#rows tr').forEach(function (tr) { tr.classList.toggle('sel', on); tr.querySelector('input').checked = on; });
+    bulk();
+  });
+  document.getElementById('bulk-x').addEventListener('click', function () { document.getElementById('all').checked = true; document.getElementById('all').click(); });
+  document.querySelectorAll('[data-bulk]').forEach(function (b) {
+    b.addEventListener('click', function () { HR.toast(b.getAttribute('data-bulk') + ' cho ' + selected().length + ' tài khoản — mô phỏng'); });
+  });
+  function clear() { state.f = {}; render(); syncFilters(); }
+  document.getElementById('clear').addEventListener('click', clear);
+  document.getElementById('clear-m').addEventListener('click', clear);
+  document.querySelector('[data-open="lock"]').addEventListener('click', function () {
+    document.getElementById('lock-msg').textContent = 'Khóa ' + selected().length + ' tài khoản: ' + selected().map(function (tr) { return tr.querySelector('.person b').textContent; }).join(', ') + '.';
+  });
+  document.getElementById('lock-ok').addEventListener('click', function () {
+    var ids = selected().map(function (tr) { return +tr.dataset.id; });
+    var prev = {};
+    U.forEach(function (u) { if (ids.indexOf(u.id) >= 0) { prev[u.id] = u.st; u.st = 'locked'; } });
+    document.getElementById('lock').close();
+    render();
+    HR.toast('Đã khóa ' + ids.length + ' tài khoản.', function () { U.forEach(function (u) { if (prev[u.id]) u.st = prev[u.id]; }); render(); });
+  });
+
+  syncFilters();
+  render();
+});
+</script>
+</body>
+</html>

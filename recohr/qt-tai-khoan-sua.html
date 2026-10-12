@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sửa tài khoản — RecoHR Admin</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../sales-hub/assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/hr.css">
+<link rel="stylesheet" href="assets/admin.css">
+</head>
+<body data-shell="admin" data-page="tai-khoan" data-crumbs='[["Quản trị","quan-tri.html"],["Tài khoản người dùng","qt-tai-khoan.html"],["Nguyễn Thu Lan"]]'>
+<main class="adm-body">
+  <div class="adm-head">
+    <div class="row" style="gap:14px">
+      <span class="avatar lg"><img src="../sales-hub/assets/img/avatar-lan.jpg" alt=""></span>
+      <div>
+        <h1>Nguyễn Thu Lan</h1>
+        <div class="row mt-1" style="gap:6px"><span class="code">RC0142</span><span class="st st-ok">Đang hoạt động</span><span class="chip"><i data-i="link"></i>Đã liên kết Sales Hub</span></div>
+      </div>
+    </div>
+    <div class="row">
+      <a class="btn btn-outline btn-sm" href="qt-nhat-ky.html"><i data-i="history"></i>Lịch sử</a>
+      <a class="btn btn-outline btn-sm" href="#" data-toast="Xem như người dùng này (chỉ đọc) — mô phỏng"><i data-i="eye"></i>Xem như người dùng</a>
+    </div>
+  </div>
+
+  <nav class="sec-tabs mb-2" aria-label="Các phần" style="margin-bottom:14px">
+    <a href="#s-login">Đăng nhập</a><a href="#s-person">Cá nhân</a><a href="#s-org">Tổ chức</a><a href="#s-perm">Phân quyền</a><a href="#s-emer">Khẩn cấp</a><a href="#s-sys">Hệ thống</a>
+  </nav>
+
+  <form class="form-layout" id="f" novalidate>
+    <nav class="sec-nav" aria-label="Các phần" id="secnav">
+      <a href="#s-login" class="on"><i data-i="key"></i>Đăng nhập</a>
+      <a href="#s-person"><i data-i="user"></i>Thông tin cá nhân</a>
+      <a href="#s-org"><i data-i="org"></i>Tổ chức</a>
+      <a href="#s-perm"><i data-i="shield"></i>Phân quyền</a>
+      <a href="#s-emer"><i data-i="phone"></i>Liên hệ khẩn cấp</a>
+      <a href="#s-sys"><i data-i="history"></i>Hệ thống</a>
+    </nav>
+
+    <div class="stack">
+      <section class="card fsec" id="s-login">
+        <div class="card-head"><div><h3>Đăng nhập</h3><p>Dùng cho RecoHR và Sales Hub (QD-153). Đăng nhập bằng số điện thoại hoặc email.</p></div></div>
+        <div class="card-body fgrid">
+          <label class="field"><span class="rq">Số điện thoại đăng nhập</span><input class="inp" name="phone" value="0912 345 142" inputmode="tel"><small class="help">Duy nhất trong hệ thống</small></label>
+          <label class="field"><span class="rq">Email công ty</span><input class="inp" name="email" type="email" value="lan.nguyen@reco.demo"><small class="err" hidden>Email không hợp lệ</small></label>
+          <div class="field full"><span>Mật khẩu</span>
+            <div class="row"><span class="ro" style="flex:1">Đã đặt · đổi lần cuối 03/09/2026</span><button class="btn btn-outline btn-sm" type="button" data-toast="Đã gửi đường dẫn đặt lại mật khẩu tới lan.nguyen@reco.demo — mô phỏng"><i data-i="mail"></i>Gửi link đặt lại</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card fsec" id="s-person">
+        <div class="card-head"><div><h3>Thông tin cá nhân</h3><p>Chỉ HR và quản trị xem được phần này.</p></div><span class="chip"><i data-i="lock"></i>Dữ liệu nhạy cảm</span></div>
+        <div class="card-body fgrid">
+          <label class="field"><span class="rq">Họ và tên đệm</span><input class="inp" name="last_name" value="Nguyễn Thu"></label>
+          <label class="field"><span class="rq">Tên</span><input class="inp" name="first_name" value="Lan"></label>
+          <label class="field"><span>Ngày sinh</span><input class="inp" type="date" name="dob" value="1994-05-17"></label>
+          <label class="field"><span>Giới tính</span><select class="inp" name="gender"><option selected>Nữ</option><option>Nam</option><option>Khác</option></select></label>
+          <label class="field"><span>Tình trạng hôn nhân</span><select class="inp" name="marital"><option>Độc thân</option><option selected>Đã kết hôn</option></select></label>
+          <label class="field"><span>Số điện thoại phụ</span><input class="inp" name="phone2" value=""></label>
+          <label class="field"><span>Email cá nhân</span><input class="inp" type="email" name="pemail" value="thulan94@email.demo"><small class="err" hidden>Email không hợp lệ</small></label>
+          <label class="field"><span>Số CCCD</span><input class="inp" name="cccd" value="0011 9400 0142" inputmode="numeric"><small class="help">12 chữ số</small><small class="err" hidden>CCCD phải có đúng 12 chữ số</small></label>
+          <label class="field"><span>Ngày cấp</span><input class="inp" type="date" name="cccd_date" value="2021-06-10"></label>
+          <label class="field"><span>Nơi cấp</span><input class="inp" name="cccd_place" value="Cục CS QLHC về TTXH"></label>
+          <label class="field full"><span>Địa chỉ thường trú</span><input class="inp" name="addr" value="Số 12, ngõ 34, phố Mẫu, phường Mẫu, Hà Nội"></label>
+          <label class="field full"><span>Địa chỉ liên hệ</span><input class="inp" name="caddr" value=""><small class="help">Để trống nếu trùng địa chỉ thường trú</small></label>
+        </div>
+      </section>
+
+      <section class="card fsec" id="s-org">
+        <div class="card-head"><div><h3>Tổ chức</h3><p>Thay đổi ở đây được đồng bộ sang Sales Hub trong vòng 1 phút.</p></div><span class="chip"><i data-i="sync"></i>Đồng bộ Sales Hub</span></div>
+        <div class="card-body fgrid">
+          <label class="field"><span class="rq">Mã nhân viên</span><input class="inp" name="eid" value="RC0142"></label>
+          <label class="field"><span class="rq">Văn phòng</span><select class="inp" name="office"><option selected>Trụ sở RECO</option><option>Văn phòng 2</option></select></label>
+          <label class="field"><span class="rq">Phòng ban</span><select class="inp" name="dept"><option selected>Kinh doanh 2</option><option>Kinh doanh 1</option><option>HR</option><option>Kế toán</option></select></label>
+          <label class="field"><span>Khối</span><select class="inp" name="block"><option selected>Kinh doanh</option><option>Văn phòng</option></select></label>
+          <label class="field"><span class="rq">Chức danh</span><select class="inp" name="pos"><option selected>Trưởng nhóm kinh doanh [TNKD]</option><option>Nhân viên kinh doanh [NVKD]</option><option>Trưởng phòng kinh doanh [TPKD]</option></select><small class="help">Chức danh quyết định vai trò mặc định (QD-150)</small></label>
+          <label class="field"><span>Vai trò chính</span><select class="inp" name="group"><option selected>Trưởng nhóm [TN]</option><option>Nhân viên [NV]</option></select></label>
+          <div class="field"><span>Quản lý trực tiếp</span>
+            <button class="inp" type="button" style="text-align:left;display:flex;align-items:center;gap:10px;cursor:pointer" data-toast="Mở bộ chọn nhân viên dùng chung (#400) — mô phỏng"><span class="avatar sm" style="width:26px;height:26px"><img src="../sales-hub/assets/img/avatar-tung.jpg" alt=""></span>Trần Minh Tùng · Trưởng phòng kinh doanh</button>
+          </div>
+          <div class="field"><span>Là quản lý</span><label class="switch" style="min-height:46px"><input type="checkbox" name="is_manager" checked><span class="track"></span><span>Có cấp dưới trực tiếp (4 người)</span></label></div>
+        </div>
+      </section>
+
+      <section class="card fsec" id="s-perm">
+        <div class="card-head"><div><h3>Phân quyền</h3><p>Quyền theo vai trò quản lý ở <a href="qt-vai-tro.html">Vai trò & phân quyền</a>. Chỉ cấp quyền riêng khi thật cần.</p></div></div>
+        <div class="card-body" style="display:grid;gap:14px">
+          <label class="switch"><input type="checkbox" name="active" checked><span class="track"></span><span><b>Đang hoạt động</b> — tắt để khóa đăng nhập RecoHR và Sales Hub</span></label>
+          <label class="switch"><input type="checkbox" name="lists" checked><span class="track"></span><span><b>Hiển thị trong danh sách</b> — tắt với tài khoản hệ thống (#436)</span></label>
+          <label class="switch"><input type="checkbox" name="staff"><span class="track"></span><span><b>Vào trang quản trị</b> (staff)</span></label>
+          <label class="switch"><input type="checkbox" name="super" disabled><span class="track"></span><span><b>Toàn quyền</b> (superuser) — chỉ superuser khác mới bật được</span></label>
+          <div class="note-box small"><b>Quyền hiệu lực:</b> 42 quyền từ vai trò <span class="code">TN</span> + 0 quyền riêng. <a href="qt-vai-tro.html">Xem chi tiết</a></div>
+        </div>
+      </section>
+
+      <section class="card fsec" id="s-emer">
+        <div class="card-head"><h3>Liên hệ khẩn cấp</h3></div>
+        <div class="card-body fgrid">
+          <label class="field"><span>Họ tên</span><input class="inp" name="ec_name" value="Nguyễn Văn Mẫu"></label>
+          <label class="field"><span>Quan hệ</span><input class="inp" name="ec_rel" value="Chồng"></label>
+          <label class="field"><span>Số điện thoại</span><input class="inp" name="ec_phone" value="0987 000 111" inputmode="tel"></label>
+        </div>
+      </section>
+
+      <section class="card fsec" id="s-sys">
+        <div class="card-head"><h3>Hệ thống</h3><span class="micro">Chỉ đọc</span></div>
+        <div class="card-body fgrid">
+          <div class="field"><span>Đăng nhập lần cuối</span><span class="ro">Hôm nay 08:19 · iPhone · app RecoHR</span></div>
+          <div class="field"><span>Ngày tạo tài khoản</span><span class="ro">06/03/2023</span></div>
+          <div class="field"><span>Liên kết Sales Hub</span><span class="ro">user #318 · đồng bộ 2 phút trước</span></div>
+          <div class="field"><span>Nguồn tài khoản</span><span class="ro">Tạo tại RecoHR</span></div>
+        </div>
+      </section>
+
+      <div class="savebar">
+        <span class="state" id="state">Không có thay đổi</span>
+        <a class="btn btn-outline" href="qt-tai-khoan.html">Hủy</a>
+        <button class="btn btn-outline" type="button" id="save-cont">Lưu và tiếp tục sửa</button>
+        <button class="btn btn-primary" type="submit"><i data-i="save"></i>Lưu</button>
+      </div>
+    </div>
+
+    <aside class="stack">
+      <section class="card">
+        <div class="card-head"><h3>Hợp đồng hiện tại</h3><a class="link" href="#" data-toast="Hợp đồng lao động — mô phỏng">Tất cả</a></div>
+        <div class="card-body small">
+          <div class="spread"><span class="muted">Loại</span><b>Không xác định thời hạn</b></div>
+          <div class="spread mt-1"><span class="muted">Hiệu lực từ</span><b>06/03/2024</b></div>
+          <div class="spread mt-1"><span class="muted">Trạng thái</span><span class="st st-ok">Hiệu lực</span></div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-head"><h3>Thay đổi gần đây</h3><a class="link" href="qt-nhat-ky.html">Nhật ký</a></div>
+        <ul class="feed">
+          <li><span class="avatar sm"><img src="../sales-hub/assets/img/avatar-thuha.jpg" alt=""></span><div><b>Đỗ Thu Hà</b> đổi chức danh → <span class="code">TNKD</span></div><span class="t">03/09</span></li>
+          <li><span class="ico-tile g" style="width:32px;height:32px"><i data-i="sync"></i></span><div>Sales Hub cập nhật số điện thoại</div><span class="t">21/08</span></li>
+          <li><span class="ico-tile" style="width:32px;height:32px"><i data-i="user"></i></span><div><b>Nguyễn Thu Lan</b> gửi yêu cầu đổi địa chỉ (đã duyệt)</div><span class="t">02/08</span></li>
+        </ul>
+      </section>
+      <section class="card danger-zone">
+        <div class="card-head"><h3 style="color:var(--danger)">Vùng nguy hiểm</h3></div>
+        <div class="card-body" style="display:grid;gap:10px">
+          <button class="btn btn-danger-quiet btn-block" type="button" data-toast="Đăng xuất mọi thiết bị — cần xác nhận (mô phỏng)"><i data-i="logout"></i>Đăng xuất mọi thiết bị</button>
+          <button class="btn btn-danger-quiet btn-block" type="button" data-toast="Khóa tài khoản — cần nhập lý do (mô phỏng)"><i data-i="lock"></i>Khóa tài khoản</button>
+          <p class="micro" style="margin:0">Không xóa tài khoản có dữ liệu chấm công/đơn từ — dùng Khóa để giữ lịch sử.</p>
+        </div>
+      </section>
+    </aside>
+  </form>
+</main>
+<script src="assets/hr.js"></script>
+<script src="assets/admin.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var form = document.getElementById('f');
+  var initial = {};
+  var fields = Array.prototype.slice.call(form.querySelectorAll('input[name], select[name]'));
+  function val(el) { return el.type === 'checkbox' ? el.checked : el.value; }
+  fields.forEach(function (el) { initial[el.name] = val(el); });
+
+  var RULES = {
+    email: function (v) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v); },
+    pemail: function (v) { return !v || /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v); },
+    cccd: function (v) { return !v || /^\d{12}$/.test(v.replace(/\s/g, '')); }
+  };
+  function validate(el) {
+    var rule = RULES[el.name]; if (!rule) return true;
+    var ok = rule(el.value.trim());
+    var f = el.closest('.field');
+    f.classList.toggle('invalid', !ok);
+    var e = f.querySelector('.err'); if (e) e.hidden = ok;
+    var h = f.querySelector('.help'); if (h) h.hidden = !ok;
+    return ok;
+  }
+  function refresh() {
+    var dirty = 0, perSec = {};
+    fields.forEach(function (el) {
+      var changed = val(el) !== initial[el.name];
+      var f = el.closest('.field'); if (f) f.classList.toggle('changed', changed);
+      if (changed) { dirty++; var s = el.closest('.fsec').id; perSec[s] = true; }
+    });
+    var st = document.getElementById('state');
+    st.textContent = dirty ? dirty + ' thay đổi chưa lưu' : 'Không có thay đổi';
+    st.classList.toggle('dirty', !!dirty);
+    document.querySelectorAll('#secnav a').forEach(function (a) {
+      var d = a.querySelector('.dirty');
+      var on = perSec[a.getAttribute('href').slice(1)];
+      if (on && !d) a.appendChild(HR.h('span.dirty'));
+      if (!on && d) d.remove();
+    });
+    return dirty;
+  }
+  form.addEventListener('input', function (e) { if (e.target.name) { validate(e.target); refresh(); } });
+  form.addEventListener('change', refresh);
+  function save(stay) {
+    var bad = fields.filter(function (el) { return !validate(el); });
+    if (bad.length) { bad[0].focus(); HR.toast('Còn ' + bad.length + ' trường chưa hợp lệ.'); return; }
+    var n = refresh();
+    if (!n) { HR.toast('Không có thay đổi để lưu.'); return; }
+    fields.forEach(function (el) { initial[el.name] = val(el); });
+    refresh();
+    HR.toast('Đã lưu ' + n + ' thay đổi · ghi nhật ký · đồng bộ Sales Hub.' + (stay ? '' : ' (mô phỏng: ở lại trang)'));
+  }
+  form.addEventListener('submit', function (e) { e.preventDefault(); save(false); });
+  document.getElementById('save-cont').addEventListener('click', function () { save(true); });
+  window.addEventListener('beforeunload', function (e) { if (refresh()) { e.preventDefault(); e.returnValue = ''; } });
+
+  /* Mục lục theo vị trí cuộn */
+  var links = Array.prototype.slice.call(document.querySelectorAll('#secnav a'));
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + en.target.id); });
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  document.querySelectorAll('.fsec').forEach(function (s) { io.observe(s); });
+});
+</script>
+</body>
+</html>
