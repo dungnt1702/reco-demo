@@ -17,6 +17,7 @@ Xem trực tiếp: https://dungnt1702.github.io/reco-demo/recohr/
 | `don-tu.html` | Đơn từ: số phép, lọc loại đơn, tạo đơn |
 | `phe-duyet.html` | Phê duyệt cấp 1: duyệt / từ chối / chuyển tiếp, duyệt hàng loạt, hoàn tác |
 | `nhan-su.html` | Danh bạ + tình trạng công hôm nay |
+| `icon-app.html` | Ba phương án icon app (E46.5, reco-devops#544): icon iOS/Android, favicon, màn mở app, icon thông báo |
 
 ## Quy ước
 

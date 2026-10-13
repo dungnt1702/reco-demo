@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RecoHR — Phương án icon app</title>
+<meta name="theme-color" content="#09263c">
+<meta name="description" content="Ba phương án icon app RecoHR (E46.5) để PO chọn: icon iOS/Android, favicon web, màn mở app và icon thông báo.">
+<link rel="icon" href="../sales-hub/assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/hr.css">
+<style>
+  .opts { display: grid; gap: 16px; }
+  @media (min-width: 1024px) { .opts { grid-template-columns: repeat(3, 1fr); } }
+  .opt .card-head { flex-wrap: wrap; }
+  .opt .card-head p { margin: 4px 0 0; font-size: 0.84rem; color: var(--muted); }
+  .opt .tag { font-family: var(--font-display); font-weight: 700; color: var(--orange-text); letter-spacing: 0.08em; font-size: 0.75rem; text-transform: uppercase; }
+  .ic { display: block; width: 100%; height: 100%; }
+  .m { display: inline-block; overflow: hidden; flex: none; line-height: 0; }
+  .m-ios { border-radius: 22.37%; box-shadow: 0 6px 16px rgb(8 39 67 / 0.18); }
+  .m-circle { border-radius: 50%; }
+  .m-squircle { border-radius: 32%; }
+  .m-fav { border-radius: 3px; }
+  .show { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px; }
+  .show figure { margin: 0; display: grid; justify-items: center; gap: 6px; }
+  .show figcaption { font-size: 0.72rem; color: var(--muted); text-align: center; }
+  .sizes { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
+  .label { font-size: 0.72rem; font-weight: 700; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin: 14px 0 8px; }
+  /* Browser tab (favicon) */
+  .tab { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; padding: 8px 12px; border-radius: 10px 10px 0 0; background: var(--soft); border: 1px solid var(--line); border-bottom: 0; font-size: 0.78rem; color: var(--ink); }
+  .tab span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* Android status bar + notification */
+  .statusbar { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 10px; background: #0d1b26; color: #fff; font-size: 0.74rem; --bg: #0d1b26; }
+  .statusbar b { font-weight: 600; margin-right: 4px; }
+  .notif { display: grid; gap: 4px; padding: 12px 14px; border-radius: 16px; background: var(--white); border: 1px solid var(--line); box-shadow: var(--shadow-card); font-size: 0.8rem; --bg: #fff; }
+  .notif .h { display: flex; align-items: center; gap: 6px; color: #c1550b; font-size: 0.72rem; font-weight: 600; }
+  .notif .h small { color: var(--muted); font-weight: 400; }
+  .notif strong { color: var(--ink); }
+  .notif p { margin: 0; color: var(--muted); }
+  /* Phones: home screen + splash */
+  .phones { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .phone { position: relative; border-radius: 30px; padding: 8px; background: #11161b; box-shadow: var(--shadow-float); max-width: 260px; width: 100%; justify-self: center; }
+  .screen { border-radius: 23px; overflow: hidden; aspect-ratio: 9 / 19.5; position: relative; }
+  .home { background: linear-gradient(160deg, #cfdde6, #f3e3d3 55%, #e8c9b0); padding: 34px 14px 14px; display: grid; grid-template-columns: repeat(4, 1fr); align-content: start; gap: 16px 8px; }
+  .home.dark { background: linear-gradient(160deg, #1b2733, #31424f 60%, #4b3a33); }
+  .app { display: grid; justify-items: center; gap: 4px; font-size: 0.6rem; color: #1b2733; text-align: center; line-height: 1.2; }
+  .home.dark .app { color: #fff; }
+  .app .m { width: 46px; height: 46px; }
+  .ph { width: 46px; height: 46px; border-radius: 22.37%; display: block; }
+  .splash { background: #09263c; display: grid; place-items: center; }
+  .splash .mk { width: 62%; aspect-ratio: 1; }
+  .splash .clock { position: absolute; top: 8px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 18px; color: #fff; font-size: 0.62rem; }
+  .phone-cap { text-align: center; font-size: 0.78rem; color: var(--muted); margin-top: 8px; }
+  .choose { display: grid; gap: 10px; }
+  .choose ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+  @media (max-width: 420px) { .show figure .m-ios.big { width: 132px !important; height: 132px !important; } }
+</style>
+</head>
+<body data-shell="gallery" data-page="icon-app">
+
+<!-- Icon artwork, 1024 × 1024. Colours: navy #09263c, orange #f27622, white. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <radialGradient id="halo" cx="1" cy="0" r="0.9">
+      <stop offset="0" stop-color="#f27622" stop-opacity="0.16"/>
+      <stop offset="0.55" stop-color="#f27622" stop-opacity="0"/>
+    </radialGradient>
+    <symbol id="tile" viewBox="0 0 1024 1024">
+      <rect width="1024" height="1024" fill="#09263c"/>
+      <rect width="1024" height="1024" fill="url(#halo)"/>
+    </symbol>
+
+    <!-- RECO house mark, redrawn from the brand logo; colours via --mark / --cut / --accent -->
+    <symbol id="house" viewBox="0 0 440 385">
+      <path style="fill:var(--mark,#fff)" d="M28 118H150L266 9Q277-1 288 9L420 133Q428 141 428 152V357Q428 373 412 373H28Q12 373 12 357V134Q12 118 28 118Z"/>
+      <g style="fill:var(--cut,#09263c)">
+        <path d="M20 157H204A19 19 0 0 1 204 195H20Z"/>
+        <path d="M20 228H181.5A18.5 18.5 0 0 1 181.5 265H20Z"/>
+        <path d="M20 296H253A17 17 0 0 1 253 330H20Z"/>
+        <rect x="20" y="137" width="40" height="21"/>
+        <rect x="20" y="194" width="100" height="35"/>
+        <rect x="20" y="264" width="80" height="33"/>
+        <rect x="20" y="329" width="40" height="36"/>
+      </g>
+      <g style="fill:var(--mark,#fff)">
+        <path d="M56.5 118H300V157H56.5A19.5 19.5 0 0 1 56.5 118Z"/>
+        <path d="M53.5 195H65.5A16.5 16.5 0 0 1 65.5 228H53.5A16.5 16.5 0 0 1 53.5 195Z"/>
+        <path d="M118.5 195H300V228H118.5A16.5 16.5 0 0 1 118.5 195Z"/>
+        <path d="M93.5 265H300V296H93.5A15.5 15.5 0 0 1 93.5 265Z"/>
+        <path d="M54.5 330H300V365H54.5A17.5 17.5 0 0 1 54.5 330Z"/>
+      </g>
+      <g style="fill:var(--accent,#f27622)">
+        <path d="M225.5 231H244.5A15.5 15.5 0 0 1 244.5 262H225.5A15.5 15.5 0 0 1 225.5 231Z"/>
+        <path d="M357 89L420 152V352Q420 364 410 359C372 326 336 296 320 279C291 247 267 215 263 180C259 141 283 108 315 95C330 89 344 87 357 89Z"/>
+      </g>
+    </symbol>
+
+    <!-- A: house mark + HR -->
+    <symbol id="mark-a" viewBox="0 0 1024 1024">
+      <use href="#house" x="226" y="190" width="572" height="500.5"/>
+      <text x="527" y="834" text-anchor="middle" font-family="Manrope, sans-serif" font-weight="700" font-size="150" letter-spacing="30" fill="#f27622">HR</text>
+    </symbol>
+
+    <!-- B: wordmark RECO / HR -->
+    <symbol id="mark-b" viewBox="0 0 1024 1024">
+      <text x="509" y="503" text-anchor="middle" font-family="Manrope, sans-serif" font-weight="700" font-size="208" letter-spacing="-6" fill="#fff">RECO</text>
+      <rect x="432" y="548" width="160" height="16" rx="8" fill="#f27622"/>
+      <text x="532" y="725" text-anchor="middle" font-family="Manrope, sans-serif" font-weight="700" font-size="150" letter-spacing="40" fill="#f27622">HR</text>
+    </symbol>
+
+    <!-- C: check-in stopwatch ring + HR -->
+    <symbol id="mark-c" viewBox="0 0 1024 1024">
+      <rect x="452" y="150" width="120" height="46" rx="23" fill="#f27622"/>
+      <rect x="494" y="186" width="36" height="44" fill="#f27622"/>
+      <circle cx="512" cy="530" r="262" fill="none" stroke="#f27622" stroke-width="60"/>
+      <text x="510" y="618" text-anchor="middle" font-family="Manrope, sans-serif" font-weight="700" font-size="244" letter-spacing="-4" fill="#fff">HR</text>
+    </symbol>
+
+    <!-- One-colour versions for the Android status bar / notification (currentColor) -->
+    <symbol id="mono-a" viewBox="0 0 440 385">
+      <use href="#house" style="--mark: currentColor; --accent: currentColor; --cut: var(--bg, #0d1b26)"/>
+    </symbol>
+    <symbol id="mono-b" viewBox="0 0 1024 1024">
+      <text x="512" y="800" text-anchor="middle" font-family="Manrope, sans-serif" font-weight="700" font-size="820" fill="currentColor">R</text>
+    </symbol>
+    <symbol id="mono-c" viewBox="0 0 1024 1024">
+      <rect x="402" y="10" width="220" height="90" rx="45" fill="currentColor"/>
+      <rect x="472" y="80" width="80" height="80" fill="currentColor"/>
+      <circle cx="512" cy="580" r="380" fill="none" stroke="currentColor" stroke-width="110"/>
+      <text x="508" y="718" text-anchor="middle" font-family="Manrope, sans-serif" font-weight="700" font-size="380" fill="currentColor">HR</text>
+    </symbol>
+  </defs>
+</svg>
+
+<main class="wrap page">
+  <section class="hero">
+    <a class="brand" href="index.html" style="color:#fff"><b>RECO</b><span style="color:var(--accent-light)">HR</span></a>
+    <h1 class="mt-3" style="max-width:22ch">Icon app RecoHR — ba phương án để chọn</h1>
+    <p class="mt-2" style="max-width:66ch;color:rgb(255 255 255 / .82)">
+      Nền navy <b>#09263c</b>, điểm nhấn cam RECO <b>#f27622</b>, chữ Manrope. Phương án được chọn dùng chung cho icon app iOS và Android, màn mở app, icon thông báo, favicon và icon cài đặt trên web (E46.5, reco-devops#544).
+    </p>
+  </section>
+
+  <div class="section-head mt-4" style="margin-bottom:14px">
+    <span class="eyebrow">Chờ PO duyệt · 13/10/2026</span>
+    <h2 class="mt-1">Ba phương án</h2>
+  </div>
+
+  <div class="opts">
+    <!-- A -->
+    <article class="card opt">
+      <div class="card-head"><div><span class="tag">Phương án A</span><h3 class="mt-1">Ngôi nhà RECO + HR</h3><p>Biểu tượng ngôi nhà của thương hiệu RECO, đổi sang trắng trên nền navy, thêm chữ HR màu cam. Nhận ra ngay là sản phẩm RECO.</p></div></div>
+      <div class="card-body">
+        <div class="show">
+          <figure><span class="m m-ios big" style="width:168px;height:168px"><svg class="ic" viewBox="0 0 1024 1024" role="img" aria-label="Icon phương án A"><use href="#tile"/><use href="#mark-a"/></svg></span><figcaption>iOS</figcaption></figure>
+          <figure><span class="m m-circle" style="width:96px;height:96px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-a"/></svg></span><figcaption>Android tròn</figcaption></figure>
+          <figure><span class="m m-squircle" style="width:96px;height:96px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-a"/></svg></span><figcaption>Android bo góc</figcaption></figure>
+        </div>
+        <p class="label">Các cỡ thật</p>
+        <div class="sizes">
+          <span class="m m-ios" style="width:60px;height:60px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-a"/></svg></span>
+          <span class="m m-ios" style="width:40px;height:40px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-a"/></svg></span>
+          <span class="m m-ios" style="width:29px;height:29px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-a"/></svg></span>
+          <span class="m m-fav" style="width:32px;height:32px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-a"/></svg></span>
+          <span class="m m-fav" style="width:16px;height:16px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-a"/></svg></span>
+        </div>
+        <p class="label">Tab trình duyệt</p>
+        <div class="tab"><span class="m m-fav" style="width:16px;height:16px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-a"/></svg></span><span>RecoHR — Trang chủ</span></div>
+        <p class="label">Thông báo (Android, một màu)</p>
+        <div class="stack" style="gap:8px">
+          <div class="statusbar"><b>9:41</b><svg width="16" height="14" viewBox="0 0 440 385" aria-hidden="true" style="color:#fff"><use href="#mono-a"/></svg></div>
+          <div class="notif"><div class="h"><svg width="14" height="12" viewBox="0 0 440 385" aria-hidden="true" style="color:#c1550b"><use href="#mono-a"/></svg>RECO HR <small>· bây giờ</small></div><strong>Đơn nghỉ phép đã được duyệt</strong><p>Thứ Năm 15/10 · Nghỉ phép năm · 1 ngày</p></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- B -->
+    <article class="card opt">
+      <div class="card-head"><div><span class="tag">Phương án B</span><h3 class="mt-1">Chữ RECO HR</h3><p>Hai dòng chữ RECO trắng, HR cam, giống logo chữ trên thanh trên của web. Đơn giản, đọc được tên ngay trên màn hình chính.</p></div></div>
+      <div class="card-body">
+        <div class="show">
+          <figure><span class="m m-ios big" style="width:168px;height:168px"><svg class="ic" viewBox="0 0 1024 1024" role="img" aria-label="Icon phương án B"><use href="#tile"/><use href="#mark-b"/></svg></span><figcaption>iOS</figcaption></figure>
+          <figure><span class="m m-circle" style="width:96px;height:96px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-b"/></svg></span><figcaption>Android tròn</figcaption></figure>
+          <figure><span class="m m-squircle" style="width:96px;height:96px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-b"/></svg></span><figcaption>Android bo góc</figcaption></figure>
+        </div>
+        <p class="label">Các cỡ thật</p>
+        <div class="sizes">
+          <span class="m m-ios" style="width:60px;height:60px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-b"/></svg></span>
+          <span class="m m-ios" style="width:40px;height:40px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-b"/></svg></span>
+          <span class="m m-ios" style="width:29px;height:29px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-b"/></svg></span>
+          <span class="m m-fav" style="width:32px;height:32px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-b"/></svg></span>
+          <span class="m m-fav" style="width:16px;height:16px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-b"/></svg></span>
+        </div>
+        <p class="label">Tab trình duyệt</p>
+        <div class="tab"><span class="m m-fav" style="width:16px;height:16px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-b"/></svg></span><span>RecoHR — Trang chủ</span></div>
+        <p class="label">Thông báo (Android, một màu)</p>
+        <div class="stack" style="gap:8px">
+          <div class="statusbar"><b>9:41</b><svg width="14" height="14" viewBox="0 0 1024 1024" aria-hidden="true" style="color:#fff"><use href="#mono-b"/></svg></div>
+          <div class="notif"><div class="h"><svg width="12" height="12" viewBox="0 0 1024 1024" aria-hidden="true" style="color:#c1550b"><use href="#mono-b"/></svg>RECO HR <small>· bây giờ</small></div><strong>Đơn nghỉ phép đã được duyệt</strong><p>Thứ Năm 15/10 · Nghỉ phép năm · 1 ngày</p></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- C -->
+    <article class="card opt">
+      <div class="card-head"><div><span class="tag">Phương án C</span><h3 class="mt-1">Đồng hồ chấm công + HR</h3><p>Vòng cam như nút Chấm công nổi trên dock, có núm đồng hồ ở trên, chữ HR trắng ở giữa. Gợi đúng việc dùng nhiều nhất là chấm công mỗi ngày.</p></div></div>
+      <div class="card-body">
+        <div class="show">
+          <figure><span class="m m-ios big" style="width:168px;height:168px"><svg class="ic" viewBox="0 0 1024 1024" role="img" aria-label="Icon phương án C"><use href="#tile"/><use href="#mark-c"/></svg></span><figcaption>iOS</figcaption></figure>
+          <figure><span class="m m-circle" style="width:96px;height:96px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-c"/></svg></span><figcaption>Android tròn</figcaption></figure>
+          <figure><span class="m m-squircle" style="width:96px;height:96px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-c"/></svg></span><figcaption>Android bo góc</figcaption></figure>
+        </div>
+        <p class="label">Các cỡ thật</p>
+        <div class="sizes">
+          <span class="m m-ios" style="width:60px;height:60px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-c"/></svg></span>
+          <span class="m m-ios" style="width:40px;height:40px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-c"/></svg></span>
+          <span class="m m-ios" style="width:29px;height:29px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-c"/></svg></span>
+          <span class="m m-fav" style="width:32px;height:32px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-c"/></svg></span>
+          <span class="m m-fav" style="width:16px;height:16px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-c"/></svg></span>
+        </div>
+        <p class="label">Tab trình duyệt</p>
+        <div class="tab"><span class="m m-fav" style="width:16px;height:16px"><svg class="ic" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#tile"/><use href="#mark-c"/></svg></span><span>RecoHR — Trang chủ</span></div>
+        <p class="label">Thông báo (Android, một màu)</p>
+        <div class="stack" style="gap:8px">
+          <div class="statusbar"><b>9:41</b><svg width="14" height="14" viewBox="0 0 1024 1024" aria-hidden="true" style="color:#fff"><use href="#mono-c"/></svg></div>
+          <div class="notif"><div class="h"><svg width="12" height="12" viewBox="0 0 1024 1024" aria-hidden="true" style="color:#c1550b"><use href="#mono-c"/></svg>RECO HR <small>· bây giờ</small></div><strong>Đơn nghỉ phép đã được duyệt</strong><p>Thứ Năm 15/10 · Nghỉ phép năm · 1 ngày</p></div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div class="section-head mt-4" style="margin-bottom:14px">
+    <span class="eyebrow">Trên màn hình chính</span>
+    <h2 class="mt-1">Đặt cạnh các app khác</h2>
+  </div>
+  <div class="phones" id="homes"></div>
+
+  <div class="section-head mt-4" style="margin-bottom:14px">
+    <span class="eyebrow">Lúc mở app</span>
+    <h2 class="mt-1">Màn mở app (splash)</h2>
+    <p class="muted small mt-1" style="max-width:70ch">Splash của hệ điều hành và màn chờ của app cùng nền navy và cùng biểu tượng, nên khi chuyển từ màn này sang màn kia không bị nháy trắng. App chỉ dùng giao diện sáng.</p>
+  </div>
+  <div class="phones" id="splashes"></div>
+
+  <section class="card mt-4">
+    <div class="card-head"><h3>Cách chọn</h3></div>
+    <div class="card-body choose">
+      <ol>
+        <li>Chọn <b>A</b>, <b>B</b> hoặc <b>C</b>. Có thể ghi thêm ý chỉnh, ví dụ "B nhưng HR to hơn".</li>
+        <li>Lựa chọn được ghi lại trên issue <b>reco-devops#544</b>.</li>
+        <li>Sau khi chọn, đội phát triển sinh bộ icon iOS và Android, splash, icon thông báo, favicon và icon cài đặt web từ cùng một bản vẽ.</li>
+      </ol>
+      <p class="micro">Biểu tượng ngôi nhà ở phương án A được vẽ lại từ logo RECO dạng ảnh. Nếu chọn A, cần file vector gốc của bộ nhận diện để xuất bản cuối.</p>
+    </div>
+  </section>
+
+  <p class="micro mt-3"><a href="index.html">← Về danh sách màn RecoHR</a></p>
+</main>
+
+<script src="assets/hr.js"></script>
+<script>
+  (function () {
+    var NS = 'http://www.w3.org/2000/svg';
+    var OPTS = [['a', 'Phương án A'], ['b', 'Phương án B'], ['c', 'Phương án C']];
+    var OTHERS = ['Điện thoại', 'Tin nhắn', 'Zalo', 'Ảnh', 'Lịch', 'Camera', 'Cài đặt', 'Bản đồ', 'Thư', 'Ghi chú', 'Đồng hồ'];
+    var TINTS = ['#4f8f6a', '#5aa0d8', '#2f7bd9', '#e7a23b', '#e05a4f', '#6b7280', '#8a8f98', '#3fa35b', '#3b82f6', '#f3c74b', '#1f2937'];
+
+    function icon(mark, size) {
+      var wrap = document.createElement('span');
+      wrap.className = 'm m-ios';
+      wrap.style.width = size + 'px';
+      wrap.style.height = size + 'px';
+      var svg = document.createElementNS(NS, 'svg');
+      svg.setAttribute('viewBox', '0 0 1024 1024');
+      svg.setAttribute('class', 'ic');
+      svg.setAttribute('aria-hidden', 'true');
+      ['#tile', '#mark-' + mark].forEach(function (ref) {
+        var use = document.createElementNS(NS, 'use');
+        use.setAttribute('href', ref);
+        svg.appendChild(use);
+      });
+      wrap.appendChild(svg);
+      return wrap;
+    }
+
+    function app(node, label) {
+      var a = document.createElement('div');
+      a.className = 'app';
+      a.appendChild(node);
+      var t = document.createElement('span');
+      t.textContent = label;
+      a.appendChild(t);
+      return a;
+    }
+
+    function phone(screen, caption) {
+      var fig = document.createElement('figure');
+      fig.style.margin = '0';
+      var p = document.createElement('div');
+      p.className = 'phone';
+      p.appendChild(screen);
+      fig.appendChild(p);
+      var c = document.createElement('figcaption');
+      c.className = 'phone-cap';
+      c.textContent = caption;
+      fig.appendChild(c);
+      return fig;
+    }
+
+    var homes = document.getElementById('homes');
+    var splashes = document.getElementById('splashes');
+    OPTS.forEach(function (o, i) {
+      var scr = document.createElement('div');
+      scr.className = 'screen home' + (i === 1 ? ' dark' : '');
+      for (var k = 0; k < 16; k++) {
+        if (k === 5) {
+          scr.appendChild(app(icon(o[0], 46), 'RECO HR'));
+        } else {
+          var ph = document.createElement('span');
+          ph.className = 'ph';
+          ph.style.background = TINTS[k % TINTS.length];
+          scr.appendChild(app(ph, OTHERS[k % OTHERS.length]));
+        }
+      }
+      homes.appendChild(phone(scr, o[1] + (i === 1 ? ' · nền tối' : ' · nền sáng')));
+
+      var sp = document.createElement('div');
+      sp.className = 'screen splash';
+      var clock = document.createElement('div');
+      clock.className = 'clock';
+      var l = document.createElement('span'); l.textContent = '9:41';
+      var r = document.createElement('span'); r.textContent = '100%';
+      clock.appendChild(l); clock.appendChild(r);
+      sp.appendChild(clock);
+      var mk = document.createElementNS(NS, 'svg');
+      mk.setAttribute('viewBox', '0 0 1024 1024');
+      mk.setAttribute('class', 'mk');
+      mk.setAttribute('aria-hidden', 'true');
+      var use = document.createElementNS(NS, 'use');
+      use.setAttribute('href', '#mark-' + o[0]);
+      mk.appendChild(use);
+      sp.appendChild(mk);
+      splashes.appendChild(phone(sp, o[1]));
+    });
+  })();
+</script>
+</body>
+</html>
