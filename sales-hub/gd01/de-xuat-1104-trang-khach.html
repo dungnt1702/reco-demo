@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đề xuất #1104 · MH-08 trang khách của liên kết một căn · RECO Sales Hub</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<link rel="stylesheet" href="../assets/compare.css">
+<script defer src="../assets/compare.js"></script>
+</head>
+<body>
+<main class="cmp">
+
+  <header class="cmp-head">
+    <span class="eyebrow">Bước Design · chờ PO duyệt · E71.10</span>
+    <h1>MH-08 Trang khách: liên kết một căn ghi tên căn ngay đầu trang và có nút gọi dính đáy</h1>
+    <p class="lead">
+      Đề xuất cho <a href="https://github.com/recogroup/reco-devops/issues/1104">reco-devops#1104</a>
+      (phát hiện UX-G06-30, PO duyệt làm ngay ở E59.11 #869). Mỗi khung là trang thật thu nhỏ, cuộn được bên trong.
+      Dòng dưới khung là kết quả đo vị trí trong màn đầu. Dữ liệu là mẫu: dự án lấy từ bản mô phỏng,
+      chuyên viên "Lê Thu Hà" và số điện thoại là tên và số giả.
+    </p>
+  </header>
+
+  <section class="cmp-note" aria-label="Thay đổi và lý do">
+    <div class="card card-pad">
+      <h2>Vấn đề hiện tại</h2>
+      <ul class="small">
+        <li>Liên kết gắn một căn nhưng khối đầu trang chỉ ghi tên dự án. Spec-05 MH-08 xếp "ảnh và tên dự án hoặc căn" lên đầu.</li>
+        <li>Khối <b>Sản phẩm đang tư vấn</b> đứng sau Tổng quan, thẻ chuyên viên, nội dung bài và hình ảnh, sát chân trang.</li>
+        <li>Trên điện thoại nút <b>Gọi</b> nằm dưới mép màn đầu và trên trang không có lối liên hệ nào dính lại. Khách phải cuộn mới thấy cả căn được tư vấn lẫn nút gọi.</li>
+      </ul>
+    </div>
+    <div class="card card-pad">
+      <h2>Đề xuất: đổi gì và vì sao</h2>
+      <ol class="small">
+        <li><b>Khối đầu của liên kết một căn</b> ghi <b>"Căn A10-1"</b> làm tiêu đề, tên dự án và địa chỉ ở dòng dưới, thêm một dòng ba thông số (diện tích, phòng ngủ, hướng). Ảnh bìa dự án giữ nguyên. Trên điện thoại khối đầu thấp lại từ 300px xuống 240px để khối căn ló lên ngay trong màn đầu.</li>
+        <li><b>Khối căn lên đầu cột trái</b> của khối đầu tiên, trước Tổng quan. Từ 900px thẻ chuyên viên vẫn ở cột phải, cùng vị trí như hiện nay, nên desktop không bị đẩy nút gọi xuống.</li>
+        <li><b>Dưới 900px có thanh gọi dính đáy</b>: ảnh hoặc chữ cái đầu, tên, số điện thoại và nút <b>Gọi</b> (nền <code>orange-button</code>, cao 44px). Thanh chỉ dùng CSS <code>position: fixed</code> vì trang khách không chạy script (CSP). Thân trang chừa đáy bằng chiều cao thanh cộng <code>safe-area</code>, giống quy ước thanh đáy ở spec-00, nên footer không bị che.</li>
+        <li><b>Căn đã rút sau khi gửi</b>: khối đầu quay về tên dự án, câu "Sản phẩm này không còn được giới thiệu…" đứng đầu cột trái, thanh gọi vẫn còn để khách liên hệ.</li>
+        <li><b>Liên kết dự án</b> (không gắn căn): giữ thứ tự cũ, chỉ thêm thanh gọi. Phần này cần PO chốt, xem câu hỏi bên dưới.</li>
+        <li>Điện thoại nằm ngang: khối đầu thấp lại theo chiều cao màn (240px) thay vì 420px theo bề rộng, để tên căn và nút gọi lọt vào màn 390px.</li>
+        <li>Không thêm màu, font hay bóng mới. Thanh gọi dùng <code>white</code>, <code>line</code>, <code>navy</code>, <code>orange-button</code>. Danh sách trường công khai giữ nguyên, không lộ giá (QD-075).</li>
+      </ol>
+    </div>
+  </section>
+
+  <nav class="cmp-bar" aria-label="Chọn loại liên kết">
+    <span class="lab">Liên kết:</span>
+    <button type="button" class="cmp-pill" data-tt="can" aria-pressed="false">Một căn (A10-1)</button>
+    <button type="button" class="cmp-pill" data-tt="rut" aria-pressed="false">Căn đã rút sau khi gửi</button>
+    <button type="button" class="cmp-pill" data-tt="du-an" aria-pressed="false">Liên kết dự án</button>
+  </nav>
+
+  <section class="cmp-row">
+    <h2>Điện thoại 360 × 800 (M1, Chrome Android)</h2>
+    <div class="cmp-pair">
+      <div class="cmp-cell" data-frame data-src="de-xuat-1104-khung.html" data-v="cu" data-w="360" data-h="800"></div>
+      <div class="cmp-cell" data-frame data-src="de-xuat-1104-khung.html" data-v="moi" data-w="360" data-h="800"></div>
+    </div>
+  </section>
+
+  <section class="cmp-row">
+    <h2>Điện thoại 390 dọc (M2, iPhone Safari)</h2>
+    <p class="small muted">Khung 390 × 664 là phần trang còn thấy được khi Safari hiện thanh địa chỉ. Đây cũng là chiều cao đã đo trong issue.</p>
+    <div class="cmp-pair">
+      <div class="cmp-cell" data-frame data-src="de-xuat-1104-khung.html" data-v="cu" data-w="390" data-h="664"></div>
+      <div class="cmp-cell" data-frame data-src="de-xuat-1104-khung.html" data-v="moi" data-w="390" data-h="664"></div>
+    </div>
+  </section>
+
+  <section class="cmp-row">
+    <h2>Máy tính bảng dọc 768 × 1024 (T1)</h2>
+    <p class="small muted">Dưới 900px thẻ chuyên viên xếp dưới Tổng quan, nên thanh gọi dính đáy cũng hiện ở máy tính bảng dọc.</p>
+    <div class="cmp-pair">
+      <div class="cmp-cell" data-frame data-src="de-xuat-1104-khung.html" data-v="cu" data-w="768" data-h="1024" data-scale="0.75"></div>
+      <div class="cmp-cell" data-frame data-src="de-xuat-1104-khung.html" data-v="moi" data-w="768" data-h="1024" data-scale="0.75"></div>
+    </div>
+  </section>
+
+  <section class="cmp-row">
+    <h2>Máy tính 1440 × 900: khung giữ nguyên</h2>
+    <p class="small muted">Vẫn hai cột và thẻ chuyên viên cùng chỗ ở cột phải, không có thanh dính. Thay đổi duy nhất: tiêu đề khối đầu ghi tên căn, và cột trái mở đầu bằng khối căn.</p>
+    <div class="cmp-pair">
+      <div class="cmp-cell" data-frame data-src="de-xuat-1104-khung.html" data-v="cu" data-w="1440" data-h="900" data-scale="0.5"></div>
+      <div class="cmp-cell" data-frame data-src="de-xuat-1104-khung.html" data-v="moi" data-w="1440" data-h="900" data-scale="0.5"></div>
+    </div>
+  </section>
+
+  <details class="cmp-more">
+    <summary>Khung kiểm lại thêm: điện thoại nằm ngang 844 × 390 (M3)</summary>
+    <section class="cmp-row" style="margin-top:12px">
+      <h2>Điện thoại nằm ngang 844 × 390 (M3)</h2>
+      <div class="cmp-pair">
+        <div class="cmp-cell" data-frame data-src="de-xuat-1104-khung.html" data-v="cu" data-w="844" data-h="390" data-scale="0.75"></div>
+        <div class="cmp-cell" data-frame data-src="de-xuat-1104-khung.html" data-v="moi" data-w="844" data-h="390" data-scale="0.75"></div>
+      </div>
+    </section>
+  </details>
+
+  <section class="cmp-row">
+    <h2>Câu hỏi cho PO</h2>
+    <ol class="small" style="padding-left:20px">
+      <li>Thanh gọi dính đáy có áp cho <b>mọi liên kết có chuyên viên</b> (cả liên kết dự án) không? Prototype đang hiện cho cả hai loại. Issue chỉ nêu liên kết một căn.</li>
+      <li>Trang khách không có script, nên thanh gọi <b>luôn hiện</b>, kể cả khi thẻ chuyên viên đang trong màn. Hai nút gọi cùng lúc có chấp nhận được không? (Bản mô phỏng cũ cũng có hai nút: thẻ chuyên viên và dải "Bước tiếp theo".)</li>
+      <li>Dòng thông số ở khối đầu (diện tích · phòng ngủ · hướng) có giữ không, hay chỉ ghi tên căn và tên dự án?</li>
+      <li>Thứ tự mới có áp cho desktop không (khối căn đầu cột trái, tiêu đề ghi tên căn)? Prototype đang áp cho mọi khổ màn vì spec-05 MH-08 xếp như vậy. Nếu muốn desktop giữ y hệt, có thể giới hạn bằng CSS <code>order</code> dưới 900px.</li>
+      <li>Trên điện thoại nằm ngang (844 × 390), mọi khối đầu trang trong đề xuất thấp lại còn 240px, áp cho cả liên kết dự án. Ở bản đang chạy, chiều cao này tính theo bề rộng nên khối đầu cao hơn cả màn. Đồng ý không?</li>
+    </ol>
+  </section>
+
+  <section class="cmp-row">
+    <h2>Bàn giao khi PO duyệt</h2>
+    <ul class="small" style="padding-left:20px">
+      <li><code>src/public-view/render.ts</code> <code>renderPublicPage</code>: khi có <code>unit</code> và căn chưa rút, khối đầu dùng <code>Căn {code}</code> làm <code>h1</code>, tên dự án và địa chỉ làm dòng phụ, thêm dòng thông số. Các ô trống thì bỏ, như <code>keyValues</code> đang làm.</li>
+      <li>Cùng file: đưa khối căn (và câu căn đã rút) vào đầu cột trái của <code>.agent-wrap</code>, trước Tổng quan. Bỏ khối căn ở cuối.</li>
+      <li>Cùng file: thêm thanh <code>.call-bar</code> khi <code>agent !== null</code>, chỉ hiện dưới 900px. Thêm CSS vào <code>PUBLIC_PAGE_STYLE</code>, không thêm script và không đổi CSP. Số điện thoại lọc như <code>agentCard</code>.</li>
+      <li>Không đổi <code>src/server/public-links/source.ts</code>: các trường đã đủ trong danh sách trắng.</li>
+      <li>Cập nhật spec-05 MH-08 <code>AC-L-1</code> (trỏ sang prototype này, thêm thanh gọi vào thứ tự khối), DESIGN.md §5/§9. Kiểm lại trên M2, M3 như issue yêu cầu.</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

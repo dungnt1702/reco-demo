@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đề xuất #888 · MH-01 đăng nhập trên điện thoại và máy tính bảng dọc · RECO Sales Hub</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<link rel="stylesheet" href="../assets/compare.css">
+<script defer src="../assets/compare.js"></script>
+</head>
+<body>
+<main class="cmp">
+
+  <header class="cmp-head">
+    <span class="eyebrow">Bước Design · chờ PO duyệt · E61.1</span>
+    <h1>MH-01 Đăng nhập: nút, câu báo và lỗi SSO phải nằm trong màn đầu</h1>
+    <p class="lead">
+      Đề xuất cho <a href="https://github.com/recogroup/reco-devops/issues/888">reco-devops#888</a>
+      (phát hiện UX-G01-02, PO duyệt làm ngay ở E59.11 #869). Mỗi khung bên dưới là trang thật thu nhỏ,
+      cuộn được bên trong; dòng dưới khung là kết quả đo vị trí trong màn đầu, đo ngay khi mở.
+    </p>
+  </header>
+
+  <section class="cmp-note" aria-label="Thay đổi và lý do">
+    <div class="card card-pad">
+      <h2>Vấn đề hiện tại</h2>
+      <ul class="small">
+        <li>Dưới 900px khối giới thiệu nền xanh đứng trước form, cao khoảng 630px ở 360px và 540px ở 768px.</li>
+        <li>Ở 360 × 800, nút <b>Đăng nhập bằng RecoHR</b> và câu báo đều nằm dưới mép màn. Người quay về từ RecoHR vì tài khoản bị khoá không thấy lý do.</li>
+        <li>Lỗi SSO còn nằm <i>sau</i> nút và dòng hướng dẫn, nên kể cả khi nút đã lọt vào màn thì câu lỗi vẫn ở ngoài.</li>
+        <li>Ở 768 × 1024, mở <b>Tài khoản Sales Hub nội bộ</b> thì nút đăng nhập bằng mật khẩu nằm dưới mép màn và trang không tự cuộn. MH-01a và MH-01b cũng bị y hệt vì dùng chung khối giới thiệu.</li>
+      </ul>
+    </div>
+    <div class="card card-pad">
+      <h2>Đề xuất: đổi gì và vì sao</h2>
+      <ol class="small">
+        <li><b>Dưới 900px</b>, khối giới thiệu đầu trang thu thành <b>dải logo cao 56px</b> (nền <code>navy</code>, logo và chữ "Sales Hub"). Form đứng ngay sau dải này.</li>
+        <li>Phần giới thiệu (ba ý và tên pháp nhân) <b>chuyển xuống sau form</b>, không mất nội dung. Thứ tự trong mã nguồn đổi theo: dải logo, form, rồi giới thiệu, nên thứ tự Tab và đọc màn hình khớp thứ tự nhìn.</li>
+        <li><b>Câu lỗi SSO đứng ngay dưới lời chào, trước nút chính</b>, cùng chỗ với câu báo "Anh/chị đã đăng xuất.". Người dùng đọc lý do trước rồi mới bấm lại.</li>
+        <li>Mở "Tài khoản Sales Hub nội bộ" mà nút gửi còn dưới mép màn (điện thoại thấp, bàn phím) thì trang cuộn để tiêu đề form lên đầu. Cuộn mượt, tắt khi máy bật giảm chuyển động. Ô mật khẩu có <code>enterkeyhint="go"</code>.</li>
+        <li><b>Từ 900px giữ nguyên khung</b>: hai cột, giới thiệu bên trái (đặt bằng lưới). Riêng câu lỗi SSO đứng trước nút ở mọi khổ màn. Không thêm màu, font hay bóng mới, chỉ dùng token sẵn có của DESIGN.md.</li>
+        <li>Áp chung cho MH-01, MH-01a (Quên mật khẩu) và MH-01b (Đặt hoặc đổi mật khẩu) vì cả ba dùng <code>AuthArtPane</code>.</li>
+      </ol>
+    </div>
+  </section>
+
+  <nav class="cmp-bar" aria-label="Chọn trạng thái màn">
+    <span class="lab">Trạng thái:</span>
+    <button type="button" class="cmp-pill" data-tt="sso-khoa" aria-pressed="false">Lỗi SSO: tài khoản bị khoá</button>
+    <button type="button" class="cmp-pill" data-tt="dang-xuat" aria-pressed="false">Vừa đăng xuất</button>
+    <button type="button" class="cmp-pill" data-tt="noi-bo" aria-pressed="false">Mở form nội bộ</button>
+    <button type="button" class="cmp-pill" data-tt="quen" aria-pressed="false">MH-01a Quên mật khẩu</button>
+    <button type="button" class="cmp-pill" data-tt="doi-mk" aria-pressed="false">MH-01b Đổi mật khẩu</button>
+    <button type="button" class="cmp-pill" data-tt="lien-ket-hong" aria-pressed="false">MH-01b Liên kết hỏng</button>
+  </nav>
+
+  <section class="cmp-row">
+    <h2>Điện thoại 360 × 800 (M1, Chrome Android)</h2>
+    <div class="cmp-pair">
+      <div class="cmp-cell" data-frame data-src="de-xuat-888-khung.html" data-v="cu" data-w="360" data-h="800"></div>
+      <div class="cmp-cell" data-frame data-src="de-xuat-888-khung.html" data-v="moi" data-w="360" data-h="800"></div>
+    </div>
+  </section>
+
+  <section class="cmp-row">
+    <h2>Điện thoại 390 dọc (M2, iPhone Safari)</h2>
+    <p class="small muted">Khung 390 × 664 là phần trang còn thấy được khi Safari hiện thanh địa chỉ và thanh công cụ. Khung này chặt hơn mốc M2 390 × 844 toàn màn.</p>
+    <div class="cmp-pair">
+      <div class="cmp-cell" data-frame data-src="de-xuat-888-khung.html" data-v="cu" data-w="390" data-h="664"></div>
+      <div class="cmp-cell" data-frame data-src="de-xuat-888-khung.html" data-v="moi" data-w="390" data-h="664"></div>
+    </div>
+  </section>
+
+  <section class="cmp-row">
+    <h2>Máy tính bảng dọc 768 × 1024 (T1)</h2>
+    <p class="small muted">Chọn "Mở form nội bộ" để xem nút đăng nhập bằng mật khẩu. Ở khung đề xuất có thể bấm đóng rồi mở lại để thử hành vi cuộn.</p>
+    <div class="cmp-pair">
+      <div class="cmp-cell" data-frame data-src="de-xuat-888-khung.html" data-v="cu" data-w="768" data-h="1024" data-scale="0.75"></div>
+      <div class="cmp-cell" data-frame data-src="de-xuat-888-khung.html" data-v="moi" data-w="768" data-h="1024" data-scale="0.75"></div>
+    </div>
+  </section>
+
+  <section class="cmp-row">
+    <h2>Máy tính 1440 × 900: khung giữ nguyên</h2>
+    <p class="small muted">Từ 900px hai biến thể dựng cùng một bố cục hai cột. Khác biệt duy nhất: câu lỗi SSO đứng trước nút RecoHR ở mọi khổ màn (chọn trạng thái "Lỗi SSO" để thấy). Một thứ tự cho mọi khổ thì đơn giản hơn tách riêng cho điện thoại.</p>
+    <div class="cmp-pair">
+      <div class="cmp-cell" data-frame data-src="de-xuat-888-khung.html" data-v="cu" data-w="1440" data-h="900" data-scale="0.5"></div>
+      <div class="cmp-cell" data-frame data-src="de-xuat-888-khung.html" data-v="moi" data-w="1440" data-h="900" data-scale="0.5"></div>
+    </div>
+  </section>
+
+  <details class="cmp-more">
+    <summary>Khung kiểm lại thêm: nằm ngang 844 × 390 (M3), bàn phím mở 360 × 420 (M4)</summary>
+    <section class="cmp-row" style="margin-top:12px">
+      <h2>Điện thoại nằm ngang 844 × 390 (M3)</h2>
+      <div class="cmp-pair">
+        <div class="cmp-cell" data-frame data-src="de-xuat-888-khung.html" data-v="cu" data-w="844" data-h="390" data-scale="0.75"></div>
+        <div class="cmp-cell" data-frame data-src="de-xuat-888-khung.html" data-v="moi" data-w="844" data-h="390" data-scale="0.75"></div>
+      </div>
+    </section>
+    <section class="cmp-row">
+      <h2>Bàn phím đang mở 360 × 420 (M4)</h2>
+      <p class="small muted">Khi gõ thì trình duyệt tự cuộn tới ô đang nhập. Điều cần thấy ở khung này là tiêu đề, câu báo và ô đầu tiên lọt vào phần màn còn lại.</p>
+      <div class="cmp-pair">
+        <div class="cmp-cell" data-frame data-src="de-xuat-888-khung.html" data-v="cu" data-w="360" data-h="420"></div>
+        <div class="cmp-cell" data-frame data-src="de-xuat-888-khung.html" data-v="moi" data-w="360" data-h="420"></div>
+      </div>
+    </section>
+  </details>
+
+  <section class="cmp-row">
+    <h2>Câu hỏi cho PO</h2>
+    <ol class="small" style="padding-left:20px">
+      <li>Trên điện thoại, phần giới thiệu (ba ý "Dữ liệu · Truy xuất · Chia sẻ") có <b>giữ ở cuối trang</b> như prototype không, hay <b>bỏ hẳn</b> dưới 900px cho gọn? Người dùng màn này là nhân viên nội bộ, đã biết hệ thống.</li>
+      <li>Câu lỗi SSO đứng trước nút RecoHR ở <b>mọi khổ màn</b>, kể cả desktop. Đồng ý không, hay desktop giữ chỗ cũ (sau nút)?</li>
+      <li>Điện thoại nằm ngang (844 × 390) và bàn phím mở (360 × 420) quá thấp để chứa cả biểu mẫu nhiều ô (MH-01b ba ô, MH-01a hai hộp). Đề xuất bảo đảm tiêu đề, câu báo hoặc lỗi và nút đầu tiên ở màn đầu. Với MH-01a ở 844 × 390, nút "Đặt lại mật khẩu ở RecoHR" vẫn thấp hơn mép màn khoảng 50px. Mức này có đạt yêu cầu "kiểm lại đạt trên M3, M4" không?</li>
+      <li>Bản mô phỏng đã duyệt (<code>gd01/dang-nhap.html</code>) còn thẻ "Chính sách phiên đăng nhập", bản đang chạy không có. Prototype này theo bản đang chạy. Khi duyệt, có cập nhật luôn <code>dang-nhap.html</code> theo bố cục mới không?</li>
+    </ol>
+  </section>
+
+  <section class="cmp-row">
+    <h2>Bàn giao khi PO duyệt</h2>
+    <ul class="small" style="padding-left:20px">
+      <li><code>src/components/auth-art-pane.tsx</code>: tách phần logo thành dải riêng, chỉ hiện dưới 900px (<code>min-[900px]:hidden</code>). Ẩn logo trong khối giới thiệu dưới 900px. Từ 900px đặt khối giới thiệu vào cột 1 bằng <code>grid-column</code> và <code>grid-row</code>.</li>
+      <li><code>src/app/(auth)/dang-nhap/page.tsx</code>, <code>quen-mat-khau/page.tsx</code>, <code>dat-mat-khau/page.tsx</code>: đổi thứ tự thành dải logo, cột form, khối giới thiệu. Dưới 900px cột form canh trên, đệm trên 24px.</li>
+      <li><code>src/app/(auth)/dang-nhap/login-form.tsx</code>: dời khối <code>sso-error</code> lên ngay sau câu <code>login-note</code>, trước nút RecoHR. Thêm cuộn khi người dùng mở <code>details</code> và nút gửi còn dưới mép màn. Thêm <code>enterkeyhint</code>.</li>
+      <li>Cập nhật spec-01 MH-01 <code>AC-L-1</code> (trỏ sang prototype này), DESIGN.md §6/§9. Kiểm lại trên T1, M1, M2, M3, M4 như issue yêu cầu.</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Khung MH-01 · đề xuất reco-devops#888</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/fold-probe.js"></script>
+<!--
+  Trang khung cho de-xuat-888-dang-nhap.html. Dựng lại MH-01/MH-01a/MH-01b theo đúng bản đang
+  chạy (src/app/(auth)/*, src/components/auth-art-pane.tsx — cỡ chữ, khoảng cách Tailwind đổi ra px)
+  ở hai biến thể:
+    ?v=cu   bố cục hiện tại: dưới 900px khối giới thiệu đứng trước form.
+    ?v=moi  đề xuất: dưới 900px dải logo ngắn trên đầu, form ngay sau, giới thiệu xuống cuối;
+            câu lỗi SSO đứng trước nút chính. Từ 900px hai biến thể giống hệt nhau.
+  ?tt= chọn màn: sso-khoa | dang-xuat | noi-bo | quen | doi-mk | lien-ket-hong.
+-->
+<style>
+  /* Lớp riêng tiền tố a- để không đụng .btn/.mt-* của reco.css (bản thật không có bóng nút cam). */
+  body { background: var(--paper); }
+  .a-login { display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* ---- Khối giới thiệu (AuthArtPane) ---- */
+  .a-art {
+    position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 28px;
+    padding: 32px var(--gutter); color: #fff;
+    background: linear-gradient(105deg, rgba(5,31,53,.97), rgba(9,49,82,.86)), var(--navy);
+  }
+  .a-brand { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+  .a-brand img { height: 40px; width: auto; display: block; }
+  .a-brand span { font-size: .75rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: rgb(255 255 255 / .72); }
+  .a-art .eyebrow { color: rgb(255 255 255 / .8); }
+  .a-art h2 { color: #fff; font-size: 1.5rem; line-height: 1.33; letter-spacing: -.02em; max-width: 16ch; }
+  .a-art .a-lead { margin: 8px 0 0; max-width: 44ch; color: rgb(255 255 255 / .8); }
+  .a-pts { margin-top: 12px; display: flex; flex-direction: column; gap: 12px; max-width: 44ch; }
+  .a-pt { display: flex; gap: 12px; align-items: flex-start; }
+  .a-pt i {
+    flex: none; width: 26px; height: 26px; border-radius: 50%; background: rgb(255 255 255 / .14);
+    display: inline-flex; align-items: center; justify-content: center;
+    font: normal 700 .72rem var(--font-display);
+  }
+  .a-pt div div { font-size: .875rem; color: rgb(255 255 255 / .7); }
+  .a-legal { margin: 0; font-size: .74rem; color: rgb(255 255 255 / .55); }
+
+  /* ---- Dải logo ngắn (chỉ đề xuất, dưới 900) ---- */
+  .a-strip { display: none; }
+
+  /* ---- Cột form ---- */
+  .a-form { display: flex; align-items: center; justify-content: center; padding: 32px var(--gutter) 80px; }
+  .a-inner { width: 100%; max-width: 400px; }
+  .a-inner.wide { max-width: 480px; }
+  .a-inner h1 { font-size: clamp(1.7rem, 3.4vw, 2.2rem); line-height: 1.15; letter-spacing: -.03em; }
+  .a-inner h1.sm { font-size: clamp(1.6rem, 3.2vw, 2rem); }
+  .a-sub { margin: 4px 0 0; font-size: .98rem; color: var(--muted); }
+  .a-hint { display: block; margin-top: 6px; font-size: .78rem; color: var(--muted); }
+  .a-btn {
+    display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px;
+    margin-top: 16px; padding: 10px 18px; border-radius: var(--radius-md); border: 1px solid transparent;
+    font: 700 .92rem/1.2 var(--font-body); text-decoration: none; cursor: pointer;
+    background: var(--orange-button); color: #fff; transition: background-color .15s ease-out;
+  }
+  .a-btn:hover { background: var(--orange-dark); color: #fff; }
+  .a-btn.outline { background: transparent; border-color: var(--navy); color: var(--navy); margin-top: 12px; }
+  .a-btn.outline:hover { background: color-mix(in srgb, var(--navy) 5%, transparent); }
+  .a-note { margin: 12px 0 0; padding: 12px 16px; border-left: 3px solid var(--navy); border-radius: 0 var(--radius-md) var(--radius-md) 0; background: var(--soft); font-size: .875rem; color: var(--ink); }
+  .a-alert { margin: 12px 0 0; padding: 8px 12px; border-left: 3px solid var(--danger); background: color-mix(in srgb, var(--danger) 6%, transparent); font-size: .875rem; color: var(--ink); }
+  .a-alert strong { color: var(--danger); }
+  .a-or { display: flex; align-items: center; gap: 12px; margin: 16px 0; font-size: .75rem; color: var(--muted); }
+  .a-or::before, .a-or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+  .a-local > summary { cursor: pointer; list-style: none; padding: 8px 0; font-weight: 600; color: var(--navy); min-height: 44px; display: flex; align-items: center; }
+  .a-local > summary::-webkit-details-marker { display: none; }
+  .a-local > summary::before { content: '+\00a0'; }
+  .a-local[open] > summary::before { content: '\2212\00a0'; }
+  .a-field { display: block; margin-bottom: 14px; }
+  .a-field > span:first-child { display: block; margin-bottom: 6px; font-size: .82rem; font-weight: 700; color: var(--navy); }
+  .a-inp {
+    width: 100%; box-sizing: border-box; padding: 11px 14px; border: 1px solid var(--line); border-radius: var(--radius-md);
+    background: var(--white); font: .94rem var(--font-body); color: var(--ink);
+  }
+  .a-inp:focus { outline: 0; border-color: var(--orange-text); box-shadow: 0 0 0 3px color-mix(in srgb, var(--orange) 18%, transparent); }
+  .a-check { display: flex; gap: 10px; align-items: flex-start; margin-top: 8px; font-size: .9rem; cursor: pointer; }
+  .a-check input { margin-top: 3px; width: 17px; height: 17px; accent-color: var(--orange-button); }
+  .a-link { display: inline-block; margin-top: 16px; font-size: .875rem; font-weight: 700; color: var(--navy); }
+  .a-box { margin-top: 16px; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--white); }
+  .a-box h2 { font-size: 1.125rem; letter-spacing: -.02em; }
+  .a-box p, .a-box ol { font-size: .875rem; }
+  .a-box ol { margin: 8px 0 0; padding-left: 20px; }
+  .a-box li + li { margin-top: 4px; }
+
+  /* Mỗi màn chỉ hiện một khối; ô báo lỗi SSO có hai chỗ đặt, mỗi biến thể dùng một chỗ. */
+  [data-screen] { display: none; }
+  [data-screen].on { display: block; }
+  .v-cu .only-moi, .v-moi .only-cu { display: none !important; }
+
+  /* ================= ĐỀ XUẤT — chỉ dưới 900px ================= */
+  @media (max-width: 899.98px) {
+    .v-cu .a-art { order: -1; }                       /* hiện tại: giới thiệu đứng trước form */
+
+    .v-moi .a-strip {
+      display: flex; align-items: center; gap: 8px; min-height: 56px; padding: 8px var(--gutter);
+      background: var(--navy);
+    }
+    .v-moi .a-strip img { height: 32px; width: auto; display: block; }
+    .v-moi .a-strip span { font-size: .75rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: rgb(255 255 255 / .72); }
+    .v-moi .a-form { align-items: flex-start; padding: 24px var(--gutter) 40px; }
+    .v-moi .a-art { padding: 28px var(--gutter) 32px; gap: 20px; }
+    .v-moi .a-art .a-brand { display: none; }          /* logo đã ở dải trên đầu */
+  }
+
+  /* ================= Từ 900px — hai biến thể như nhau (desktop không đổi) ================= */
+  @media (min-width: 900px) {
+    .a-login { display: grid; grid-template-columns: 1.05fr 1fr; }
+    .a-art { grid-column: 1; grid-row: 1; padding: 48px 52px; }
+    .a-form { grid-column: 2; grid-row: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) { .a-btn { transition: none; } }
+</style>
+</head>
+<body class="v-cu" data-fold-labels="Tiêu đề màn|Câu báo / lỗi|Nút chính|Nút đăng nhập bằng mật khẩu">
+
+<main class="a-login">
+
+  <!-- Đề xuất: dải logo ngắn, thay khối giới thiệu ở đầu trang dưới 900px -->
+  <header class="a-strip only-moi">
+    <a class="a-brand" href="#" aria-label="RECO Sales Hub — trang đầu" style="gap:8px">
+      <img src="../assets/img/reco-logo-dark.png" alt="RECO" width="115" height="32">
+    </a>
+    <span>Sales Hub</span>
+  </header>
+
+  <section class="a-form">
+
+    <!-- ===== MH-01 Đăng nhập (sso-khoa · dang-xuat · noi-bo) ===== -->
+    <div class="a-inner" data-screen="login">
+      <span class="eyebrow">Đăng nhập</span>
+      <h1 data-fold="Tiêu đề màn">Chào anh/chị</h1>
+      <p class="a-sub">Đăng nhập bằng số điện thoại hoặc email do RECO cấp.</p>
+
+      <p class="a-note" role="status" data-msg="note" data-fold="Câu báo / lỗi" hidden>Anh/chị đã đăng xuất.</p>
+      <!-- Đề xuất: lỗi SSO đứng ngay dưới lời chào, trước nút chính -->
+      <p class="a-alert only-moi" role="alert" data-msg="sso" data-fold="Câu báo / lỗi" hidden>Tài khoản Sales Hub của anh/chị đang bị khoá hoặc đã nghỉ việc trên RecoHR. Liên hệ Hành chính nhân sự.</p>
+
+      <a class="a-btn" href="#" data-fold="Nút chính">Đăng nhập bằng RecoHR</a>
+      <span class="a-hint">Nhập số điện thoại hoặc email cùng mật khẩu RecoHR ở trang RecoHR, rồi quay lại đây.</span>
+      <!-- Hiện tại: lỗi SSO nằm sau nút và dòng hướng dẫn -->
+      <p class="a-alert only-cu" role="alert" data-msg="sso" data-fold="Câu báo / lỗi" hidden>Tài khoản Sales Hub của anh/chị đang bị khoá hoặc đã nghỉ việc trên RecoHR. Liên hệ Hành chính nhân sự.</p>
+
+      <div class="a-or" aria-hidden="true">hoặc</div>
+
+      <details class="a-local" id="local">
+        <summary id="local-sum">Tài khoản Sales Hub nội bộ</summary>
+        <form novalidate onsubmit="return false" style="margin-top:12px">
+          <label class="a-field"><span>Số điện thoại hoặc email</span>
+            <input class="a-inp" type="text" autocomplete="username" placeholder="0912 345 678 hoặc ten@nhaongayreco.vn">
+            <span class="a-hint">Hệ thống tự nhận diện đúng định dạng, anh/chị không cần chọn kiểu đăng nhập.</span>
+          </label>
+          <label class="a-field"><span>Mật khẩu</span>
+            <input class="a-inp" type="password" autocomplete="current-password" enterkeyhint="go">
+          </label>
+          <label class="a-check"><input type="checkbox" checked> <span>Ghi nhớ thiết bị này</span></label>
+          <button class="a-btn outline" type="submit" id="local-go" data-fold="Nút đăng nhập bằng mật khẩu">Đăng nhập bằng mật khẩu Sales Hub</button>
+          <span class="a-hint">Dành cho tài khoản không có trên RecoHR (như người quản trị chung) và tài khoản đã có mật khẩu Sales Hub từ trước.</span>
+        </form>
+      </details>
+
+      <a class="a-link" href="#">Quên mật khẩu?</a>
+    </div>
+
+    <!-- ===== MH-01a Quên mật khẩu ===== -->
+    <div class="a-inner wide" data-screen="quen">
+      <span class="eyebrow">Quên mật khẩu</span>
+      <h1 class="sm" data-fold="Tiêu đề màn">Lấy lại mật khẩu</h1>
+      <p class="a-sub">Sales Hub dùng chung mật khẩu với RecoHR. Đặt lại một lần là dùng được cho cả hai.</p>
+      <div class="a-box">
+        <h2>Nhân viên RECO</h2>
+        <p style="margin:4px 0 0">Đặt lại mật khẩu ở RecoHR, bằng một trong hai cách:</p>
+        <ol>
+          <li><strong>Qua email:</strong> nhập số điện thoại hoặc email, mở link trong thư (dùng một lần, trong 1 giờ) rồi đặt mật khẩu mới.</li>
+          <li><strong>Không có email:</strong> nhờ HR gửi link đặt lại mật khẩu qua Zalo (dùng một lần, trong 24 giờ).</li>
+        </ol>
+        <a class="a-btn" href="#" data-fold="Nút chính">Đặt lại mật khẩu ở RecoHR</a>
+        <span class="a-hint">Đặt xong, quay lại Sales Hub và bấm Đăng nhập bằng RecoHR.</span>
+      </div>
+      <div class="a-box">
+        <h2>Tài khoản Sales Hub nội bộ</h2>
+        <p style="margin:4px 0 0">Tài khoản không có trên RecoHR (như người quản trị chung): liên hệ người đã cấp tài khoản để được đặt lại mật khẩu.</p>
+      </div>
+      <a class="a-link" href="#">Về trang đăng nhập</a>
+    </div>
+
+    <!-- ===== MH-01b Đổi mật khẩu trước khi tiếp tục ===== -->
+    <div class="a-inner" data-screen="doi-mk">
+      <span class="eyebrow">Đặt mật khẩu</span>
+      <h1 data-fold="Tiêu đề màn">Đổi mật khẩu trước khi tiếp tục</h1>
+      <p class="a-sub">Tài khoản của anh/chị cần mật khẩu mới trước khi dùng hệ thống.</p>
+      <p class="a-sub">Mật khẩu từ 12 đến 128 ký tự, không dùng mật khẩu quá phổ biến và không chứa tên, số điện thoại hay email của anh/chị.</p>
+      <form novalidate onsubmit="return false" style="margin-top:12px">
+        <label class="a-field"><span>Mật khẩu hiện tại</span><input class="a-inp" type="password" autocomplete="current-password"></label>
+        <label class="a-field"><span>Mật khẩu mới</span><input class="a-inp" type="password" autocomplete="new-password"></label>
+        <label class="a-field"><span>Nhập lại mật khẩu</span><input class="a-inp" type="password" autocomplete="new-password" enterkeyhint="done"></label>
+        <button class="a-btn" type="submit" data-fold="Nút chính">Đặt mật khẩu</button>
+      </form>
+    </div>
+
+    <!-- ===== MH-01b Liên kết không dùng được ===== -->
+    <div class="a-inner" data-screen="lien-ket-hong">
+      <span class="eyebrow">Đặt mật khẩu</span>
+      <h1 data-fold="Tiêu đề màn">Liên kết không dùng được</h1>
+      <p class="a-alert" role="alert" data-fold="Câu báo / lỗi" style="padding:12px 16px">Liên kết đặt mật khẩu không hợp lệ hoặc đã hết hạn (hiệu lực 24 giờ).</p>
+      <p class="a-sub" style="margin-top:12px;font-size:.875rem">Anh/chị liên hệ người quản trị chung để được cấp lại đường dẫn mới.</p>
+      <a class="a-link" href="#" data-fold="Nút chính" style="color:var(--orange-text)">Về trang đăng nhập</a>
+    </div>
+  </section>
+
+  <!-- Khối giới thiệu: hiện tại đứng đầu dưới 900px; đề xuất xuống cuối, bỏ logo trùng -->
+  <section class="a-art">
+    <a class="a-brand" href="#">
+      <img src="../assets/img/reco-logo-dark.png" alt="RECO" width="144" height="40">
+      <span>Sales Hub</span>
+    </a>
+    <div>
+      <span class="eyebrow">Nền tảng bán hàng nội bộ</span>
+      <h2>Một nơi duy nhất cho mọi thông tin dự án</h2>
+      <p class="a-lead">Thông tin tập trung, có nguồn và có ngày hiệu lực — để đội bán hàng tư vấn nhanh hơn và nói cùng một thông tin.</p>
+      <div class="a-pts">
+        <div class="a-pt"><i>1</i><div><b>Dữ liệu</b><div>Dự án, bảng hàng, tài liệu, ảnh và chính sách được sắp xếp theo bảy nhánh cố định.</div></div></div>
+        <div class="a-pt"><i>2</i><div><b>Truy xuất</b><div>Tìm đúng thứ cần dùng ngay khi đang ngồi với khách.</div></div></div>
+        <div class="a-pt"><i>3</i><div><b>Chia sẻ</b><div>Gửi khách một trang công khai gắn đúng tên nhân viên phụ trách.</div></div></div>
+      </div>
+    </div>
+    <p class="a-legal">Công ty Cổ phần Nhà Ở Ngay RECO · Hệ thống dành cho nhân sự nội bộ</p>
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var q = new URLSearchParams(location.search);
+  var v = q.get('v') === 'moi' ? 'moi' : 'cu';
+  var tt = q.get('tt') || 'sso-khoa';
+  document.body.className = 'v-' + v;
+
+  var screen = { 'sso-khoa': 'login', 'dang-xuat': 'login', 'noi-bo': 'login', quen: 'quen', 'doi-mk': 'doi-mk', 'lien-ket-hong': 'lien-ket-hong' }[tt] || 'login';
+  document.querySelector('[data-screen="' + screen + '"]').classList.add('on');
+  [].slice.call(document.querySelectorAll('[data-msg="sso"]')).forEach(function (n) { n.hidden = tt !== 'sso-khoa'; });
+  document.querySelector('[data-msg="note"]').hidden = tt !== 'dang-xuat';
+
+  var local = document.getElementById('local');
+  if (tt === 'noi-bo') local.open = true;
+
+  /* Đề xuất: mở "Tài khoản Sales Hub nội bộ" mà nút gửi còn dưới mép màn thì cuộn tiêu đề form lên đầu.
+     Chỉ chạy khi người dùng tự mở — mở sẵn lúc tải (có lỗi) thì không giật trang. */
+  var userToggled = false;
+  document.getElementById('local-sum').addEventListener('click', function () { userToggled = true; });
+  local.addEventListener('toggle', function () {
+    if (v !== 'moi' || !local.open || !userToggled) return;
+    userToggled = false;
+    var go = document.getElementById('local-go').getBoundingClientRect();
+    if (go.bottom <= window.innerHeight) return;
+    var calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.getElementById('local-sum').scrollIntoView({ block: 'start', behavior: calm ? 'auto' : 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>
