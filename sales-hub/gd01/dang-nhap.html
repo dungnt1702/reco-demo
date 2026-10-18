@@ -139,9 +139,10 @@
         <a href="dang-nhap.html?loi=sso_that_bai">RecoHR lỗi, mở sẵn form mật khẩu</a> ·
         <a href="dang-nhap.html?da=dang-xuat">vừa đăng xuất</a>.
         Mở <em>Tài khoản Sales Hub nội bộ</em> trên điện thoại thì trang tự cuộn tới form; lỗi của form diễn được ngay tại đây:
-        gõ <code>abc</code> vào ô đầu để thấy lỗi sai định dạng;
-        đổi mật khẩu khác <code>reco-demo-2026</code> để thấy lỗi sai mật khẩu;
-        gõ <code>0000000000</code> — hoặc số của một tài khoản vừa bị Ngừng ở màn Người dùng — để thấy lỗi tài khoản đã ngừng.
+        gõ <code>abc</code> vào ô đầu để thấy lỗi sai định dạng ngay dưới ô.
+        Sai mật khẩu (khác <code>reco-demo-2026</code>), số không có trong màn Người dùng, hay số của một tài khoản vừa bị Ngừng
+        đều chỉ nhận <em>một</em> câu chung “Số điện thoại/email hoặc mật khẩu không đúng.” — cố ý như bản thật (D-15):
+        không cho biết tài khoản có tồn tại hay đã ngừng, để không ai dò được danh sách tài khoản.
       </div>
     </div>
   </section>
@@ -268,17 +269,11 @@ document.addEventListener('DOMContentLoaded', function () {
       fail('Thông tin đăng nhập chưa hợp lệ', 'Anh/chị xem lại ô được đánh dấu đỏ bên dưới.');
       return;
     }
+    /* D-15 (chống dò tài khoản): sai mật khẩu, không có tài khoản và tài khoản đã ngừng đều nhận MỘT câu,
+       đúng nguyên văn BAD_CREDENTIALS của src/app/api/auth/login/route.ts — không nêu tên, không nêu nhánh nào. */
     var who = findUser(id.value);
-    if (digits(id.value) === '0000000000' || (who && who.state === 'off')) {
-      fail('Tài khoản đã bị ngừng',
-        'Tài khoản' + (who ? ' của ' + who.name : '') + ' đã được người quản trị chung ngừng hoạt động, mọi phiên đăng nhập đã bị hủy. ' +
-        'Anh/chị liên hệ người quản trị chung để mở lại.');
-      return;
-    }
-    if (pw.value !== DEMO_PW) {
-      fail('Thông tin đăng nhập không đúng',
-        'Kiểm tra lại số điện thoại/email và mật khẩu. Nhập sai nhiều lần thì bị chặn tạm. ' +
-        'Nhân viên RECO nên dùng nút Đăng nhập bằng RecoHR; quên mật khẩu thì bấm Quên mật khẩu? bên dưới.');
+    if (!who || who.state === 'off' || pw.value !== DEMO_PW) {
+      fail('Không đăng nhập được', 'Số điện thoại/email hoặc mật khẩu không đúng.');
       pw.focus();
       pw.select();
       return;
