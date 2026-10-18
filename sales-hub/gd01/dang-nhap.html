@@ -10,30 +10,60 @@
 <script defer src="../assets/reco.js"></script>
 <script defer src="store.js"></script>
 <style>
-  .login { display: grid; min-height: 100vh; }
-  @media (min-width: 900px) { .login { grid-template-columns: 1.05fr 1fr; } }
-  .login-art {
-    position: relative; color: #fff; padding: 34px var(--gutter);
-    background: linear-gradient(105deg, rgba(5,31,53,.97), rgba(9,49,82,.86)), url('../assets/img/reco-banner.jpg') center/cover;
-    display: flex; flex-direction: column; justify-content: space-between; gap: 28px;
+  /* Bố cục chung MH-01 / MH-01a (reco-devops#888, PO duyệt 18/10/2026, spec-01 AC-L-1).
+     Thứ tự mã nguồn = thứ tự trên điện thoại: dải logo, form, giới thiệu.
+     Từ 900px: hai cột, giới thiệu đặt vào cột 1 bằng lưới — khung giữ như cũ. */
+  .login { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; min-height: 100vh; }
+  .login-strip {
+    display: flex; align-items: center; gap: 8px; min-height: 56px; padding: 8px var(--gutter);
+    background: var(--navy); text-decoration: none;
   }
-  @media (min-width: 900px) { .login-art { padding: 48px 52px; } }
-  .login-form { display: flex; align-items: center; justify-content: center; padding: 34px var(--gutter) 80px; }
+  .login-strip img { height: 32px; width: auto; display: block; }
+  .login-strip span {
+    font-size: .75rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+    color: rgb(255 255 255 / .72); white-space: nowrap;
+  }
+  .login-art {
+    position: relative; color: #fff; padding: 28px var(--gutter) 32px;
+    background: linear-gradient(105deg, rgba(5,31,53,.97), rgba(9,49,82,.86)), url('../assets/img/reco-banner.jpg') center/cover;
+    display: flex; flex-direction: column; justify-content: space-between; gap: 20px;
+  }
+  .login-art > .brand { display: none; }   /* dưới 900px logo đã ở dải trên đầu */
+  .login-form { display: flex; align-items: flex-start; justify-content: center; padding: 24px var(--gutter) 40px; }
   .login-form .inner { width: 100%; max-width: 400px; }
+  @media (min-width: 900px) {
+    .login { grid-template-columns: 1.05fr 1fr; align-content: normal; }
+    .login-strip { display: none; }
+    .login-art { grid-column: 1; grid-row: 1; padding: 48px 52px; gap: 28px; }
+    .login-art > .brand { display: inline-flex; }
+    .login-form { grid-column: 2; grid-row: 1; align-items: center; padding: 34px var(--gutter) 80px; }
+  }
   .login-art h2, .login-art h3 { color: #fff; }
+  .login-art .lead { color: rgb(255 255 255 / .8); }   /* như bản thật: chữ xám --muted trên navy thiếu tương phản */
   .login-art .pt { display: flex; gap: 12px; align-items: flex-start; }
-  /* QD-153: dòng "hoặc" giữa nút RecoHR và tài khoản nội bộ */
-  .login-or { display: flex; align-items: center; gap: 12px; color: var(--muted, #6b7280); font-size: .85rem; }
-  .login-or::before, .login-or::after { content: ''; flex: 1; border-top: 1px solid var(--line); }
-  .login-local > summary { cursor: pointer; font-weight: 600; padding: 10px 0; list-style: none; }
-  .login-local > summary::-webkit-details-marker { display: none; }
-  .login-local > summary::before { content: '+ '; }
-  .login-local[open] > summary::before { content: '− '; }
   .login-art .pt i {
     flex: none; width: 26px; height: 26px; border-radius: 50%;
     background: rgba(255,255,255,.14); display: inline-flex; align-items: center; justify-content: center;
     font-style: normal; font-family: var(--font-display); font-weight: 700; font-size: .72rem;
   }
+  /* Câu báo (?da=…) và lỗi SSO (?loi=…): ngay dưới lời chào, trước nút RecoHR, ở mọi khổ màn (#888). */
+  .login-msg { margin: 12px 0 0; padding: 12px 16px; font-weight: 400; border-left: 3px solid var(--navy); border-radius: 0 var(--radius-md) var(--radius-md) 0; background: var(--soft); font-size: .875rem; color: var(--ink); }
+  .login-msg.err { border-left-color: var(--danger); background: color-mix(in srgb, var(--danger) 6%, transparent); }
+  .login-msg.err strong { color: var(--danger); }
+  /* QD-153: dòng "hoặc" giữa nút RecoHR và tài khoản nội bộ */
+  .login-or { display: flex; align-items: center; gap: 12px; color: var(--muted, #6b7280); font-size: .85rem; }
+  .login-or::before, .login-or::after { content: ''; flex: 1; border-top: 1px solid var(--line); }
+  .login-local > summary {
+    cursor: pointer; font-weight: 600; color: var(--navy); padding: 8px 0; list-style: none;
+    min-height: 44px; display: flex; align-items: center;
+  }
+  .login-local > summary::-webkit-details-marker { display: none; }
+  .login-local > summary::before { content: '+\00a0'; }
+  .login-local[open] > summary::before { content: '\2212\00a0'; }
+  .login-forgot { display: inline-flex; align-items: center; min-height: 44px; }
+  /* Cả dòng "Ghi nhớ thiết bị này" là vùng chạm ≥ 44px, không chỉ ô tích 17px. */
+  .login-local label.check { min-height: 44px; align-items: center; margin-top: 4px; }
+  .login-local label.check input { margin-top: 0; }
 </style>
 </head>
 <body data-shell="plain" data-page="dang-nhap">
@@ -41,6 +71,82 @@
 <main id="page">
 <div class="login">
 
+  <!-- #888: dưới 900px dải logo navy 56px thay khối giới thiệu ở đầu trang -->
+  <a class="login-strip" href="index.html" aria-label="RECO Sales Hub — về bản đồ prototype">
+    <img src="../assets/img/reco-logo-dark.png" alt="RECO" width="115" height="32">
+    <span>Sales Hub</span>
+  </a>
+
+  <section class="login-form">
+    <div class="inner">
+      <span class="eyebrow">Đăng nhập</span>
+      <h1 style="font-size:clamp(1.7rem,3.4vw,2.2rem)">Chào anh/chị</h1>
+      <p class="lead mt-1" style="font-size:.98rem">Đăng nhập bằng số điện thoại hoặc email do RECO cấp.</p>
+
+      <p class="login-msg" id="li-note" role="status" hidden></p>
+      <!-- #888: lỗi SSO đọc trước rồi mới bấm lại — đứng trước nút RecoHR ở mọi khổ màn -->
+      <p class="login-msg err" id="li-sso-err" role="alert" hidden>
+        <strong>Không đăng nhập được bằng RecoHR</strong> <span id="li-sso-err-b"></span>
+      </p>
+
+      <!-- QD-153: SSO RecoHR là cách đăng nhập chính -->
+      <a class="btn btn-primary btn-block mt-3" id="li-sso" href="trang-dau.html">Đăng nhập bằng RecoHR</a>
+      <p class="hint mt-1">Nhập số điện thoại hoặc email cùng mật khẩu RecoHR ở trang RecoHR, rồi quay lại đây.</p>
+
+      <div class="login-or mt-3" aria-hidden="true"><span>hoặc</span></div>
+
+      <details class="login-local mt-2" id="li-local">
+        <summary>Tài khoản Sales Hub nội bộ</summary>
+        <div class="login-msg err" id="login-err" role="alert" tabindex="-1" hidden>
+          <strong id="login-err-t">Không đăng nhập được</strong>
+          <span id="login-err-b"></span>
+        </div>
+      <form class="mt-2" id="login-form" novalidate>
+        <label class="field">
+          <span class="lab">Số điện thoại hoặc email</span>
+          <input class="inp" type="text" name="identifier" id="li-id" value="0912 345 678" autocomplete="username"
+                 placeholder="0912 345 678 hoặc email"
+                 data-required
+                 data-pattern="^((0|\+84)[\s.]?(\d[\s.]?){9}|[^@\s]+@[^@\s]+\.[A-Za-z]{2,})$"
+                 data-msg="Nhập số điện thoại Việt Nam (ví dụ 0912 345 678) hoặc email do RECO cấp (ví dụ ten@nhaongayreco.vn).">
+          <span class="hint">Hệ thống tự nhận diện đúng định dạng, anh/chị không cần chọn kiểu đăng nhập.</span>
+        </label>
+
+        <label class="field">
+          <span class="lab">Mật khẩu</span>
+          <input class="inp" type="password" name="password" id="li-pw" value="reco-demo-2026" autocomplete="current-password"
+                 enterkeyhint="go" data-required data-msg="Nhập mật khẩu RECO đã cấp cho anh/chị.">
+        </label>
+
+        <label class="check mt-2"><input type="checkbox" id="li-remember" checked> <span>Ghi nhớ thiết bị này</span></label>
+
+        <button class="btn btn-outline btn-block mt-3" type="submit" id="li-go">Đăng nhập bằng mật khẩu Sales Hub</button>
+        <p class="hint mt-1">Dành cho tài khoản không có trên RecoHR (như người quản trị chung) và tài khoản đã có mật khẩu Sales Hub từ trước.</p>
+      </form>
+      </details>
+
+      <p class="mt-2"><a class="login-forgot" href="quen-mat-khau.html" id="li-forgot"><strong>Quên mật khẩu?</strong></a></p>
+
+      <p class="micro muted mt-3">
+        Đây là bản mô phỏng — bấm <strong>Đăng nhập bằng RecoHR</strong> để vào thẳng Trang đầu (bản thật chuyển sang trang đăng nhập RecoHR rồi quay lại).
+        <a href="index.html">Về bản đồ prototype</a>
+      </p>
+
+      <div class="note mt-3">
+        <strong>Ghi chú cho người trình bày.</strong>
+        Câu báo và lỗi khi quay về từ RecoHR đứng ngay dưới lời chào, trước nút RecoHR:
+        <a href="dang-nhap.html?loi=sso_bi_khoa">lỗi SSO tài khoản bị khoá</a> ·
+        <a href="dang-nhap.html?loi=sso_that_bai">RecoHR lỗi, mở sẵn form mật khẩu</a> ·
+        <a href="dang-nhap.html?da=dang-xuat">vừa đăng xuất</a>.
+        Mở <em>Tài khoản Sales Hub nội bộ</em> trên điện thoại thì trang tự cuộn tới form; lỗi của form diễn được ngay tại đây:
+        gõ <code>abc</code> vào ô đầu để thấy lỗi sai định dạng;
+        đổi mật khẩu khác <code>reco-demo-2026</code> để thấy lỗi sai mật khẩu;
+        gõ <code>0000000000</code> — hoặc số của một tài khoản vừa bị Ngừng ở màn Người dùng — để thấy lỗi tài khoản đã ngừng.
+      </div>
+    </div>
+  </section>
+
+  <!-- Khối giới thiệu: từ 900px là cột trái; dưới 900px nằm cuối trang, sau form (#888) -->
   <section class="login-art">
     <a class="brand" href="index.html" style="color:#fff">
       <b style="color:#fff">RECO</b><span style="color:rgba(255,255,255,.72)">Sales Hub</span>
@@ -60,73 +166,6 @@
     <p class="micro" style="color:rgba(255,255,255,.55);margin:0">Công ty Cổ phần Nhà Ở Ngay RECO · Hệ thống dành cho nhân sự nội bộ</p>
   </section>
 
-  <section class="login-form">
-    <div class="inner">
-      <span class="eyebrow">Đăng nhập</span>
-      <h1 style="font-size:clamp(1.7rem,3.4vw,2.2rem)">Chào anh/chị</h1>
-      <p class="lead mt-1" style="font-size:.98rem">Dùng tài khoản RecoHR — một mật khẩu cho cả RecoHR và Sales Hub.</p>
-
-      <!-- QD-153: SSO RecoHR là cách đăng nhập chính -->
-      <a class="btn btn-primary btn-block mt-3" id="li-sso" href="trang-dau.html">Đăng nhập bằng RecoHR</a>
-      <p class="hint mt-1">Nhập số điện thoại hoặc email cùng mật khẩu RecoHR ở trang RecoHR, rồi quay lại đây.</p>
-
-      <div class="login-or mt-3" aria-hidden="true"><span>hoặc</span></div>
-
-      <div class="note note-danger mt-3" id="login-err" role="alert" hidden>
-        <strong id="login-err-t">Không đăng nhập được</strong>
-        <span id="login-err-b"></span>
-      </div>
-
-      <details class="login-local mt-2" id="li-local">
-        <summary>Tài khoản Sales Hub nội bộ</summary>
-      <form class="mt-2" id="login-form" novalidate>
-        <label class="field">
-          <span class="lab">Số điện thoại hoặc email</span>
-          <input class="inp" type="text" name="identifier" id="li-id" value="0912 345 678" autocomplete="username"
-                 placeholder="0912 345 678 hoặc ten@nhaongayreco.vn"
-                 data-required
-                 data-pattern="^((0|\+84)[\s.]?(\d[\s.]?){9}|[^@\s]+@[^@\s]+\.[A-Za-z]{2,})$"
-                 data-msg="Nhập số điện thoại Việt Nam (ví dụ 0912 345 678) hoặc email do RECO cấp (ví dụ ten@nhaongayreco.vn).">
-          <span class="hint">Hệ thống tự nhận diện đúng định dạng, anh/chị không cần chọn kiểu đăng nhập.</span>
-        </label>
-
-        <label class="field">
-          <span class="lab">Mật khẩu</span>
-          <input class="inp" type="password" name="password" id="li-pw" value="reco-demo-2026" autocomplete="current-password"
-                 data-required data-msg="Nhập mật khẩu RECO đã cấp cho anh/chị.">
-        </label>
-
-        <label class="check mt-2"><input type="checkbox" id="li-remember" checked> <span>Ghi nhớ thiết bị này</span></label>
-
-        <button class="btn btn-outline btn-block mt-3" type="submit" id="li-go">Đăng nhập bằng mật khẩu Sales Hub</button>
-        <p class="hint mt-1">Dành cho tài khoản không phải nhân viên trên RecoHR (ví dụ người quản trị chung) và tài khoản đã có mật khẩu Sales Hub từ trước.</p>
-      </form>
-      </details>
-
-      <p class="mt-3"><a href="quen-mat-khau.html" id="li-forgot"><strong>Quên mật khẩu?</strong></a></p>
-
-      <div class="card card-pad mt-3">
-        <h4>Chính sách phiên đăng nhập</h4>
-        <ul class="small muted mt-1" style="margin:0;padding-left:18px">
-          <li id="li-policy">Hết hạn sau 7 ngày không sử dụng, tối đa 30 ngày.</li>
-          <li>Phiên cũ hơn 12 giờ sẽ hỏi lại mật khẩu khi mở nội dung <span class="lb lb-restricted">Nội bộ hạn chế</span>, duyệt hoặc công bố nội dung, tạo đường dẫn gửi khách, hoặc vào màn quản lý người dùng.</li>
-        </ul>
-      </div>
-
-      <p class="micro muted mt-3">
-        Đây là bản mô phỏng — bấm <strong>Đăng nhập bằng RecoHR</strong> để vào thẳng Trang đầu (bản thật chuyển sang trang đăng nhập RecoHR rồi quay lại).
-        <a href="index.html">Về bản đồ prototype</a>
-      </p>
-
-      <div class="note mt-3">
-        <strong>Ghi chú cho người trình bày.</strong> Mở <em>Tài khoản Sales Hub nội bộ</em>; ba trạng thái lỗi diễn được ngay tại đây:
-        gõ <code>abc</code> vào ô đầu để thấy lỗi sai định dạng;
-        đổi mật khẩu khác <code>reco-demo-2026</code> để thấy lỗi sai mật khẩu;
-        gõ <code>0000000000</code> — hoặc số của một tài khoản vừa bị Ngừng ở màn Người dùng — để thấy lỗi tài khoản đã ngừng.
-      </div>
-    </div>
-  </section>
-
 </div>
 </main>
 
@@ -137,25 +176,64 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!form) return;
 
   var id = document.getElementById('li-id'), pw = document.getElementById('li-pw');
-  var remember = document.getElementById('li-remember'), policy = document.getElementById('li-policy');
+  var local = document.getElementById('li-local');
   var box = document.getElementById('login-err'),
       boxT = document.getElementById('login-err-t'), boxB = document.getElementById('login-err-b');
   var DEMO_PW = 'reco-demo-2026';
 
-  /* Ghi nhớ thiết bị đổi hẳn thời hạn phiên — người xem thử phải thấy hệ quả, không chỉ một ô tích. */
-  function paintPolicy() {
-    policy.textContent = remember.checked
-      ? 'Đang bật Ghi nhớ thiết bị này — phiên giữ tới 30 ngày, hết hạn sau 7 ngày không sử dụng.'
-      : 'Không ghi nhớ thiết bị — phiên kết thúc khi đóng trình duyệt, tối đa 12 giờ.';
+  /* Cùng mã và câu với bản thật (src/app/(auth)/dang-nhap/page.tsx): ?loi=… khi luồng RecoHR quay về,
+     ?da=… khi vừa đăng xuất hoặc vừa đặt/đổi mật khẩu. */
+  var SSO_ERRORS = {
+    sso_that_bai: 'Vui lòng thử lại hoặc dùng mật khẩu.',
+    sso_bi_khoa: 'Tài khoản Sales Hub của anh/chị đang bị khoá hoặc đã nghỉ việc trên RecoHR. Liên hệ Hành chính nhân sự.',
+    sso_khong_co_tai_khoan: 'Anh/chị chưa có tài khoản Sales Hub. Phòng ban của anh/chị chưa được cấp quyền — liên hệ Hành chính nhân sự.',
+    sso_tat: 'Đăng nhập bằng RecoHR đang tắt. Vui lòng dùng mật khẩu.'
+  };
+  var NOTES = {
+    'dang-xuat': 'Anh/chị đã đăng xuất.',
+    'dang-xuat-moi-noi': 'Anh/chị đã đăng xuất khỏi mọi thiết bị.',
+    'doi-mat-khau': 'Đã đổi mật khẩu. Vui lòng đăng nhập lại bằng mật khẩu mới.',
+    'dat-mat-khau': 'Đã đặt mật khẩu. Đăng nhập bằng mật khẩu vừa tạo.'
+  };
+  var qs = new URLSearchParams(location.search);
+  var loi = qs.get('loi'), da = qs.get('da');
+  if (da && NOTES[da]) {
+    var n = document.getElementById('li-note');
+    n.textContent = NOTES[da];
+    n.hidden = false;
   }
-  remember.addEventListener('change', paintPolicy);
-  paintPolicy();
+  if (loi && SSO_ERRORS[loi]) {
+    document.getElementById('li-sso-err-b').textContent = SSO_ERRORS[loi];
+    document.getElementById('li-sso-err').hidden = false;
+  }
+  /* #896: mật khẩu là lối vào lúc này — form mở sẵn, tiêu điểm ở ô đầu, nút gửi là nút chính. */
+  var openedByScript = false;
+  if (da === 'doi-mat-khau' || da === 'dat-mat-khau' || loi === 'sso_that_bai' || loi === 'sso_tat') {
+    openedByScript = true;
+    local.open = true;
+    document.getElementById('li-sso').classList.replace('btn-primary', 'btn-outline');
+    document.getElementById('li-go').classList.replace('btn-outline', 'btn-primary');
+    id.focus({ preventScroll: true });
+  }
+
+  /* #888: người dùng vừa mở form trên điện thoại / máy tính bảng dọc mà nút gửi còn dưới mép màn
+     thì đưa form lên. Từ 900px cột đứng yên; máy bật giảm chuyển động thì không cuộn. */
+  local.addEventListener('toggle', function () {
+    if (openedByScript) { openedByScript = false; return; }
+    if (!local.open) return;
+    var go = document.getElementById('li-go').getBoundingClientRect();
+    if (go.bottom <= window.innerHeight) return;
+    if (!window.matchMedia('(max-width: 899.98px)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    local.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  });
 
   var formPane = document.querySelector('.login-form');
   if (formPane && window.visualViewport) {
     function fitKb() {
       var vv = window.visualViewport;
-      formPane.style.paddingBottom = Math.max(80, Math.round(window.innerHeight - vv.height) + 24) + 'px';
+      var base = window.matchMedia('(min-width: 900px)').matches ? 80 : 40;
+      formPane.style.paddingBottom = Math.max(base, Math.round(window.innerHeight - vv.height) + 24) + 'px';
     }
     window.visualViewport.addEventListener('resize', fitKb);
   }

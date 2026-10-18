@@ -10,47 +10,109 @@
 <script defer src="../assets/reco.js"></script>
 <script defer src="store.js"></script>
 <style>
-  .forgot { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 34px var(--gutter) 80px; }
-  .forgot .inner { width: 100%; max-width: 560px; }
+  /* Cùng bố cục với dang-nhap.html (reco-devops#888, spec-01 AC-L-1): dưới 900px dải logo, form,
+     giới thiệu ở cuối; từ 900px hai cột, giới thiệu ở cột 1. */
+  .login { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; min-height: 100vh; }
+  .login-strip {
+    display: flex; align-items: center; gap: 8px; min-height: 56px; padding: 8px var(--gutter);
+    background: var(--navy); text-decoration: none;
+  }
+  .login-strip img { height: 32px; width: auto; display: block; }
+  .login-strip span {
+    font-size: .75rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+    color: rgb(255 255 255 / .72); white-space: nowrap;
+  }
+  .login-art {
+    position: relative; color: #fff; padding: 28px var(--gutter) 32px;
+    background: linear-gradient(105deg, rgba(5,31,53,.97), rgba(9,49,82,.86)), url('../assets/img/reco-banner.jpg') center/cover;
+    display: flex; flex-direction: column; justify-content: space-between; gap: 20px;
+  }
+  .login-art > .brand { display: none; }
+  .login-form { display: flex; align-items: flex-start; justify-content: center; padding: 24px var(--gutter) 40px; }
+  .login-form .inner { width: 100%; max-width: 480px; }
+  @media (min-width: 900px) {
+    .login { grid-template-columns: 1.05fr 1fr; align-content: normal; }
+    .login-strip { display: none; }
+    .login-art { grid-column: 1; grid-row: 1; padding: 48px 52px; gap: 28px; }
+    .login-art > .brand { display: inline-flex; }
+    .login-form { grid-column: 2; grid-row: 1; align-items: center; padding: 32px var(--gutter) 80px; }
+  }
+  .login-art h2 { color: #fff; }
+  .login-art .lead { color: rgb(255 255 255 / .8); }   /* như bản thật: chữ xám --muted trên navy thiếu tương phản */
+  .login-art .pt { display: flex; gap: 12px; align-items: flex-start; }
+  .login-art .pt i {
+    flex: none; width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(255,255,255,.14); display: inline-flex; align-items: center; justify-content: center;
+    font-style: normal; font-family: var(--font-display); font-weight: 700; font-size: .72rem;
+  }
   .forgot .card + .card { margin-top: 16px; }
   .forgot ol { margin: 8px 0 0; padding-left: 20px; }
   .forgot ol li + li { margin-top: 4px; }
+  .forgot-back { display: inline-flex; align-items: center; min-height: 44px; }
 </style>
 </head>
 <body data-shell="plain" data-page="quen-mat-khau">
 
 <main id="page">
-<div class="forgot">
-  <div class="inner">
-    <a class="brand" href="index.html"><b>RECO</b><span>Sales Hub</span></a>
-    <span class="eyebrow mt-3">Quên mật khẩu</span>
-    <h1 style="font-size:clamp(1.6rem,3.2vw,2rem)">Lấy lại mật khẩu</h1>
-    <p class="lead mt-1" style="font-size:.98rem">Sales Hub dùng chung mật khẩu với RecoHR. Đặt lại một lần là dùng được cho cả hai.</p>
+<div class="login">
 
-    <div class="card card-pad mt-3">
-      <h3>Nhân viên RECO</h3>
-      <p class="small mt-1">Đặt lại mật khẩu ở RecoHR, bằng một trong hai cách:</p>
-      <ol class="small">
-        <li><strong>Qua email:</strong> nhập số điện thoại hoặc email, mở link trong thư (dùng một lần, trong 1 giờ) rồi đặt mật khẩu mới.</li>
-        <li><strong>Không có email:</strong> nhờ HR gửi link đặt lại mật khẩu qua Zalo (dùng một lần, trong 24 giờ).</li>
-      </ol>
-      <a class="btn btn-primary btn-block mt-3" id="fp-recohr" href="#" data-recohr-forgot>Đặt lại mật khẩu ở RecoHR</a>
-      <p class="hint mt-1">Mở trang Quên mật khẩu của RecoHR. Đặt xong, quay lại Sales Hub và bấm <em>Đăng nhập bằng RecoHR</em>.</p>
+  <a class="login-strip" href="index.html" aria-label="RECO Sales Hub — về bản đồ prototype">
+    <img src="../assets/img/reco-logo-dark.png" alt="RECO" width="115" height="32">
+    <span>Sales Hub</span>
+  </a>
+
+  <section class="login-form forgot">
+    <div class="inner">
+      <span class="eyebrow">Quên mật khẩu</span>
+      <h1 style="font-size:clamp(1.6rem,3.2vw,2rem)">Lấy lại mật khẩu</h1>
+      <p class="lead mt-1" style="font-size:.98rem">Sales Hub dùng chung mật khẩu với RecoHR. Đặt lại một lần là dùng được cho cả hai.</p>
+
+      <div class="card card-pad mt-3">
+        <h3>Nhân viên RECO</h3>
+        <p class="small mt-1">Đặt lại mật khẩu ở RecoHR, bằng một trong hai cách:</p>
+        <ol class="small">
+          <li><strong>Qua email:</strong> nhập số điện thoại hoặc email, mở liên kết trong thư (dùng một lần, trong 1 giờ) rồi đặt mật khẩu mới.</li>
+          <li><strong>Không có email:</strong> nhờ Hành chính nhân sự gửi liên kết đặt lại mật khẩu qua Zalo (dùng một lần, trong 24 giờ).</li>
+        </ol>
+        <a class="btn btn-primary btn-block mt-3" id="fp-recohr" href="#" data-recohr-forgot>Đặt lại mật khẩu ở RecoHR</a>
+        <p class="hint mt-1">RecoHR mở ở thẻ mới. Đặt xong, quay lại thẻ Sales Hub này và bấm Đăng nhập bằng RecoHR.</p>
+      </div>
+
+      <div class="card card-pad">
+        <h3>Tài khoản Sales Hub nội bộ</h3>
+        <p class="small mt-1">Tài khoản không có trên RecoHR (như người quản trị chung): liên hệ người quản trị hệ thống để được gửi liên kết đặt mật khẩu mới (dùng một lần, trong 24 giờ).</p>
+      </div>
+
+      <p class="mt-2"><a class="forgot-back" href="dang-nhap.html"><strong>← Quay lại đăng nhập</strong></a></p>
+
+      <div class="note mt-3">
+        <strong>Ghi chú cho người trình bày.</strong> Trang này không có ô nhập và không gửi yêu cầu nào — Sales Hub không tự gửi thư
+        và không có đường dẫn công khai nhận số điện thoại/email (QD-153, <code>TC-AUTH-11</code>, <code>TC-AUTH-59</code>).
+        Bản thật trỏ nút trên tới <code>RECOHR_PASSWORD_RESET_URL</code>.
+      </div>
     </div>
+  </section>
 
-    <div class="card card-pad">
-      <h3>Tài khoản Sales Hub nội bộ</h3>
-      <p class="small mt-1">Tài khoản không có trên RecoHR (ví dụ người quản trị chung) liên hệ người quản trị để được gửi link đặt mật khẩu mới (dùng một lần, trong 24 giờ).</p>
+  <!-- Khối giới thiệu dùng chung với màn Đăng nhập: cột trái từ 900px, cuối trang dưới 900px (#888) -->
+  <section class="login-art">
+    <a class="brand" href="index.html" style="color:#fff">
+      <b style="color:#fff">RECO</b><span style="color:rgba(255,255,255,.72)">Sales Hub</span>
+    </a>
+    <div>
+      <span class="eyebrow light">Nền tảng bán hàng nội bộ</span>
+      <h2 style="max-width:16ch">Một nơi duy nhất cho mọi thông tin dự án</h2>
+      <p class="lead mt-2" style="max-width:44ch">
+        Thông tin tập trung, có nguồn và có ngày hiệu lực — để đội bán hàng tư vấn nhanh hơn và nói cùng một thông tin.
+      </p>
+      <div class="stack mt-3" style="max-width:44ch">
+        <div class="pt"><i>1</i><div><b>Dữ liệu</b><div class="small" style="color:rgba(255,255,255,.7)">Dự án, bảng hàng, tài liệu, ảnh và chính sách được sắp xếp theo bảy nhánh cố định.</div></div></div>
+        <div class="pt"><i>2</i><div><b>Truy xuất</b><div class="small" style="color:rgba(255,255,255,.7)">Tìm đúng thứ cần dùng ngay khi đang ngồi với khách.</div></div></div>
+        <div class="pt"><i>3</i><div><b>Chia sẻ</b><div class="small" style="color:rgba(255,255,255,.7)">Gửi khách một trang công khai gắn đúng tên nhân viên phụ trách.</div></div></div>
+      </div>
     </div>
+    <p class="micro" style="color:rgba(255,255,255,.55);margin:0">Công ty Cổ phần Nhà Ở Ngay RECO · Hệ thống dành cho nhân sự nội bộ</p>
+  </section>
 
-    <p class="mt-3"><a href="dang-nhap.html">← Quay lại đăng nhập</a></p>
-
-    <div class="note mt-3">
-      <strong>Ghi chú cho người trình bày.</strong> Trang này không có ô nhập và không gửi yêu cầu nào — Sales Hub không tự gửi thư
-      và không có đường dẫn công khai nhận số điện thoại/email (QD-153, <code>TC-AUTH-11</code>, <code>TC-AUTH-59</code>).
-      Bản thật trỏ nút trên tới <code>RECOHR_PASSWORD_RESET_URL</code>.
-    </div>
-  </div>
 </div>
 </main>
 
@@ -60,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!btn) return;
   btn.addEventListener('click', function (e) {
     e.preventDefault();
-    RECO.toast('Bản thật mở trang Quên mật khẩu của RecoHR (nhansu.recogroup.vn/users/password/forgot/).');
+    RECO.toast('Bản thật mở trang Quên mật khẩu của RecoHR ở thẻ mới (nhansu.recogroup.vn/users/password/forgot/).');
   });
 });
 </script>
