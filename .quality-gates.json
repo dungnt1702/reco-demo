@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "integration": "main",
+  "protected": [],
+  "dirtyIgnore": [".claude/agent-memory/"],
+  "merge": { "main": "pr" },
+  "tiers": {
+    "commit": [{ "name": "Secrets (staged)", "run": "gitleaks git --pre-commit --staged --redact --no-banner" }],
+    "pr": [{ "name": "Secrets", "run": "gitleaks detect --source . --redact --no-banner" }]
+  }
+}
