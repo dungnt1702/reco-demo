@@ -19,6 +19,7 @@ Canonical ship policy: `dev-guides/ai-agent-guidelines/cursor-agents/git-shipper
 - Account: `dungnt1702`.
 
 ## Quality gate — local only (repo không có CI)
+- Runner bắt buộc `~/.claude/hooks/quality-gate.js` (`dev-guides/ai-agent-guidelines/quality-gates.md`) đọc `.quality-gates.json`: tầng `commit` (Gitleaks file staged, tự chạy qua git hook) và `pr` (Gitleaks toàn repo, cần khi merge PR vào `main`). Không có nhánh bảo vệ — luồng push thẳng `main` giữ nguyên.
 - Repo không có `package.json`/npm toolchain — các trang là HTML/JS tĩnh, deploy = push thẳng `main` lên GitHub Pages, không qua bước build/bundle nào (trừ `build-artifact.mjs`, chỉ dùng riêng để đóng gói bản demo cho Claude Artifact).
 - Trước khi push, chạy `.\security-check.ps1` (gitleaks + semgrep, cả hai cài global trên máy dev, không thêm dependency vào repo):
   - **Gitleaks** (secret scan): không có false positive nào tại lần chạy đầu (18/09/2026) — không cần `.gitleaks.toml`. Leak thật xuất hiện sau này → KHÔNG tự sửa, báo cho user.
