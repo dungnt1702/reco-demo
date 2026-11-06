@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đề xuất MH-01 đăng nhập một cửa · RECO Sales Hub</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<link rel="stylesheet" href="../assets/compare.css">
+<script defer src="../assets/compare.js"></script>
+</head>
+<body>
+<main class="cmp">
+
+  <header class="cmp-head">
+    <span class="eyebrow">Bước Design · chờ PO duyệt</span>
+    <h1>MH-01 Đăng nhập Kinh doanh: một form, không còn nút "Đăng nhập bằng RecoHR"</h1>
+    <p class="lead">
+      Yêu cầu PO ngày 06/11/2026: bỏ nút đăng nhập qua RecoHR, Kinh doanh tự kiểm mật khẩu với hệ thống Nhân sự
+      qua API; trình duyệt đã đăng nhập Nhân sự thì vào Kinh doanh luôn, không đăng nhập lại.
+      Mỗi khung bên dưới là trang thu nhỏ, cuộn được bên trong. Tên, mã nhân viên và số điện thoại trong khung là dữ liệu mẫu.
+    </p>
+  </header>
+
+  <section class="cmp-note" aria-label="Thay đổi và lý do">
+    <div class="card card-pad">
+      <h2>Vấn đề hiện tại</h2>
+      <ul class="small">
+        <li>Màn có <b>hai cách đăng nhập</b>: nút "Đăng nhập bằng RecoHR" và form thu gọn "Tài khoản Sales Hub nội bộ". Nhân viên không biết chọn cách nào.</li>
+        <li>Nhân viên quen nhập số điện thoại và mật khẩu như app chấm công, nên dễ mở nhầm form nội bộ. Tài khoản đồng bộ từ Nhân sự không có mật khẩu Kinh doanh, nên form này <b>luôn báo sai</b> dù mật khẩu đúng.</li>
+        <li>Nút RecoHR đưa người dùng sang trang khác (nhansu.recogroup.vn) rồi mới quay lại. Nhiều người tưởng đã vào nhầm trang.</li>
+        <li>Trình duyệt đã đăng nhập Nhân sự vẫn phải bấm thêm nút RecoHR mới vào được Kinh doanh.</li>
+      </ul>
+    </div>
+    <div class="card card-pad">
+      <h2>Đề xuất: đổi gì</h2>
+      <ol class="small">
+        <li><b>Một form duy nhất:</b> số điện thoại hoặc email, mật khẩu, "Ghi nhớ thiết bị này", nút <b>Đăng nhập</b> (cam). Bỏ nút RecoHR, bỏ dòng "hoặc", bỏ khối "Tài khoản Sales Hub nội bộ".</li>
+        <li><b>Kiểm mật khẩu ngầm:</b> máy chủ Kinh doanh gửi số điện thoại/email và mật khẩu sang API của hệ thống Nhân sự để kiểm. Người dùng ở nguyên trang, không chuyển sang nhansu. Tài khoản không có trên Nhân sự (người quản trị chung) vẫn dùng mật khẩu Kinh doanh, cùng form này.</li>
+        <li><b>Đăng nhập đồng bộ:</b> khi mở trang đăng nhập, Kinh doanh hỏi ngầm hệ thống Nhân sự xem trình duyệt này đã đăng nhập chưa (một chuyến chuyển trang, thường dưới 1 giây). Có thì hiện "Đang vào Kinh doanh" với tên người đó rồi mở Trang đầu. Không có thì hiện form.</li>
+        <li><b>Sau khi bấm Đăng xuất ở Kinh doanh</b> thì không tự vào lại. Màn hiện tên người đang đăng nhập Nhân sự và nút <b>Tiếp tục với tài khoản này</b>; vẫn có form để dùng tài khoản khác.</li>
+        <li><b>Một chỗ báo lỗi</b> ngay trên form, mỗi lý do một câu: sai mật khẩu, chưa có tài khoản Kinh doanh, bị khoá hoặc nghỉ việc, hệ thống Nhân sự không phản hồi.</li>
+        <li>Trên màn đổi chữ "RecoHR" thành <b>"hệ thống Nhân sự"</b>, đúng cách nhân viên gọi. Không thêm màu, font hay bóng mới: chỉ dùng token và khung của DESIGN.md (bố cục #888 giữ nguyên).</li>
+      </ol>
+    </div>
+  </section>
+
+  <nav class="cmp-bar" aria-label="Chọn trạng thái màn">
+    <span class="lab">Trạng thái:</span>
+    <button type="button" class="cmp-pill" data-tt="mac-dinh" aria-pressed="false">Mặc định</button>
+    <button type="button" class="cmp-pill" data-tt="kiem-tra" aria-pressed="false">Đang kiểm tra phiên Nhân sự</button>
+    <button type="button" class="cmp-pill" data-tt="co-phien" aria-pressed="false">Đã đăng nhập Nhân sự → tự vào</button>
+    <button type="button" class="cmp-pill" data-tt="sau-dang-xuat" aria-pressed="false">Vừa đăng xuất Kinh doanh</button>
+    <button type="button" class="cmp-pill" data-tt="sai" aria-pressed="false">Sai mật khẩu</button>
+    <button type="button" class="cmp-pill" data-tt="chua-co-tk" aria-pressed="false">Chưa có tài khoản KD</button>
+    <button type="button" class="cmp-pill" data-tt="bi-khoa" aria-pressed="false">Bị khoá / nghỉ việc</button>
+    <button type="button" class="cmp-pill" data-tt="ns-loi" aria-pressed="false">Nhân sự không phản hồi</button>
+    <button type="button" class="cmp-pill" data-tt="quen" aria-pressed="false">MH-01a Quên mật khẩu</button>
+  </nav>
+  <p class="small muted" style="margin:-4px 0 12px">Hai trạng thái "Đang kiểm tra" và "Tự vào" chưa có ở bản hiện tại, nên khung "Hiện tại" hiện màn mặc định.</p>
+
+  <section class="cmp-row">
+    <h2>Điện thoại 360 × 800 (M1, Chrome Android)</h2>
+    <div class="cmp-pair">
+      <div class="cmp-cell" data-frame data-src="de-xuat-dang-nhap-mot-cua-khung.html" data-v="cu" data-w="360" data-h="800"></div>
+      <div class="cmp-cell" data-frame data-src="de-xuat-dang-nhap-mot-cua-khung.html" data-v="moi" data-w="360" data-h="800"></div>
+    </div>
+  </section>
+
+  <section class="cmp-row">
+    <h2>Điện thoại 390 dọc (M2, iPhone Safari, có thanh địa chỉ)</h2>
+    <div class="cmp-pair">
+      <div class="cmp-cell" data-frame data-src="de-xuat-dang-nhap-mot-cua-khung.html" data-v="cu" data-w="390" data-h="664"></div>
+      <div class="cmp-cell" data-frame data-src="de-xuat-dang-nhap-mot-cua-khung.html" data-v="moi" data-w="390" data-h="664"></div>
+    </div>
+  </section>
+
+  <section class="cmp-row">
+    <h2>Máy tính 1440 × 900</h2>
+    <div class="cmp-pair">
+      <div class="cmp-cell" data-frame data-src="de-xuat-dang-nhap-mot-cua-khung.html" data-v="cu" data-w="1440" data-h="900" data-scale="0.5"></div>
+      <div class="cmp-cell" data-frame data-src="de-xuat-dang-nhap-mot-cua-khung.html" data-v="moi" data-w="1440" data-h="900" data-scale="0.5"></div>
+    </div>
+  </section>
+
+  <details class="cmp-more">
+    <summary>Máy tính bảng dọc 768 × 1024 (T1)</summary>
+    <section class="cmp-row" style="margin-top:12px">
+      <div class="cmp-pair">
+        <div class="cmp-cell" data-frame data-src="de-xuat-dang-nhap-mot-cua-khung.html" data-v="cu" data-w="768" data-h="1024" data-scale="0.75"></div>
+        <div class="cmp-cell" data-frame data-src="de-xuat-dang-nhap-mot-cua-khung.html" data-v="moi" data-w="768" data-h="1024" data-scale="0.75"></div>
+      </div>
+    </section>
+  </details>
+
+  <section class="cmp-row">
+    <h2>Luồng xử lý (để PO nắm, chi tiết sẽ vào BR + spec)</h2>
+    <ol class="small" style="padding-left:20px">
+      <li><b>Mở trang đăng nhập Kinh doanh</b> (gõ địa chỉ, bấm "Đăng nhập" ở trang giới thiệu, hoặc phiên hết hạn): Kinh doanh hỏi ngầm hệ thống Nhân sự theo chuẩn OpenID Connect với <code>prompt=none</code>. Nhân sự không hiện màn nào.
+        <ul>
+          <li>Trình duyệt đã đăng nhập Nhân sự: Nhân sự trả về ngay, Kinh doanh kiểm trạng thái làm việc (như cách SSO hiện tại) và mở trang người đó định vào.</li>
+          <li>Chưa đăng nhập: Nhân sự trả "cần đăng nhập", Kinh doanh hiện form. Mỗi lần mở trang chỉ hỏi một lần, không lặp.</li>
+        </ul>
+      </li>
+      <li><b>Bấm Đăng nhập trên form:</b> định danh trùng tài khoản riêng của Kinh doanh (có mật khẩu Kinh doanh) thì kiểm tại chỗ như bây giờ. Còn lại, máy chủ Kinh doanh gọi API kiểm mật khẩu của hệ thống Nhân sự (khoá tích hợp riêng, chỉ máy chủ gọi được). Đúng thì áp trạng thái mới nhất của người đó rồi tạo phiên.</li>
+      <li><b>Chống dò mật khẩu:</b> giữ ngưỡng hiện có ở cả hai bên (5 lần sai / 15 phút, khoá 30 phút sau 20 lần / ngày). Kinh doanh gửi kèm IP của người dùng để Nhân sự đếm đúng người, không gộp mọi lượt từ máy chủ Kinh doanh thành một IP.</li>
+      <li><b>Xác thực lại trước thao tác nhạy cảm</b> (đang chuyển sang trang RecoHR): đổi thành hộp nhập mật khẩu ngay trên Kinh doanh, kiểm qua cùng API.</li>
+      <li>App chấm công và web Nhân sự không đổi gì, ngoài API mới cho Kinh doanh.</li>
+    </ol>
+  </section>
+
+  <section class="cmp-row">
+    <h2>Câu hỏi cho PO</h2>
+    <ol class="small" style="padding-left:20px">
+      <li><b>Tự vào khi đã đăng nhập Nhân sự:</b> đề xuất vào thẳng, chỉ hiện thẻ tên trong lúc mở Trang đầu, kèm liên kết "Không phải anh/chị? Dùng tài khoản khác". Cách khác: luôn dừng ở thẻ tên và bắt bấm "Tiếp tục" (an toàn hơn trên máy dùng chung, thêm một lần bấm). Anh/chị chọn cách nào?</li>
+      <li><b>Sau khi đăng xuất Kinh doanh:</b> đề xuất không tự vào lại, hiện nút "Tiếp tục với tài khoản này" (trạng thái "Vừa đăng xuất Kinh doanh"). Đăng xuất Kinh doanh có cần đăng xuất luôn hệ thống Nhân sự không? Đề xuất là <b>không</b>, vì app chấm công và web Nhân sự có phiên riêng.</li>
+      <li><b>Gọi tên trên màn:</b> đề xuất "hệ thống Nhân sự" thay cho "RecoHR". Đồng ý không, hay giữ "RecoHR"?</li>
+      <li>Khi hệ thống Nhân sự không phản hồi, nhân viên chưa đăng nhập được (chỉ tài khoản riêng của Kinh doanh vẫn vào được). Đề xuất chấp nhận, vì Kinh doanh không giữ bản sao mật khẩu Nhân sự. Đồng ý không?</li>
+    </ol>
+  </section>
+
+  <section class="cmp-row">
+    <h2>Bàn giao khi PO duyệt</h2>
+    <ul class="small" style="padding-left:20px">
+      <li>Viết BR + spec (spec-01 MH-01, spec-10 FR-SYNC-10/ADR-0012 §8) cho API kiểm mật khẩu và đăng nhập đồng bộ, ghi quyết định QD mới, rồi lập issue cho Sales Hub (form, luồng ngầm, xác thực lại) và RecoHR web (API kiểm mật khẩu, <code>prompt=none</code>, đếm theo IP người dùng).</li>
+      <li><code>src/app/(auth)/dang-nhap/login-form.tsx</code>, <code>page.tsx</code>: một form, một khối lỗi; bỏ <code>LocalSection</code> và nút <code>login-recohr</code>. <code>src/server/auth/login.ts</code>: nhánh kiểm qua Nhân sự. <code>src/server/integration/sso.ts</code>: thêm ý định <code>silent</code> (<code>prompt=none</code>).</li>
+      <li>Cập nhật DESIGN.md §9, spec-01 <code>AC-L-1</code>, video hướng dẫn phần đăng nhập, và E2E đăng nhập hai hệ thống.</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

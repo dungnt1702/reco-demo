@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Khung MH-01 · đề xuất đăng nhập một cửa</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/fold-probe.js"></script>
+<!--
+  Trang khung cho de-xuat-dang-nhap-mot-cua.html. Bố cục lấy đúng bản đang chạy sau #888
+  (dải logo dưới 900px, hai cột từ 900px). Hai biến thể:
+    ?v=cu   MH-01 hiện tại: nút "Đăng nhập bằng RecoHR" + form thu gọn "Tài khoản Sales Hub nội bộ".
+    ?v=moi  đề xuất: một form duy nhất, Sales Hub kiểm mật khẩu với hệ thống Nhân sự ở phía máy chủ;
+            trình duyệt đã đăng nhập Nhân sự thì tự vào, không phải nhập lại.
+  ?tt= chọn trạng thái: mac-dinh | kiem-tra | co-phien | sau-dang-xuat | sai | chua-co-tk | bi-khoa | ns-loi | quen
+-->
+<style>
+  body { background: var(--paper); }
+  .a-login { display: flex; flex-direction: column; min-height: 100vh; }
+
+  .a-art {
+    position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 20px;
+    padding: 28px var(--gutter) 32px; color: #fff;
+    background: linear-gradient(105deg, rgba(5,31,53,.97), rgba(9,49,82,.86)), var(--navy);
+  }
+  .a-brand { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+  .a-brand img { height: 40px; width: auto; display: block; }
+  .a-brand span { font-size: .75rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: rgb(255 255 255 / .72); }
+  .a-art .eyebrow { color: rgb(255 255 255 / .8); }
+  .a-art h2 { color: #fff; font-size: 1.5rem; line-height: 1.33; letter-spacing: -.02em; max-width: 16ch; }
+  .a-art .a-lead { margin: 8px 0 0; max-width: 44ch; color: rgb(255 255 255 / .8); }
+  .a-legal { margin: 0; font-size: .74rem; color: rgb(255 255 255 / .55); }
+
+  .a-strip { display: flex; align-items: center; gap: 8px; min-height: 56px; padding: 8px var(--gutter); background: var(--navy); }
+  .a-strip img { height: 32px; width: auto; display: block; }
+  .a-strip span { font-size: .75rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: rgb(255 255 255 / .72); }
+
+  .a-form { display: flex; align-items: flex-start; justify-content: center; padding: 24px var(--gutter) 40px; }
+  .a-inner { width: 100%; max-width: 400px; }
+  .a-inner.wide { max-width: 480px; }
+  .a-inner h1 { font-size: clamp(1.7rem, 3.4vw, 2.2rem); line-height: 1.15; letter-spacing: -.03em; }
+  .a-inner h1.sm { font-size: clamp(1.6rem, 3.2vw, 2rem); }
+  .a-sub { margin: 4px 0 0; font-size: .98rem; color: var(--muted); }
+  .a-hint { display: block; margin-top: 6px; font-size: .78rem; color: var(--muted); }
+  .a-btn {
+    display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px;
+    margin-top: 16px; padding: 10px 18px; border-radius: var(--radius-md); border: 1px solid transparent;
+    font: 700 .92rem/1.2 var(--font-body); text-decoration: none; cursor: pointer;
+    background: var(--orange-button); color: #fff; transition: background-color .15s ease-out;
+  }
+  .a-btn:hover { background: var(--orange-dark); color: #fff; }
+  .a-btn[aria-busy="true"] { opacity: .85; cursor: progress; }
+  .a-btn.outline { background: transparent; border-color: var(--navy); color: var(--navy); margin-top: 12px; }
+  .a-btn.outline:hover { background: color-mix(in srgb, var(--navy) 5%, transparent); }
+  .a-note { margin: 12px 0 0; padding: 12px 16px; border-left: 3px solid var(--navy); border-radius: 0 var(--radius-md) var(--radius-md) 0; background: var(--soft); font-size: .875rem; color: var(--ink); }
+  .a-alert { margin: 12px 0 0; padding: 12px 16px; border-left: 3px solid var(--danger); border-radius: 0 var(--radius-md) var(--radius-md) 0; background: color-mix(in srgb, var(--danger) 6%, transparent); font-size: .875rem; color: var(--ink); }
+  .a-alert strong { color: var(--danger); }
+  .a-or { display: flex; align-items: center; gap: 12px; margin: 16px 0; font-size: .75rem; color: var(--muted); }
+  .a-or::before, .a-or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+  .a-local > summary { cursor: pointer; list-style: none; padding: 8px 0; font-weight: 600; color: var(--navy); min-height: 44px; display: flex; align-items: center; }
+  .a-local > summary::-webkit-details-marker { display: none; }
+  .a-local > summary::before { content: '+\00a0'; }
+  .a-local[open] > summary::before { content: '\2212\00a0'; }
+  .a-field { display: block; margin-bottom: 14px; }
+  .a-field > span:first-child { display: block; margin-bottom: 6px; font-size: .82rem; font-weight: 700; color: var(--navy); }
+  .a-inp {
+    width: 100%; box-sizing: border-box; padding: 11px 14px; border: 1px solid var(--line); border-radius: var(--radius-md);
+    background: var(--white); font: .94rem var(--font-body); color: var(--ink);
+  }
+  .a-inp:focus { outline: 0; border-color: var(--orange-text); box-shadow: 0 0 0 3px color-mix(in srgb, var(--orange) 18%, transparent); }
+  .a-check { display: flex; gap: 10px; align-items: flex-start; margin-top: 8px; font-size: .9rem; cursor: pointer; }
+  .a-check input { margin-top: 3px; width: 17px; height: 17px; accent-color: var(--orange-button); }
+  .a-link { display: inline-block; margin-top: 16px; font-size: .875rem; font-weight: 700; color: var(--navy); }
+  .a-box { margin-top: 16px; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--white); }
+  .a-box h2 { font-size: 1.125rem; letter-spacing: -.02em; }
+  .a-box p, .a-box ol { font-size: .875rem; }
+  .a-box ol { margin: 8px 0 0; padding-left: 20px; }
+  .a-box li + li { margin-top: 4px; }
+
+  /* Thẻ "đang vào bằng phiên Nhân sự": thẻ trắng viền line, không màu mới */
+  .a-who { margin-top: 16px; display: flex; gap: 12px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--white); }
+  .a-ava { flex: none; width: 44px; height: 44px; border-radius: 50%; background: var(--navy); color: #fff; display: inline-flex; align-items: center; justify-content: center; font: 700 1rem var(--font-display); }
+  .a-who b { display: block; color: var(--navy); }
+  .a-who small { color: var(--muted); font-size: .8rem; }
+  .a-spin { display: inline-block; width: 16px; height: 16px; margin-right: 8px; border: 2px solid rgb(255 255 255 / .45); border-top-color: #fff; border-radius: 50%; animation: a-rot .8s linear infinite; vertical-align: -3px; }
+  .a-spin.dark { border-color: color-mix(in srgb, var(--navy) 25%, transparent); border-top-color: var(--navy); }
+  @keyframes a-rot { to { transform: rotate(360deg); } }
+  .a-check-line { margin-top: 16px; display: flex; align-items: center; min-height: 44px; font-size: .92rem; color: var(--navy); font-weight: 600; }
+
+  [data-screen] { display: none; }
+  [data-screen].on { display: block; }
+  .v-cu .only-moi, .v-moi .only-cu { display: none !important; }
+
+  @media (min-width: 900px) {
+    .a-login { display: grid; grid-template-columns: 1.05fr 1fr; }
+    .a-strip { display: none; }
+    .a-art { grid-column: 1; grid-row: 1; padding: 48px 52px; gap: 28px; }
+    .a-form { grid-column: 2; grid-row: 1; align-items: flex-start; padding: max(2rem, calc(50vh - 12rem)) var(--gutter) 80px; }
+  }
+  @media (max-width: 899.98px) { .a-art .a-brand { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .a-btn { transition: none; } .a-spin { animation-duration: 2.4s; } }
+</style>
+</head>
+<body class="v-cu" data-fold-labels="Tiêu đề màn|Câu báo / lỗi|Nút chính">
+
+<main class="a-login">
+  <header class="a-strip">
+    <a class="a-brand" href="#" aria-label="RECO Sales Hub — trang đầu">
+      <img src="../assets/img/reco-logo-dark.png" alt="RECO" width="115" height="32">
+    </a>
+    <span>Sales Hub</span>
+  </header>
+
+  <section class="a-form">
+
+    <!-- ================= HIỆN TẠI: MH-01 hai cách đăng nhập ================= -->
+    <div class="a-inner only-cu" data-screen="login-cu">
+      <span class="eyebrow">Đăng nhập</span>
+      <h1 data-fold="Tiêu đề màn">Chào anh/chị</h1>
+      <p class="a-sub">Đăng nhập bằng số điện thoại hoặc email do RECO cấp.</p>
+      <p class="a-note" role="status" data-cu-msg="dang-xuat" hidden>Anh/chị đã đăng xuất.</p>
+      <p class="a-alert" role="alert" data-cu-msg="loi" hidden><strong>Không đăng nhập được bằng RecoHR</strong> <span data-cu-text></span></p>
+      <a class="a-btn" href="#" data-fold="Nút chính">Đăng nhập bằng RecoHR</a>
+      <span class="a-hint">Nhập số điện thoại hoặc email cùng mật khẩu RecoHR ở trang RecoHR, rồi quay lại đây.</span>
+      <div class="a-or" aria-hidden="true">hoặc</div>
+      <details class="a-local" data-cu-local>
+        <summary>Tài khoản Sales Hub nội bộ</summary>
+        <form novalidate onsubmit="return false" style="margin-top:12px">
+          <div class="a-alert" role="alert" data-cu-msg="sai" hidden><strong>Không đăng nhập được</strong> Số điện thoại/email hoặc mật khẩu không đúng.</div>
+          <label class="a-field" style="margin-top:12px"><span>Số điện thoại hoặc email</span>
+            <input class="a-inp" type="text" autocomplete="username" placeholder="0912 345 678 hoặc email">
+          </label>
+          <label class="a-field"><span>Mật khẩu</span>
+            <input class="a-inp" type="password" autocomplete="current-password" enterkeyhint="go">
+          </label>
+          <label class="a-check"><input type="checkbox" checked> <span>Ghi nhớ thiết bị này</span></label>
+          <button class="a-btn outline" type="submit">Đăng nhập bằng mật khẩu Sales Hub</button>
+          <span class="a-hint">Dành cho tài khoản không có trên RecoHR (như người quản trị chung) và tài khoản đã có mật khẩu Sales Hub từ trước.</span>
+        </form>
+      </details>
+      <a class="a-link" href="#">Quên mật khẩu?</a>
+    </div>
+
+    <!-- ================= ĐỀ XUẤT: một form ================= -->
+    <div class="a-inner only-moi" data-screen="login-moi">
+      <span class="eyebrow">Đăng nhập</span>
+      <h1 data-fold="Tiêu đề màn">Chào anh/chị</h1>
+      <p class="a-sub">Dùng số điện thoại hoặc email và mật khẩu của hệ thống Nhân sự.</p>
+
+      <p class="a-note" role="status" data-msg="dang-xuat" data-fold="Câu báo / lỗi" hidden>Anh/chị đã đăng xuất khỏi Kinh doanh. Hệ thống Nhân sự vẫn đang đăng nhập.</p>
+      <div class="a-who" data-msg="dang-xuat" hidden>
+        <span class="a-ava" aria-hidden="true">MA</span>
+        <div style="min-width:0"><b>Trần Minh Anh</b><small>Đang đăng nhập hệ thống Nhân sự · RC00999</small></div>
+      </div>
+      <a class="a-btn" href="#" data-msg="dang-xuat" hidden>Tiếp tục với tài khoản này</a>
+      <div class="a-or" data-msg="dang-xuat" aria-hidden="true" hidden>hoặc dùng tài khoản khác</div>
+
+      <div class="a-alert" role="alert" data-msg="loi" data-fold="Câu báo / lỗi" tabindex="-1" hidden><strong>Không đăng nhập được</strong> <span data-text></span></div>
+
+      <form novalidate onsubmit="return false" style="margin-top:16px">
+        <label class="a-field"><span>Số điện thoại hoặc email</span>
+          <input class="a-inp" type="text" autocomplete="username" placeholder="0912 345 678 hoặc email" data-id>
+          <span class="a-hint">Giống khi đăng nhập app chấm công.</span>
+        </label>
+        <label class="a-field"><span>Mật khẩu</span>
+          <input class="a-inp" type="password" autocomplete="current-password" enterkeyhint="go" data-pw>
+        </label>
+        <label class="a-check"><input type="checkbox" checked> <span>Ghi nhớ thiết bị này</span></label>
+        <button class="a-btn" type="submit" data-fold="Nút chính" data-go>Đăng nhập</button>
+      </form>
+      <a class="a-link" href="#">Quên mật khẩu?</a>
+    </div>
+
+    <!-- Đề xuất: đang kiểm tra phiên Nhân sự (chỉ một chuyến chuyển trang, thường dưới 1 giây) -->
+    <div class="a-inner only-moi" data-screen="kiem-tra">
+      <span class="eyebrow">Đăng nhập</span>
+      <h1 data-fold="Tiêu đề màn">Chào anh/chị</h1>
+      <p class="a-check-line" role="status" data-fold="Câu báo / lỗi"><span class="a-spin dark" aria-hidden="true"></span>Đang kiểm tra đăng nhập Nhân sự trên trình duyệt này…</p>
+      <span class="a-hint">Nếu anh/chị đã đăng nhập hệ thống Nhân sự, Kinh doanh tự vào luôn.</span>
+    </div>
+
+    <!-- Đề xuất: đã có phiên Nhân sự → đang vào -->
+    <div class="a-inner only-moi" data-screen="co-phien">
+      <span class="eyebrow">Đăng nhập đồng bộ</span>
+      <h1 data-fold="Tiêu đề màn">Đang vào Kinh doanh</h1>
+      <div class="a-who" role="status" data-fold="Câu báo / lỗi">
+        <span class="a-ava" aria-hidden="true">MA</span>
+        <div style="min-width:0"><b>Trần Minh Anh</b><small>Đã đăng nhập hệ thống Nhân sự · RC00999</small></div>
+      </div>
+      <button class="a-btn" type="button" aria-busy="true" data-fold="Nút chính"><span class="a-spin" aria-hidden="true"></span>Đang mở Trang đầu…</button>
+      <a class="a-link" href="#">Không phải anh/chị? Dùng tài khoản khác</a>
+    </div>
+
+    <!-- MH-01a Quên mật khẩu (cả hai biến thể; đề xuất chỉ đổi câu cuối) -->
+    <div class="a-inner wide" data-screen="quen">
+      <span class="eyebrow">Quên mật khẩu</span>
+      <h1 class="sm" data-fold="Tiêu đề màn">Lấy lại mật khẩu</h1>
+      <p class="a-sub">Sales Hub dùng chung mật khẩu với <span class="only-cu">RecoHR</span><span class="only-moi">hệ thống Nhân sự</span>. Đặt lại một lần là dùng được cho cả hai.</p>
+      <div class="a-box">
+        <h2>Nhân viên RECO</h2>
+        <p style="margin:4px 0 0">Đặt lại mật khẩu ở <span class="only-cu">RecoHR</span><span class="only-moi">hệ thống Nhân sự</span>, bằng một trong hai cách:</p>
+        <ol>
+          <li><strong>Qua email:</strong> nhập số điện thoại hoặc email, mở link trong thư (dùng một lần, trong 1 giờ) rồi đặt mật khẩu mới.</li>
+          <li><strong>Không có email:</strong> nhờ HR gửi link đặt lại mật khẩu qua Zalo (dùng một lần, trong 24 giờ).</li>
+        </ol>
+        <a class="a-btn" href="#" data-fold="Nút chính"><span class="only-cu">Đặt lại mật khẩu ở RecoHR</span><span class="only-moi">Đặt lại mật khẩu ở hệ thống Nhân sự</span></a>
+        <span class="a-hint only-cu">Đặt xong, quay lại Sales Hub và bấm Đăng nhập bằng RecoHR.</span>
+        <span class="a-hint only-moi">Đặt xong, quay lại đây và đăng nhập bằng mật khẩu mới. Đã đăng nhập Nhân sự thì Kinh doanh tự vào.</span>
+      </div>
+      <div class="a-box">
+        <h2>Tài khoản không có trên hệ thống Nhân sự</h2>
+        <p style="margin:4px 0 0">Như người quản trị chung: liên hệ người đã cấp tài khoản để được đặt lại mật khẩu.</p>
+      </div>
+      <a class="a-link" href="#">Về trang đăng nhập</a>
+    </div>
+  </section>
+
+  <section class="a-art">
+    <a class="a-brand" href="#">
+      <img src="../assets/img/reco-logo-dark.png" alt="RECO" width="144" height="40">
+      <span>Sales Hub</span>
+    </a>
+    <div>
+      <span class="eyebrow">Nền tảng bán hàng nội bộ</span>
+      <h2>Một nơi duy nhất cho mọi thông tin dự án</h2>
+      <p class="a-lead">Thông tin tập trung, có nguồn và có ngày hiệu lực — để đội bán hàng tư vấn nhanh hơn và nói cùng một thông tin.</p>
+    </div>
+    <p class="a-legal">Công ty Cổ phần Nhà Ở Ngay RECO · Hệ thống dành cho nhân sự nội bộ</p>
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var q = new URLSearchParams(location.search);
+  var v = q.get('v') === 'moi' ? 'moi' : 'cu';
+  var tt = q.get('tt') || 'mac-dinh';
+  document.body.className = 'v-' + v;
+
+  /* Câu lỗi: hiện tại có hai chỗ (lỗi SSO trên đầu, lỗi mật khẩu trong form nội bộ); đề xuất một chỗ. */
+  var ERR = {
+    sai: 'Số điện thoại/email hoặc mật khẩu không đúng. Dùng đúng mật khẩu đang dùng cho app chấm công.',
+    'chua-co-tk': 'Anh/chị chưa có tài khoản Kinh doanh: phòng ban của anh/chị chưa được cấp quyền. Liên hệ Hành chính nhân sự.',
+    'bi-khoa': 'Tài khoản Kinh doanh của anh/chị đang bị khoá hoặc đã nghỉ việc trên hệ thống Nhân sự. Liên hệ Hành chính nhân sự.',
+    'ns-loi': 'Hệ thống Nhân sự đang không phản hồi, nên chưa kiểm được mật khẩu. Vui lòng thử lại sau ít phút.'
+  };
+  var CU_SSO = {
+    'chua-co-tk': 'Anh/chị chưa có tài khoản Sales Hub. Phòng ban của anh/chị chưa được cấp quyền — liên hệ Hành chính nhân sự.',
+    'bi-khoa': 'Tài khoản Sales Hub của anh/chị đang bị khoá hoặc đã nghỉ việc trên RecoHR. Liên hệ Hành chính nhân sự.',
+    'ns-loi': 'Vui lòng thử lại hoặc dùng mật khẩu.'
+  };
+
+  function on(sel) { document.querySelector(sel).classList.add('on'); }
+  function show(attr, val) {
+    [].slice.call(document.querySelectorAll('[' + attr + '="' + val + '"]')).forEach(function (n) { n.hidden = false; });
+  }
+
+  if (tt === 'quen') { on('[data-screen="quen"]'); return; }
+
+  if (v === 'cu') {
+    on('[data-screen="login-cu"]');
+    if (tt === 'sau-dang-xuat') show('data-cu-msg', 'dang-xuat');
+    if (CU_SSO[tt]) { show('data-cu-msg', 'loi'); document.querySelector('[data-cu-text]').textContent = CU_SSO[tt]; }
+    if (tt === 'sai') { show('data-cu-msg', 'sai'); document.querySelector('[data-cu-local]').open = true; }
+    return;
+  }
+
+  if (tt === 'kiem-tra') { on('[data-screen="kiem-tra"]'); return; }
+  if (tt === 'co-phien') { on('[data-screen="co-phien"]'); return; }
+  on('[data-screen="login-moi"]');
+  if (tt === 'sau-dang-xuat') {
+    show('data-msg', 'dang-xuat');
+    /* Chỉ một nút chính: "Tiếp tục với tài khoản này" cam, nút của form thành nút viền. */
+    document.querySelector('[data-go]').classList.add('outline');
+    document.querySelector('[data-go]').removeAttribute('data-fold');
+  }
+  if (ERR[tt]) {
+    show('data-msg', 'loi');
+    document.querySelector('[data-text]').textContent = ERR[tt];
+    if (tt === 'sai') {
+      document.querySelector('[data-id]').value = '0912 345 678';
+    }
+  }
+
+  /* Bấm Đăng nhập: nút khoá giữ nguyên chiều rộng, câu riêng theo thao tác (V-06). */
+  var go = document.querySelector('[data-go]');
+  document.querySelector('[data-screen="login-moi"] form').addEventListener('submit', function () {
+    go.setAttribute('aria-busy', 'true');
+    go.innerHTML = '<span class="a-spin" aria-hidden="true"></span>Đang đăng nhập…';
+    setTimeout(function () { go.removeAttribute('aria-busy'); go.textContent = 'Đăng nhập'; }, 1600);
+  });
+})();
+</script>
+</body>
+</html>
